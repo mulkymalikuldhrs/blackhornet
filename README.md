@@ -4,157 +4,76 @@ A self-improving, immortal, autonomous AGI colony system implementing PSO ring t
 
 ## Architecture
 
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:D9A441,100:00D1C7&height=180&section=header&text=BlackHornet&fontSize=35&fontColor=ffffff&animation=fadeIn" width="100%" />
+
+[![Codeberg](https://img.shields.io/badge/Codeberg-Dhaher--Labs%2FBlackHornet-2185D0?logo=codeberg)](https://codeberg.org/Dhaher-Labs/BlackHornet)
+[![GitLab](https://img.shields.io/badge/Gitlab-Mirror-FC6D26?logo=gitlab)](https://gitlab.com/mulkymalikuldhr/BlackHornet)
+[![GitHub](https://img.shields.io/badge/GitHub-Archive-181717?logo=github)](https://github.com/dhaher-labs/BlackHornet)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+<p align="center">
+  <em>Part of <a href="https://dhaher-labs.codeberg.page">Dhaher Labs</a> &mdash; Autonomous Multi-Agent Swarm Framework</em>
+</p>
+
+## 📋 Overview
+
+A self-improving, immortal, autonomous AGI colony system implementing PSO ring topology, ABC role-switching, and stigmergic communication for distributed autonomous agents.
+
+## 🏗️ Architecture
+
 ```
 src/
 ├── __init__.py           # Top-level package exports
+├── colony_types/         # Pydantic v2 type system
 ├── types/                # Unified type system (Pydantic v2)
-│   ├── models.py              # 40+ enums and models
-│   ├── colony.py              # ColonyConfig, TaskAssignment
-│   ├── agent.py               # Agent type definitions
-│   ├── messages.py            # Message models
-│   ├── memory.py              # Memory models
-│   ├── events.py              # Event models
-│   ├── tools.py               # Tool models
-│   └── tests.py               # Unit tests
-├── core/                 # Core framework
-│   ├── base_agent.py          # BaseAgent with state machine
-│   ├── agent_loop.py          # Think-act-observe loop
-│   ├── llm_provider.py        # Multi-provider LLM interface
-│   ├── event_bus.py           # Pub/sub inter-agent messaging
-│   ├── tool_registry.py       # Decorator-based tool registration
-│   ├── tool_base.py           # Base tool class
-│   ├── channel.py             # Multi-channel communication
-│   ├── circuit_breaker.py     # Fault tolerance
-│   ├── memory_manager.py      # Memory management
-│   ├── persistence.py         # Storage backends
-│   ├── observability.py       # Logging, metrics, tracing
-│   ├── self_healing.py        # Phi-accrual failure detection
-│   ├── pii_redaction.py       # PII redaction
-│   ├── edge_cases.py          # Graceful degradation
-│   └── tests.py               # Unit tests
-├── agents/               # Agent implementations
-│   ├── base.py                # BaseAgent, EventBus, CircuitBreaker
-│   ├── registry.py            # AgentRegistry
-│   ├── graph.py               # AgentGraph orchestration
-│   ├── state.py               # Shared state models
-│   ├── {manus,planner,...}.py # Agent implementations
-│   └── {manus,planner,...}/   # Agent subpackages (prompts, agent code)
-├── config/               # Configuration
-│   └── settings.py            # Pydantic/dataclass settings
-├── swarm/                # Swarm intelligence
-│   ├── pso_swarm.py           # PSO ring/star/wheel/von-neumann
-│   ├── abc_swarm.py           # ABC with role-switching
-│   ├── stigmergy.py           # Pheromone field communication
-│   └── swarm_orchestrator.py  # Unified PSO+ABC+Stigmergy
-├── graph/                # Knowledge graph
-│   ├── graph_store.py         # SQLite-backed graph DB
-│   └── tests.py               # Unit tests
-├── memory/               # Memory system
-│   ├── working_memory.py      # Working memory management
-│   ├── long_term_memory.py    # LTM with vector storage
-│   └── tests.py               # Unit tests
-├── thinking/             # Thinking engine
-│   ├── thinking_engine.py     # Reasoning engine
-│   ├── thought_tree.py        # Tree-of-thought
-│   └── tests.py               # Unit tests
-├── sandbox/              # Sandbox execution
-│   ├── sandbox_manager.py     # Docker/WASM sandbox
-│   └── tests.py               # Unit tests
-├── auto_discovery/       # Module auto-discovery
-│   ├── module_discovery.py    # Module discovery system
-│   └── tests.py               # Unit tests
-├── ui/                   # TUI interface
-│   ├── tui.py                 # Terminal UI
-│   └── tests.py               # Unit tests
-├── integration/          # Integration launcher
-│   ├── unified_launcher.py    # Main entry point
-│   ├── event_hub.py           # Event hub
-│   └── tests.py               # Unit tests
-├── security/             # Security & audit
-│   ├── audit.py               # Audit trail
-│   └── permission.py          # Permission system
-├── mcp/                  # MCP protocol integration
-│   └── mcp_handler.py         # MCP message handling
-├── channels/             # Communication channels
-│   ├── telegram.py            # Telegram integration
-│   ├── discord.py             # Discord integration
-│   └── slack.py               # Slack integration
-├── api/                  # API server
-│   ├── app.py                 # Starlette API
-│   └── routes/                # API routes
-├── colony/               # Colony management
-│   ├── manager.py             # ColonyManager
-│   └── scheduler.py           # TaskScheduler
-├── tools/                # Tool implementations
-│   ├── browser/               # Browser automation
-│   ├── vcs/                   # Version control
-│   └── compute/               # Compute tools
-├── browser/              # Browser automation
-│   └── browser_manager.py     # Pooled browser management
-├── harness/              # Original harness (legacy)
-│   ├── agents/                # Legacy agent types
-│   ├── community/             # Community integrations
-│   └── persistence/           # Alembic migrations
-├── integrations/         # External integrations
-│   ├── autogen_adapter.py     # AutoGen adapter
-│   ├── crewai_adapter.py      # CrewAI adapter
-│   └── langgraph_adapter.py   # LangGraph adapter
-├── delta/                # Delta system
-├── organism/             # Organism system
-└── plugins/              # Plugin system
-    └── memory/                # Memory plugins
+├── core/                 # Core framework (agents, LLM, event bus, tools)
+├── agents/               # Agent implementations (manus, coder, researcher)
+├── agent_tools/          # MCP-based tool implementations
+├── config/               # Pydantic settings
+├── swarm/                # PSO, ABC, stigmergy orchestration
+├── memory/               # Memory system (semantic, vector, episodic)
+├── colony/               # Colony evolution, self-modify, skill learner
+├── api/                  # Starlette API server
+├── harness/              # LangGraph harness (legacy)
+└── integration/          # External integrations
 ```
 
-## Key Features
+## ✨ Key Features
 
-- **Swarm Intelligence**: PSO optimization with 4 topologies, ABC with dynamic role-switching
-- **Stigmergic Communication**: Indirect agent coordination via pheromone field (O(n) scaling)
+- **Swarm Intelligence**: PSO with 4 topologies, ABC role-switching, stigmergic coordination
 - **Self-Healing**: Phi-accrual failure detector with automatic recovery
-- **Unified Type System**: 40+ Pydantic v2 models and enums across all domains
-- **Multi-LLM Support**: OpenAI, Anthropic, and custom providers
-- **MCP Integration**: Standard protocol for LLM↔agent interaction
-- **Multi-Channel**: Telegram, Discord, Slack, WhatsApp
-- **Security**: Audit trails, RBAC, PII redaction
-- **Memory**: Working memory, LTM with vector storage, temporal facts
+- **Self-Modification**: Propose-approve-apply pipeline with safety gating
+- **Multi-LLM**: 15+ providers via JeumpaLLM, Hermes, or direct API
+- **Immortal Daemon**: Auto-upgrade, cross-repo sync, crash recovery
 
-## Quick Start
+## ⚡ Quick Start
 
 ```bash
+git clone https://codeberg.org/Dhaher-Labs/BlackHornet.git
+cd BlackHornet
 pip install -e .
-bh-colony  # Start the colony system
+python scripts/blackhornet_daemon.py
 ```
 
-## Dependencies
+## 🛠️ Tech Stack
 
-- Python >= 3.11
-- pydantic >= 1.10
-- numpy, httpx, aiohttp, sqlalchemy
-- See `pyproject.toml` for full list
+| Category | Technology |
+|----------|-----------|
+| Language | Python 3.11+ |
+| Framework | Pydantic v2, asyncio |
+| Storage | SQLite (FTS5), ChromaDB, Qdrant |
+| LLM | JeumpaLLM, OpenAI, Anthropic |
 
-## Running Tests
+## 🤝 Contributing
 
-```bash
-python -m unittest discover -s src -p "tests.py"
-```
+Part of [Dhaher Labs](https://dhaher-labs.codeberg.page) ecosystem.
 
-## License
+## 📄 License
 
-MIT
+MIT License
 
-## Performance
+---
 
-The BlackHornet deployment now supports asynchronous cloning and pulling of ecosystem repositories, reducing blocking I/O.
-
-```mermaid
-flowchart TD
-    A[Start Deploy Nest] --> B{Repo exists?}
-    B -- Yes --> C[Async Pull Repo]
-    B -- No --> D[Async Clone Repo]
-    C --> E[Record status]
-    D --> E
-    E --> F[Next Repo]
-    F --> B
-```
-
-Run `python3 profiling_blackhornet.py` to compare sync vs async execution times.
-
+<div align="center">
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:D9A441,100:00D1C7&height=100&section=footer" width="100%" />
+</div>
