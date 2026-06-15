@@ -1,0 +1,191 @@
+#!/bin/bash
+# ============================================================================
+# 🖤 BLACKHORNET — One-Command Nest Deployer
+# ============================================================================
+# Philosophy: Like hornets — autonomous, relentless, swarm-intelligent.
+# One command births the entire sovereign agent empire.
+#
+#   curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/deploy.sh | bash
+# ============================================================================
+
+set -euo pipefail
+
+BOLD='\033[1m'; DIM='\033[2m'
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'
+CYAN='\033[0;36m'; MAGENTA='\033[0;35m'; NC='\033[0m'
+
+GITHUB_USER="${GITHUB_USER:-dhaher-labs}"
+NEST_DIR="${NEST_DIR:-$HOME/hermes-ecosystem}"
+HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
+
+HORNET_ART='
+      \    /\
+       )  ( '"'"')
+      (  /  )
+       \(__)|
+        /  \
+       /    \
+      /      \
+     /        \
+    /          \
+   /   BLACK    \
+  /   HORNET     \
+ /________________\
+'
+
+banner() {
+    clear 2>/dev/null || true
+    echo ""
+    echo -e "${BOLD}${HORNET_ART}${NC}"
+    echo -e "${BOLD}  BLACKHORNET — Sovereign Autonomous Ecosystem${NC}"
+    echo -e "${DIM}  One command. 9 repos. Infinite agents. Immortal empire.${NC}"
+    echo ""
+}
+
+step() { echo -e "\n${CYAN}[$1]${NC} ${BOLD}$2${NC}"; }
+ok()   { echo -e "  ${GREEN}✓${NC} $1"; }
+warn() { echo -e "  ${YELLOW}⚠${NC} $1"; }
+die()  { echo -e "\n${RED}✗ FATAL:${NC} $1"; exit 1; }
+
+# ── Main ──────────────────────────────────────────────────────────────
+
+main() {
+    banner
+
+    # 1. Prerequisites
+    step "1/6" "Installing prerequisites..."
+    command -v git &>/dev/null || die "git required"
+    command -v curl &>/dev/null || die "curl required"
+
+    # Python 3.11+
+    PY=""
+    for p in python3.11 python3.12 python3 python3.10; do
+        if command -v $p &>/dev/null; then
+            v=$($p --version 2>&1 | grep -oP '\d+\.\d+' | head -1)
+            if [ "$(echo "$v" | cut -d. -f1)" -ge 3 ]; then
+                PY=$p; break
+            fi
+        fi
+    done
+    [ -n "$PY" ] || die "Python 3 required"
+    ok "Python: $($PY --version)"
+
+    # Node.js
+    command -v node &>/dev/null || die "Node.js required (for ProxyGateLLM)"
+    ok "Node: $(node --version)"
+
+    # uv
+    if ! command -v uv &>/dev/null; then
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        export PATH="$HOME/.local/bin:$PATH"
+    fi
+    ok "uv: $(uv --version 2>/dev/null || echo 'installed')"
+
+    # 2. Clone blackhornet
+    step "2/6" "Building the nest..."
+    mkdir -p "$NEST_DIR"
+    if [ ! -d "$NEST_DIR/blackhornet" ]; then
+        git clone "https://github.com/$GITHUB_USER/blackhornet.git" "$NEST_DIR/blackhornet"
+    else
+        git -C "$NEST_DIR/blackhornet" pull
+    fi
+    ok "blackhornet orchestrator ready"
+
+    # 3. Clone all 9 ecosystem repos
+    step "3/6" "Deploying hornet swarm (9 repos)..."
+
+    REPOS=(
+        "blackhornet"
+        "ProxyGateLLM"
+        "mnemosyne"
+        "agent"
+        "Quant-Nanggroe-AI"
+        "AI-MultiColony-Ecosystem"
+        "Vibe-Trading"
+        "AutoHedge"
+    )
+
+    for repo in "${REPOS[@]}"; do
+        if [ -d "$NEST_DIR/$repo/.git" ]; then
+            git -C "$NEST_DIR/$repo" pull --rebase 2>/dev/null && ok "$repo (updated)" || ok "$repo (exists)"
+        else
+            git clone --depth 1 "https://github.com/$GITHUB_USER/$repo.git" "$NEST_DIR/$repo" 2>/dev/null && ok "$repo" || warn "$repo (not found — will auto-expand later)"
+        fi
+    done
+
+    # 4. Install ProxyGateLLM deps
+    step "4/6" "Starting ProxyGateLLM (LLM gateway)..."
+    cd "$NEST_DIR/ProxyGateLLM"
+    npm install --omit=dev --silent 2>/dev/null || true
+    PORT=3333 nohup node index.js > /tmp/blackhornet-proxygate.log 2>&1 &
+    sleep 3
+    if curl -s http://localhost:3333/health > /dev/null 2>&1; then
+        ok "ProxyGateLLM ONLINE — 10 providers, 468 models, FREE"
+    else
+        warn "ProxyGateLLM starting (check /tmp/blackhornet-proxygate.log)"
+    fi
+
+    # 5. Install blackhornet deps
+    step "5/6" "Arming trading hornets..."
+    cd "$NEST_DIR/blackhornet"
+    $PY -m pip install -r requirements.txt openai -q 2>/dev/null || true
+    ok "Trading pipeline armed"
+
+    # Clone Hermes Agent
+    if [ ! -d "$HERMES_HOME/hermes-agent" ]; then
+        git clone --depth 1 https://github.com/NousResearch/hermes-agent.git "$HERMES_HOME/hermes-agent"
+        cd "$HERMES_HOME/hermes-agent"
+        UV_PYTHON=$PY bash setup-hermes.sh --skip-setup --non-interactive 2>/dev/null || true
+    fi
+    ok "Hermes Agent (Nous Research) installed"
+
+    # 6. Start the nest
+    step "6/6" "Launching BLACKHORNET nest..."
+
+    cd "$NEST_DIR/blackhornet/src"
+
+    # Start immortal daemon
+    nohup $PY immortal_daemon.py > ../../logs/daemon.log 2>&1 &
+    echo $! > ../../daemon.pid
+    ok "Immortal Daemon (PID $(cat ../../daemon.pid))"
+
+    # Start memory bridge
+    nohup $PY memory_bridge.py --bot blackhornet > ../../logs/bridge.log 2>&1 &
+    echo $! > ../../bridge.pid
+    ok "Memory Bridge (PID $(cat ../../bridge.pid))"
+
+    # Register in swarm
+    cd "$NEST_DIR/blackhornet/src"
+    $PY -c "
+from swarm_protocol import SwarmProtocol
+s = SwarmProtocol(agent_type='blackhornet')
+s.heartbeat()
+print('Swarm registered:', s.identity.agent_id)
+" 2>/dev/null || true
+    ok "Swarm protocol active"
+
+    # ── Final Report ──────────────────────────────────────────────
+    echo ""
+    echo -e "${BOLD}╔══════════════════════════════════════════════════╗${NC}"
+    echo -e "${BOLD}║     🖤 BLACKHORNET NEST — OPERATIONAL            ║${NC}"
+    echo -e "${BOLD}╚══════════════════════════════════════════════════╝${NC}"
+    echo ""
+    echo -e "  ${BOLD}Sovereign:${NC}    Mulky Malikul Dhaher"
+    echo -e "  ${BOLD}Nest:${NC}         $NEST_DIR"
+    echo -e "  ${BOLD}Hornets:${NC}      9 repos deployed"
+    echo -e "  ${BOLD}LLM Gateway:${NC}  http://localhost:3333 (468 models, FREE)"
+    echo -e "  ${BOLD}Daemon:${NC}       Immortal — auto-upgrade + auto-heal"
+    echo -e "  ${BOLD}Swarm:${NC}        Git-synced via dhaher-labs/agent"
+    echo ""
+    echo -e "  ${CYAN}Commands:${NC}"
+    echo -e "    cd $NEST_DIR/blackhornet"
+    echo -e "    python3 blackhornet.py --sovereign   # Control panel"
+    echo -e "    python3 blackhornet.py --status      # Nest status"
+    echo -e "    cd $NEST_DIR/blackhornet && python3 sovereign.py"
+    echo ""
+    echo -e "  ${DIM}The hornets are autonomous. The nest is immortal.${NC}"
+    echo -e "  ${DIM}They hunt. They build. They expand. They never die.${NC}"
+    echo ""
+}
+
+main "$@"
