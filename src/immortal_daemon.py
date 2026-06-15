@@ -292,6 +292,17 @@ fi
                 if self.cycles % 10 == 0:
                     self.expand_bootstrap_to_all()
 
+                # Cluster 3: AMC upgrade loop (every 3 cycles)
+                if self.cycles % 3 == 0:
+                    try:
+                        from upgrade_loop import BHUpgradeLoop
+                        ul = BHUpgradeLoop()
+                        result = ul.run_cycle()
+                        if result.get("upgrade_result", {}).get("pull_from_amc", {}).get("colony_integration"):
+                            logger.info(f"✓ BH upgraded from AMC: {result['upgrade_result']['pull_from_amc']['modules_available']} modules")
+                    except Exception as ue:
+                        logger.warning(f"Upgrade loop: {ue}")
+
                 # Sync
                 self.swarm._git_push(f"[guardian] cycle {self.cycles}")
 
