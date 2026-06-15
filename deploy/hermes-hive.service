@@ -1,6 +1,6 @@
 [Unit]
 Description=Hermes Hive — Autonomous Agent Empire
-Documentation=https://github.com/mulkymalikuldhrs/blackhornet
+Documentation=https://github.com/dhaher-labs/blackhornet
 After=network-online.target
 Wants=network-online.target
 

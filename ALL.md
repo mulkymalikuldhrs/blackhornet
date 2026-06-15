@@ -3,7 +3,7 @@
 > Autonomous Multi-Agent Trading & Research Infrastructure
 > Owner: Mulky Malikul Dhaher
 > Version: 4.0.0 | Codename: Production
-> Repository: github.com/mulkymalikuldhrs/blackhornet-os
+> Repository: github.com/dhaher-labs/blackhornet-os
 
 ---
 
@@ -13,7 +13,7 @@
 
 **Name:** Hermes Quant Operating System
 **Owner:** Mulky Malikul Dhaher
-**GitHub:** github.com/mulkymalikuldhrs
+**GitHub:** github.com/dhaher-labs
 **Mission:** Autonomous multi-agent trading & research untuk consistent capital growth dengan strict risk preservation
 **Target Markets:** Forex (XAUUSD, major pairs), Crypto (SHIB, TRX), Polymarket
 **Deployment Stage:** Research Lab (Stage 1 - Paper Trading Only)
@@ -391,10 +391,10 @@ blackhornet-os/
 | Hermes Component | Source Repository | Version | Adaptation |
 |------------------|-------------------|---------|------------|
 | Core agent loop | `nousresearch/hermes` | latest | Added trading tools, Telegram bot, risk framework |
-| 10 tools (v3.1) | `mulkymalikuldhrs/Quant-Nanggroe-AI` | v15.2.0 | Ported TypeScript → Python; Deterministic Agent Execution |
-| Alpha factors | `mulkymalikuldhrs/Vibe-Trading` | v0.1.8 | 452 alphas - planned (PR-004) |
-| Swarm pipeline | `mulkymalikuldhrs/AutoHedge` | latest | Director/Quant/Risk/Execution - planned (PR-005) |
-| Colony framework | `mulkymalikuldhrs/AI-MultiColony-Ecosystem` | v8.0.0 | Agent registry concepts - architecture reference |
+| 10 tools (v3.1) | `dhaher-labs/Quant-Nanggroe-AI` | v15.2.0 | Ported TypeScript → Python; Deterministic Agent Execution |
+| Alpha factors | `dhaher-labs/Vibe-Trading` | v0.1.8 | 452 alphas - planned (PR-004) |
+| Swarm pipeline | `dhaher-labs/AutoHedge` | latest | Director/Quant/Risk/Execution - planned (PR-005) |
+| Colony framework | `dhaher-labs/AI-MultiColony-Ecosystem` | v8.0.0 | Agent registry concepts - architecture reference |
 
 ---
 
@@ -493,5 +493,5 @@ blackhornet-os/
 ---
 
 **Document maintained by Mulky Malikul Dhaher**
-**Repository: github.com/mulkymalikuldhrs/blackhornet-os**
+**Repository: github.com/dhaher-labs/blackhornet-os**
 **This is not just documentation. This is the operational brain of an autonomous trading system.**

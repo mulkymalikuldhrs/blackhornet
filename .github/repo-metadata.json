@@ -1,6 +1,6 @@
 {
   "name": "project",
-  "description": "An open source project by mulkymalikuldhrs seeking contributors",
+  "description": "An open source project by dhaher-labs seeking contributors",
   "keywords": [
     "open-source",
     "contributions-welcome",
@@ -15,16 +15,16 @@
     "python",
     "javascript"
   ],
-  "homepage": "https://mulkymalikuldhrs.github.io/contribute-to-our-projects/",
-  "repository": "https://github.com/mulkymalikuldhrs",
+  "homepage": "https://dhaher-labs.github.io/contribute-to-our-projects/",
+  "repository": "https://github.com/dhaher-labs",
   "license": "MIT",
   "author": {
     "name": "Mulky Malikul Adhr",
-    "url": "https://github.com/mulkymalikuldhrs"
+    "url": "https://github.com/dhaher-labs"
   },
   "contributing": {
     "url": "./CONTRIBUTING.md",
-    "guide": "https://mulkymalikuldhrs.github.io/contribute-to-our-projects/",
+    "guide": "https://dhaher-labs.github.io/contribute-to-our-projects/",
     "good_first_issues": true,
     "help_wanted": true,
     "beginner_friendly": true,
@@ -48,8 +48,8 @@
     "github_actions": true
   },
   "social": {
-    "github": "https://github.com/mulkymalikuldhrs",
-    "contributor_hub": "https://mulkymalikuldhrs.github.io/contribute-to-our-projects/"
+    "github": "https://github.com/dhaher-labs",
+    "contributor_hub": "https://dhaher-labs.github.io/contribute-to-our-projects/"
   },
   "meta": {
     "generated": "2026-06-11",

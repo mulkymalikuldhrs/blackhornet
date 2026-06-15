@@ -26,7 +26,7 @@
 <br/>
 
 **Fork dari [NousResearch/Hermes](https://github.com/NousResearch/Hermes)** ⭐
-**Digabungkan dengan [Quant-Nanggroe-AI](https://github.com/mulkymalikuldhrs/Quant-Nanggroe-AI) | [AI-MultiColony-Ecosystem](https://github.com/mulkymalikuldhrs/AI-MultiColony-Ecosystem) | [Vibe-Trading](https://github.com/mulkymalikuldhrs/Vibe-Trading) | [AutoHedge](https://github.com/mulkymalikuldhrs/AutoHedge)**
+**Digabungkan dengan [Quant-Nanggroe-AI](https://github.com/dhaher-labs/Quant-Nanggroe-AI) | [AI-MultiColony-Ecosystem](https://github.com/dhaher-labs/AI-MultiColony-Ecosystem) | [Vibe-Trading](https://github.com/dhaher-labs/Vibe-Trading) | [AutoHedge](https://github.com/dhaher-labs/AutoHedge)**
 
 <br/>
 
@@ -39,14 +39,14 @@
 ## ⚡ Install Sekali Perintah
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mulkymalikuldhrs/blackhornet/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/install.sh | bash
 ```
 
 **Selesai.** Satu perintah. Seluruh ekosistem immortal — 6 repo, Hermes Agent, 21 trading agent, swarm protocol, immortal daemon — terinstall sendiri. Tanpa tanya. Otonomi penuh.
 
 Atau clone dulu:
 ```bash
-git clone https://github.com/mulkymalikuldhrs/blackhornet
+git clone https://github.com/dhaher-labs/blackhornet
 cd blackhornet && bash install.sh
 ```
 
@@ -115,10 +115,10 @@ Arsitektur ini menyintesis pola terkuat dari empat repositori referensi ke dalam
 | Repositori Sumber | Kontribusi | Versi |
 |---|---|---|
 | **[NousResearch/Hermes](https://github.com/NousResearch/Hermes)** ⭐ | Framework agent dasar, orkestrasi tool, loop percakapan | upstream |
-| **[Quant-Nanggroe-AI](https://github.com/mulkymalikuldhrs/Quant-Nanggroe-AI)** | Deterministic Agent Execution, Pressure Normalization, Market Regime Engine, Darwinian Strategy Evolution, 10 tool terintegrasi | v15.2.0 |
-| **[AI-MultiColony-Ecosystem](https://github.com/mulkymalikuldhrs/AI-MultiColony-Ecosystem)** | Unified Agent Registry, manajemen lifecycle multi-agent, koordinasi koloni | v8.0.0 |
-| **[Vibe-Trading](https://github.com/mulkymalikuldhrs/Vibe-Trading)** | 450+ alpha quant siap pakai, penerapan alpha purity, analisis faktor | v0.1.8 |
-| **[AutoHedge](https://github.com/mulkymalikuldhrs/AutoHedge)** | Arsitektur swarm pipeline (Director → Quant → Risk → Execution), integrasi venue-specific | terbaru |
+| **[Quant-Nanggroe-AI](https://github.com/dhaher-labs/Quant-Nanggroe-AI)** | Deterministic Agent Execution, Pressure Normalization, Market Regime Engine, Darwinian Strategy Evolution, 10 tool terintegrasi | v15.2.0 |
+| **[AI-MultiColony-Ecosystem](https://github.com/dhaher-labs/AI-MultiColony-Ecosystem)** | Unified Agent Registry, manajemen lifecycle multi-agent, koordinasi koloni | v8.0.0 |
+| **[Vibe-Trading](https://github.com/dhaher-labs/Vibe-Trading)** | 450+ alpha quant siap pakai, penerapan alpha purity, analisis faktor | v0.1.8 |
+| **[AutoHedge](https://github.com/dhaher-labs/AutoHedge)** | Arsitektur swarm pipeline (Director → Quant → Risk → Execution), integrasi venue-specific | terbaru |
 
 ### Kemampuan Utama
 
@@ -307,7 +307,7 @@ sudo ./scripts/install_server.sh
 
 ```bash
 # Clone repositori
-git clone https://github.com/mulkymalikuldhrs/blackhornet.git
+git clone https://github.com/dhaher-labs/blackhornet.git
 cd blackhornet
 
 # Install dependensi
@@ -575,11 +575,11 @@ Kami menerima kontribusi dari developer, analis kuantitatif, insinyur risiko, da
 ### Mulky Malikul Dhaher
 
 [![Email](https://img.shields.io/badge/Email-mulkymalikuldhaher@email.com-FF6B35?style=for-the-badge&logo=gmail&logoColor=white&labelColor=0A0A0A)](mailto:mulkymalikuldhaher@email.com)
-[![GitHub](https://img.shields.io/badge/GitHub-mulkymalikuldhrs-00D4FF?style=for-the-badge&logo=github&logoColor=white&labelColor=0A0A0A)](https://github.com/mulkymalikuldhrs)
+[![GitHub](https://img.shields.io/badge/GitHub-dhaher-labs-00D4FF?style=for-the-badge&logo=github&logoColor=white&labelColor=0A0A0A)](https://github.com/dhaher-labs)
 
 <br/>
 
-**Repositori Proyek**: [github.com/mulkymalikuldhrs/blackhornet](https://github.com/mulkymalikuldhrs/blackhornet)
+**Repositori Proyek**: [github.com/dhaher-labs/blackhornet](https://github.com/dhaher-labs/blackhornet)
 
 </div>
 

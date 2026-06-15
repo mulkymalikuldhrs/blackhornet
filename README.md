@@ -23,11 +23,11 @@
 
 **Like hornets — autonomous, relentless, swarm-intelligent, territorial.**
 
-[![Version](https://img.shields.io/badge/Version-1.0.0-black?style=for-the-badge)](https://github.com/mulkymalikuldhrs/blackhornet)
-[![Status](https://img.shields.io/badge/Status-PRODUCTION_READY-00ff00?style=for-the-badge)](https://github.com/mulkymalikuldhrs/blackhornet)
-[![Repos](https://img.shields.io/badge/Ecosystem-9_Repos-ff6600?style=for-the-badge)](https://github.com/mulkymalikuldhrs)
+[![Version](https://img.shields.io/badge/Version-1.0.0-black?style=for-the-badge)](https://github.com/dhaher-labs/blackhornet)
+[![Status](https://img.shields.io/badge/Status-PRODUCTION_READY-00ff00?style=for-the-badge)](https://github.com/dhaher-labs/blackhornet)
+[![Repos](https://img.shields.io/badge/Ecosystem-9_Repos-ff6600?style=for-the-badge)](https://github.com/dhaher-labs)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
-[![Sovereign](https://img.shields.io/badge/Sovereign-Mulky_Malikul_Dhaher-gold?style=for-the-badge)](https://github.com/mulkymalikuldhrs)
+[![Sovereign](https://img.shields.io/badge/Sovereign-Mulky_Malikul_Dhaher-gold?style=for-the-badge)](https://github.com/dhaher-labs)
 
 <br>
 
@@ -40,7 +40,7 @@
 ## ⚡ One Command
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mulkymalikuldhrs/blackhornet/main/deploy.sh | bash
+curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/deploy.sh | bash
 ```
 
 **That's it.** The entire BLACKHORNET nest — 9 repos, ProxyGateLLM (468 models, FREE), Immortal Daemon, Swarm Protocol, 21 trading agents — deploys itself. Autonomous. Relentless. Immortal.
@@ -137,10 +137,10 @@ curl -fsSL https://raw.githubusercontent.com/mulkymalikuldhrs/blackhornet/main/d
 
 ```bash
 # Deploy the entire empire
-curl -fsSL https://raw.githubusercontent.com/mulkymalikuldhrs/blackhornet/main/deploy.sh | bash
+curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/deploy.sh | bash
 
 # Or clone and run
-git clone https://github.com/mulkymalikuldhrs/blackhornet
+git clone https://github.com/dhaher-labs/blackhornet
 cd blackhornet
 
 # Control panel

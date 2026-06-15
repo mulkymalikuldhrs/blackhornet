@@ -3,7 +3,7 @@
 BLACKHORNET — Agent Swarm Memory Bridge
 ============================================
 Real-time shared memory sync between blackhornet agents
-and the mulkymalikuldhrs/agent swarm repository.
+and the dhaher-labs/agent swarm repository.
 
 Architecture:
   blackhornet tools → SharedState (SQLite) → MemoryBridge → agent repo (Git)
@@ -35,7 +35,7 @@ logger = logging.getLogger("MemoryBridge")
 # ── Configuration ──────────────────────────────────────────────────────
 AGENT_REPO_URL = os.getenv(
     "AGENT_REPO_URL",
-    "https://github.com/mulkymalikuldhrs/agent.git"
+    "https://github.com/dhaher-labs/agent.git"
 )
 SYNC_INTERVAL = int(os.getenv("MEMORY_SYNC_INTERVAL", "60"))  # seconds
 BOT_NAME = os.getenv("BOT_NAME", "traderbot")

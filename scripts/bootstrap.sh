@@ -3,14 +3,14 @@
 # BLACKHORNET - Bootstrap Installer
 # ============================================================================
 # Auto-installer: one command to install everything.
-# Run: curl -fsSL https://raw.githubusercontent.com/mulkymalikuldhrs/blackhornet/main/scripts/bootstrap.sh | bash
+# Run: curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/scripts/bootstrap.sh | bash
 # Or:  bash scripts/bootstrap.sh
 #
 # Installs:
 #   1. Python 3.11+ (if needed)
 #   2. Hermes Agent from Nous Research (autonomous core)
 #   3. blackhornet trading tools + dependencies
-#   4. Shared memory sync bridge → mulkymalikuldhrs/agent
+#   4. Shared memory sync bridge → dhaher-labs/agent
 #   5. Immortal cron/auto-restart setup
 # ============================================================================
 
@@ -25,7 +25,7 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
-AGENT_REPO="https://github.com/mulkymalikuldhrs/agent.git"
+AGENT_REPO="https://github.com/dhaher-labs/agent.git"
 HERMES_AGENT_REPO="https://github.com/NousResearch/hermes-agent.git"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 

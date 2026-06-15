@@ -256,4 +256,4 @@ Watchdog, keeper, on-boot, deployment. Must include:
 ---
 
 **Document maintained by Mulky Malikul Dhaher**
-**Repository: github.com/mulkymalikuldhrs/blackhornet-os**
+**Repository: github.com/dhaher-labs/blackhornet-os**

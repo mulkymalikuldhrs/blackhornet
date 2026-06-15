@@ -18,9 +18,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.local/bin:$PATH"
 
 # Clone ecosystem
-RUN git clone https://github.com/mulkymalikuldhrs/blackhornet.git . \
-    && git clone https://github.com/mulkymalikuldhrs/ProxyGateLLM.git /proxygate \
-    && git clone https://github.com/mulkymalikuldhrs/mnemosyne.git /mnemosyne
+RUN git clone https://github.com/dhaher-labs/blackhornet.git . \
+    && git clone https://github.com/dhaher-labs/ProxyGateLLM.git /proxygate \
+    && git clone https://github.com/dhaher-labs/mnemosyne.git /mnemosyne
 
 # Install Hermes Agent
 RUN git clone https://github.com/NousResearch/hermes-agent.git /hermes-agent \

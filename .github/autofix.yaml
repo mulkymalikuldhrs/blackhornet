@@ -9,7 +9,7 @@ dependabot:
   schedule: weekly
   auto_merge: true
   reviewers:
-    - mulkymalikuldhrs
+    - dhaher-labs
 
 # Auto-fix configuration for common tools
 autofix:

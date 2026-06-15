@@ -9,8 +9,8 @@
     "group:allNonMajor"
   ],
   "labels": ["dependencies", "automated"],
-  "assignees": ["mulkymalikuldhrs"],
-  "reviewers": ["mulkymalikuldhrs"],
+  "assignees": ["dhaher-labs"],
+  "reviewers": ["dhaher-labs"],
   "automerge": true,
   "automergeType": "pr",
   "platformAutomerge": true,

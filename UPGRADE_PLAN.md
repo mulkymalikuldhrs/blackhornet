@@ -341,4 +341,4 @@ If performance degrades significantly at any stage, the system MUST roll back to
 ---
 
 **Document maintained by Mulky Malikul Dhaher**
-**Repository: github.com/mulkymalikuldhrs/blackhornet-os**
+**Repository: github.com/dhaher-labs/blackhornet-os**

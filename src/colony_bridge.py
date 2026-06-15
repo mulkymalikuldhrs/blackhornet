@@ -216,7 +216,7 @@ class ColonyBridge:
         print(f"{'='*60}")
         print(f"  Available: {'✅' if s['available'] else '❌'}")
         if not s['available']:
-            print(f"  Clone: git clone https://github.com/mulkymalikuldhrs/AI-MultiColony-Ecosystem")
+            print(f"  Clone: git clone https://github.com/dhaher-labs/AI-MultiColony-Ecosystem")
             return
 
         print(f"  Capabilities: {s['available_count']}/{s['total_capabilities']} available")

@@ -35,7 +35,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   - Dead agent resurrection
   - Guardian agent type in swarm
 - **🧬 Memory Bridge** (`src/memory_bridge.py`) — Shared memory sync
-  - Real-time state sync blackhornet → mulkymalikuldhrs/agent
+  - Real-time state sync blackhornet → dhaher-labs/agent
   - Bidirectional: reads other agent states
   - Immortal: auto-retry, never stops
   - State files per bot (traderbot, devbot, researchbot, etc.)
@@ -161,7 +161,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - System prompt updated to reference all 21 tools
 
 ### Reference
-- Sourced from `github.com/mulkymalikuldhrs/Quant-Nanggroe-AI` v15.2.0 Deterministic Agent Execution framework
+- Sourced from `github.com/dhaher-labs/Quant-Nanggroe-AI` v15.2.0 Deterministic Agent Execution framework
 
 ---
 
@@ -253,10 +253,10 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Reference
 - Base agent: `github.com/NousResearch/hermes-agent` (⭐165k)
-- Inspiration: `github.com/mulkymalikuldhrs/AI-MultiColony-Ecosystem`
-- Inspiration: `github.com/mulkymalikuldhrs/Quant-Nanggroe-AI`
-- Inspiration: `github.com/mulkymalikuldhrs/Vibe-Trading`
-- Inspiration: `github.com/mulkymalikuldhrs/AutoHedge`
+- Inspiration: `github.com/dhaher-labs/AI-MultiColony-Ecosystem`
+- Inspiration: `github.com/dhaher-labs/Quant-Nanggroe-AI`
+- Inspiration: `github.com/dhaher-labs/Vibe-Trading`
+- Inspiration: `github.com/dhaher-labs/AutoHedge`
 
 ---
 
@@ -275,4 +275,4 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ---
 
 **Maintained by Mulky Malikul Dhaher**
-**Repository: github.com/mulkymalikuldhrs/blackhornet**
+**Repository: github.com/dhaher-labs/blackhornet**

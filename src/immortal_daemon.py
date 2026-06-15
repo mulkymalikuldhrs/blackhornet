@@ -48,7 +48,7 @@ ECOSYSTEM_REPOS = [
     "ProxyGateLLM",
     "mnemosyne",
 ]
-GITHUB_USER = "mulkymalikuldhrs"
+GITHUB_USER = "dhaher-labs"
 
 
 class ImmortalDaemon:

@@ -32,7 +32,17 @@ import traceback
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional, Dict, List
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv(path=None):
+        if path and os.path.exists(path):
+            with open(path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        k, v = line.split('=', 1)
+                        os.environ.setdefault(k.strip(), v.strip())
 
 # Import Trading Tools
 sys.path.insert(0, str(Path(__file__).parent))

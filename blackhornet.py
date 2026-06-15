@@ -42,14 +42,14 @@ ECOSYSTEM_NAME = "BLACKHORNET"
 NEST_DIR = Path(os.getenv("BLACKHORNET_NEST", Path.home() / "blackhornet-nest"))
 
 ECOSYSTEM_REPOS = {
-    "blackhornet":       {"type": "orchestrator", "url": "https://github.com/mulkymalikuldhrs/blackhornet"},
-    "ProxyGateLLM":        {"type": "llm-gateway",  "url": "https://github.com/mulkymalikuldhrs/ProxyGateLLM"},
-    "mnemosyne":           {"type": "memory",       "url": "https://github.com/mulkymalikuldhrs/mnemosyne"},
-    "agent":               {"type": "swarm-registry","url": "https://github.com/mulkymalikuldhrs/agent"},
-    "Quant-Nanggroe-AI":   {"type": "research",     "url": "https://github.com/mulkymalikuldhrs/Quant-Nanggroe-AI"},
-    "AI-MultiColony-Ecosystem": {"type": "colony",  "url": "https://github.com/mulkymalikuldhrs/AI-MultiColony-Ecosystem"},
-    "Vibe-Trading":        {"type": "alpha",        "url": "https://github.com/mulkymalikuldhrs/Vibe-Trading"},
-    "AutoHedge":           {"type": "execution",    "url": "https://github.com/mulkymalikuldhrs/AutoHedge"},
+    "blackhornet":       {"type": "orchestrator", "url": "https://github.com/dhaher-labs/blackhornet"},
+    "ProxyGateLLM":        {"type": "llm-gateway",  "url": "https://github.com/dhaher-labs/ProxyGateLLM"},
+    "mnemosyne":           {"type": "memory",       "url": "https://github.com/dhaher-labs/mnemosyne"},
+    "agent":               {"type": "swarm-registry","url": "https://github.com/dhaher-labs/agent"},
+    "Quant-Nanggroe-AI":   {"type": "research",     "url": "https://github.com/dhaher-labs/Quant-Nanggroe-AI"},
+    "AI-MultiColony-Ecosystem": {"type": "colony",  "url": "https://github.com/dhaher-labs/AI-MultiColony-Ecosystem"},
+    "Vibe-Trading":        {"type": "alpha",        "url": "https://github.com/dhaher-labs/Vibe-Trading"},
+    "AutoHedge":           {"type": "execution",    "url": "https://github.com/dhaher-labs/AutoHedge"},
 }
 
 HORNET_ART = r"""

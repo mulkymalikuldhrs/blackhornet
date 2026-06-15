@@ -122,17 +122,17 @@ sources:
   
   integrated:
     - name: "Quant-Nanggroe-AI"
-      url: "https://github.com/mulkymalikuldhrs/Quant-Nanggroe-AI"
+      url: "https://github.com/dhaher-labs/Quant-Nanggroe-AI"
       version: "v15.2.0"
     
     - name: "AI-MultiColony-Ecosystem"
-      url: "https://github.com/mulkymalikuldhrs/AI-MultiColony-Ecosystem"
+      url: "https://github.com/dhaher-labs/AI-MultiColony-Ecosystem"
       version: "v8.0.0"
     
     - name: "Vibe-Trading"
-      url: "https://github.com/mulkymalikuldhrs/Vibe-Trading"
+      url: "https://github.com/dhaher-labs/Vibe-Trading"
       version: "v0.1.8"
     
     - name: "AutoHedge"
-      url: "https://github.com/mulkymalikuldhrs/AutoHedge"
+      url: "https://github.com/dhaher-labs/AutoHedge"
       version: "latest"

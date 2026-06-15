@@ -12,7 +12,7 @@ Every agent in every repo uses this protocol to:
   5. EXPAND — spawn new agents into new repos
   6. HEAL — detect dead agents, resurrect them
 
-Protocol via: Git (mulkymalikuldhrs/agent) + optional WebSocket
+Protocol via: Git (dhaher-labs/agent) + optional WebSocket
 
 Architecture:
   Each agent writes to: agent/sync/swarm/{agent_id}.json
@@ -37,7 +37,7 @@ from dataclasses import dataclass, field, asdict
 logger = logging.getLogger("SwarmProtocol")
 
 # ── Constants ─────────────────────────────────────────────────────────
-AGENT_REPO = os.getenv("AGENT_REPO", "https://github.com/mulkymalikuldhrs/agent.git")
+AGENT_REPO = os.getenv("AGENT_REPO", "https://github.com/dhaher-labs/agent.git")
 SWARM_DIR = "sync/swarm"
 HEARTBEAT_INTERVAL = int(os.getenv("SWARM_HEARTBEAT", "60"))  # seconds
 AGENT_TIMEOUT = int(os.getenv("SWARM_TIMEOUT", "300"))       # 5 min → considered dead
@@ -96,7 +96,7 @@ class SwarmProtocol:
                  agent_id: str = None,
                  agent_type: str = "trading",
                  repo: str = "blackhornet",
-                 repo_url: str = "https://github.com/mulkymalikuldhrs/blackhornet",
+                 repo_url: str = "https://github.com/dhaher-labs/blackhornet",
                  version: str = "4.0.0",
                  swarm_repo_path: str = None):
         
@@ -388,7 +388,7 @@ class SwarmProtocol:
         2. Setting up the agent
         3. Registering in swarm
         """
-        repo_url = f"https://github.com/mulkymalikuldhrs/{target_repo}.git"
+        repo_url = f"https://github.com/dhaher-labs/{target_repo}.git"
         spawn_dir = HERMES_HOME / "spawns" / target_repo
 
         logger.info(f"[SWARM] Spawning agent in {target_repo}...")

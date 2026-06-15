@@ -164,10 +164,10 @@ clone() {
   
   # Clone repos
   cd "$target"
-  git clone "https://github.com/mulkymalikuldhrs/ProxyGateLLM.git" 2>/dev/null || true
-  git clone "https://github.com/mulkymalikuldhrs/mnemosyne.git" 2>/dev/null || true
-  git clone "https://github.com/mulkymalikuldhrs/blackhornet.git" 2>/dev/null || true
-  git clone "https://github.com/mulkymalikuldhrs/agent.git" 2>/dev/null || true
+  git clone "https://github.com/dhaher-labs/ProxyGateLLM.git" 2>/dev/null || true
+  git clone "https://github.com/dhaher-labs/mnemosyne.git" 2>/dev/null || true
+  git clone "https://github.com/dhaher-labs/blackhornet.git" 2>/dev/null || true
+  git clone "https://github.com/dhaher-labs/agent.git" 2>/dev/null || true
   
   # Install script
   cat > "$target/install.sh" << 'INSTALLEOF'

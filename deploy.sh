@@ -5,7 +5,7 @@
 # Philosophy: Like hornets — autonomous, relentless, swarm-intelligent.
 # One command births the entire sovereign agent empire.
 #
-#   curl -fsSL https://raw.githubusercontent.com/mulkymalikuldhrs/blackhornet/main/deploy.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/deploy.sh | bash
 # ============================================================================
 
 set -euo pipefail
@@ -14,7 +14,7 @@ BOLD='\033[1m'; DIM='\033[2m'
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'
 CYAN='\033[0;36m'; MAGENTA='\033[0;35m'; NC='\033[0m'
 
-GITHUB_USER="${GITHUB_USER:-mulkymalikuldhrs}"
+GITHUB_USER="${GITHUB_USER:-dhaher-labs}"
 NEST_DIR="${NEST_DIR:-$HOME/hermes-ecosystem}"
 HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
 
@@ -175,7 +175,7 @@ print('Swarm registered:', s.identity.agent_id)
     echo -e "  ${BOLD}Hornets:${NC}      9 repos deployed"
     echo -e "  ${BOLD}LLM Gateway:${NC}  http://localhost:3333 (468 models, FREE)"
     echo -e "  ${BOLD}Daemon:${NC}       Immortal — auto-upgrade + auto-heal"
-    echo -e "  ${BOLD}Swarm:${NC}        Git-synced via mulkymalikuldhrs/agent"
+    echo -e "  ${BOLD}Swarm:${NC}        Git-synced via dhaher-labs/agent"
     echo ""
     echo -e "  ${CYAN}Commands:${NC}"
     echo -e "    cd $NEST_DIR/blackhornet"

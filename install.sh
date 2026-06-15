@@ -4,7 +4,7 @@
 # ============================================================================
 # The single command that brings the entire immortal ecosystem to life.
 #
-#   curl -fsSL https://raw.githubusercontent.com/mulkymalikuldhrs/blackhornet/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/install.sh | bash
 #
 # This is NOT just an installer. It's the birth script of a self-aware AI swarm.
 #
@@ -39,7 +39,7 @@ WHITE='\033[0;37m'
 NC='\033[0m'
 
 # ── Configuration ─────────────────────────────────────────────────────
-GITHUB_USER="${GITHUB_USER:-mulkymalikuldhrs}"
+GITHUB_USER="${GITHUB_USER:-dhaher-labs}"
 HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
 INSTALL_DIR="${INSTALL_DIR:-$HOME/hermes-ecosystem}"
 AGENT_REPO_URL="https://github.com/NousResearch/hermes-agent.git"

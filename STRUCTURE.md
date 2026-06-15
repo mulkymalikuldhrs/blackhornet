@@ -170,12 +170,12 @@ blackhornet-os/
 | Hermes Component | Source Repository | Version | Adaptation Notes |
 |------------------|-------------------|---------|------------------|
 | Core agent loop | `nousresearch/hermes` | latest | Adapted from Hermes Agent; added trading tools, Telegram bot, risk framework |
-| 10 tools (v3.1) | `mulkymalikuldhrs/Quant-Nanggroe-AI` | v15.2.0 | Ported from TypeScript services to Python tools; adapted Deterministic Agent Execution |
-| Alpha factors | `mulkymalikuldhrs/Vibe-Trading` | v0.1.8 | 452 alphas (qlib158, alpha101, gtja191, academic) - planned integration (PR-004) |
-| Swarm pipeline | `mulkymalikuldhrs/AutoHedge` | latest | Director/Quant/Risk/Execution pipeline - planned integration (PR-005) |
-| Colony framework | `mulkymalikuldhrs/AI-MultiColony-Ecosystem` | v8.0.0 | Agent registry, lifecycle management concepts - architecture reference |
+| 10 tools (v3.1) | `dhaher-labs/Quant-Nanggroe-AI` | v15.2.0 | Ported from TypeScript services to Python tools; adapted Deterministic Agent Execution |
+| Alpha factors | `dhaher-labs/Vibe-Trading` | v0.1.8 | 452 alphas (qlib158, alpha101, gtja191, academic) - planned integration (PR-004) |
+| Swarm pipeline | `dhaher-labs/AutoHedge` | latest | Director/Quant/Risk/Execution pipeline - planned integration (PR-005) |
+| Colony framework | `dhaher-labs/AI-MultiColony-Ecosystem` | v8.0.0 | Agent registry, lifecycle management concepts - architecture reference |
 
 ---
 
 **Document maintained by Mulky Malikul Dhaher**
-**Repository: github.com/mulkymalikuldhrs/blackhornet-os**
+**Repository: github.com/dhaher-labs/blackhornet-os**

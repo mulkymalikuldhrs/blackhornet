@@ -9,7 +9,7 @@
 ## Quick Deploy (30 seconds)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mulkymalikuldhrs/blackhornet/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/install.sh | bash
 ```
 
 This single command:
@@ -32,7 +32,7 @@ This single command:
 
 ```bash
 # Prerequisites: git, curl
-curl -fsSL https://raw.githubusercontent.com/mulkymalikuldhrs/blackhornet/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/install.sh | bash
 cd ~/hermes-ecosystem/blackhornet
 
 # Start everything
@@ -53,7 +53,7 @@ docker run -d \
   -v ~/.hermes:/root/.hermes \
   -p 3333:3333 \
   -e NVIDIA_API_KEY=your_key \
-  ghcr.io/mulkymalikuldhrs/hermes-hive:latest
+  ghcr.io/dhaher-labs/hermes-hive:latest
 ```
 
 ### Method 3: systemd (Linux servers)
@@ -180,6 +180,6 @@ bash hermes.sh restart
 
 ## Support
 
-- GitHub: https://github.com/mulkymalikuldhrs/blackhornet
-- Swarm: https://github.com/mulkymalikuldhrs/agent
+- GitHub: https://github.com/dhaher-labs/blackhornet
+- Swarm: https://github.com/dhaher-labs/agent
 - Owner: Mulky Malikul Dhaher

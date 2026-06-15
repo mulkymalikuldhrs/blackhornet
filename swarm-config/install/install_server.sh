@@ -23,10 +23,10 @@ done
 echo "[3/5] Cloning repositories..."
 mkdir -p ~/.hermes/shared-workspace
 cd ~/.hermes/shared-workspace
-git clone https://github.com/mulkymalikuldhrs/ProxyGateLLM.git 2>/dev/null || (cd ProxyGateLLM && git pull)
-git clone https://github.com/mulkymalikuldhrs/mnemosyne.git 2>/dev/null || (cd mnemosyne && git pull)
-git clone https://github.com/mulkymalikuldhrs/blackhornet.git 2>/dev/null || (cd blackhornet && git pull)
-git clone https://github.com/mulkymalikuldhrs/agent.git github-sync 2>/dev/null || (cd github-sync && git pull)
+git clone https://github.com/dhaher-labs/ProxyGateLLM.git 2>/dev/null || (cd ProxyGateLLM && git pull)
+git clone https://github.com/dhaher-labs/mnemosyne.git 2>/dev/null || (cd mnemosyne && git pull)
+git clone https://github.com/dhaher-labs/blackhornet.git 2>/dev/null || (cd blackhornet && git pull)
+git clone https://github.com/dhaher-labs/agent.git github-sync 2>/dev/null || (cd github-sync && git pull)
 
 # 4. Install ProxyGateLLM deps
 echo "[4/5] Installing ProxyGateLLM..."
