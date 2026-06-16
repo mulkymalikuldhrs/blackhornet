@@ -1,20 +1,9 @@
 #!/usr/bin/env python3
 """
-🖤 BLACKHORNET — MultiColony Integration Bridge
-=================================================
-Integrates AI-MultiColony-Ecosystem's production patterns into BLACKHORNET.
-
-Patterns absorbed:
-  1. Daemon Manager → multi-agent lifecycle orchestration
-  2. Engine Pipeline → backtest + risk + execution + strategies
-  3. MCP Server → AI assistant protocol bridge
-  4. Exchange Connectors → multi-venue execution
-  5. Strategy Registry → 10+ strategy types (SMC, ICT, Wyckoff, etc.)
-  6. Factor Pipeline → alpha101, gtja191, qlib158 factors
-  7. Risk Engine → VaR, Kelly, drawdown, correlation, kill switch
-  8. Screener System → multi-timeframe market screening
-  9. Auto-Release → autonomous deployment pipeline
-  10. Shadow Scanner → code archaeology & extraction
+BLACKHORNET — MultiColony Integration Bridge v2
+================================================
+Maps 6 capability domains with 30+ capabilities from the
+AI-MultiColony-Ecosystem into BLACKHORNET's runtime.
 """
 
 import os
@@ -27,9 +16,61 @@ from datetime import datetime, timezone
 
 logger = logging.getLogger("BlackHornet.MultiColony")
 
-# ── Colony Discovery ──────────────────────────────────────────────────
 MULTICOLONY_DIR = Path(os.getenv("MULTICOLONY_DIR",
     Path(__file__).parent.parent.parent / "AI-MultiColony-Ecosystem"))
+
+CAPABILITY_DOMAINS = {
+    "core": {
+        "base_agent": "BaseAgent with state machine, tool invocation, LLM, event bus",
+        "agent_loop": "Think-act-observe loop engine",
+        "event_bus": "Pub/sub inter-agent communication",
+        "llm_provider": "Multi-provider LLM (OpenAI, Anthropic, Google, Groq, NVIDIA, Ollama, vLLM)",
+        "circuit_breaker": "Tool call resilience pattern",
+        "persistence": "State persistence across restarts",
+    },
+    "agents": {
+        "developer_agent": "Full-cycle software engineering agent",
+        "browser_agent": "Playwright-based web automation agent",
+        "research_agent": "Web research & synthesis agent",
+        "operator_agent": "General-purpose autonomous operator",
+        "memory_agent": "Agent with persistent memory subsystem",
+        "coder_agent": "Code generation & review agent",
+        "file_surfer_agent": "File system navigation agent",
+        "web_surfer_agent": "Web browsing & data extraction agent",
+        "multimodal_agent": "Vision + text multimodal agent",
+    },
+    "colony": {
+        "coordinator": "Multi-agent task coordinator & dispatcher",
+        "hands": "Agent hand-off protocol between specialists",
+        "scheduler": "Task scheduling & prioritization engine",
+        "a2a": "Agent-to-Agent protocol for inter-agent messaging",
+        "mcp_server": "Model Context Protocol server for AI assistants",
+        "mcp_client": "MCP client for connecting to external MCP servers",
+    },
+    "harness": {
+        "guardrails": "Input/output safety guardrails & content filtering",
+        "sandbox": "Docker/WASM isolated execution environment",
+        "skills": "Extensible skill/plugin system for agents",
+        "subagents": "Hierarchical subagent delegation framework",
+        "models": "Model configuration, routing, and fallback",
+        "tracing": "OpenTelemetry distributed tracing & observability",
+    },
+    "organism": {
+        "sense": "Problem scanning engine (RSS, APIs, trend detection)",
+        "decision": "Decision scoring with configurable criteria",
+        "immune": "Safety system (loop detection, iteration limits, kill switches)",
+        "factory": "Solution builder (code generation, service creation)",
+        "growth": "Growth and marketing engine",
+        "lifecycle": "Full lifecycle orchestrator",
+    },
+    "memory": {
+        "knowledge_graph": "Entity-relation knowledge graph storage",
+        "vector_store": "Vector embedding storage & similarity search",
+        "session": "Conversation session state management",
+        "paging": "Memory paging with sliding window",
+        "condenser": "Memory condensation (8 strategies: NoOp, Recent, Observation, LLM, Amortized, BrowserOutput, Attention, Summary)",
+    },
+}
 
 COLONY_CAPABILITIES = {
     "engine.backtest":       "Walk-forward, Monte Carlo, CPCV, multi-asset",
@@ -49,13 +90,50 @@ COLONY_CAPABILITIES = {
 class ColonyBridge:
     """
     Bridges BLACKHORNET nest with AI-MultiColony-Ecosystem patterns.
-    Absorbs the best from both worlds.
+    Exposes 6 capability domains (core, agents, colony, harness, organism, memory)
+    plus the original 11 quant_nanggroe engine capabilities.
     """
 
     def __init__(self):
         self.available = MULTICOLONY_DIR.exists()
         self.capabilities = self._scan_capabilities()
         self.colony_agents = self._discover_agents()
+
+    def get_capabilities(self) -> Dict[str, Dict[str, str]]:
+        """Return all capability domains with descriptions."""
+        return {
+            domain: dict(items)
+            for domain, items in CAPABILITY_DOMAINS.items()
+        }
+
+    def get_capability(self, name: str) -> Optional[str]:
+        """Look up a capability by dotted name (e.g. 'core.base_agent')."""
+        if "." in name:
+            domain, cap = name.split(".", 1)
+            if domain in CAPABILITY_DOMAINS and cap in CAPABILITY_DOMAINS[domain]:
+                return CAPABILITY_DOMAINS[domain][cap]
+        for domain, items in CAPABILITY_DOMAINS.items():
+            if name in items:
+                return items[name]
+        return COLONY_CAPABILITIES.get(name)
+
+    def report_health(self) -> Dict[str, Any]:
+        """Health report with per-domain capability counts."""
+        s = self.status()
+        domains = {}
+        for domain, caps in CAPABILITY_DOMAINS.items():
+            domains[domain] = len(caps)
+        return {
+            "available": s["available"],
+            "domains": domains,
+            "total_capabilities": sum(domains.values()),
+            "quant_nanggroe_capabilities": len(COLONY_CAPABILITIES),
+            "colony_available": s["available_count"],
+            "colony_total": s["total_capabilities"],
+            "strategies": len(self.get_strategies()),
+            "agents_discovered": len(self.colony_agents),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
 
     def _scan_capabilities(self) -> Dict[str, bool]:
         """Scan which colony capabilities are available."""
@@ -87,11 +165,9 @@ class ColonyBridge:
         if not self.available:
             return agents
 
-        # Check daemon_manager for agent configs
         dm_path = MULTICOLONY_DIR / "daemon_manager.py"
         if dm_path.exists():
             try:
-                # Parse agent configs from daemon_manager
                 import ast
                 tree = ast.parse(dm_path.read_text())
                 for node in ast.walk(tree):
@@ -179,13 +255,8 @@ class ColonyBridge:
         }
 
     def integrate_to_hornet(self) -> Dict[str, bool]:
-        """
-        Wire MultiColony patterns into BLACKHORNET.
-        Returns status of each integration.
-        """
+        """Wire MultiColony patterns into BLACKHORNET."""
         results = {}
-
-        # 1. Import engine patterns into blackhornet context
         engine_dir = MULTICOLONY_DIR / "quant_nanggroe" / "engine"
         if engine_dir.exists():
             sys.path.insert(0, str(MULTICOLONY_DIR / "quant_nanggroe"))
@@ -194,52 +265,57 @@ class ColonyBridge:
         else:
             results["engine_path"] = False
 
-        # 2. Link MCP server
         mcp_server = MULTICOLONY_DIR / "quant_nanggroe" / "mcp" / "server.py"
         results["mcp_linked"] = mcp_server.exists()
 
-        # 3. Link exchange connectors
         exchange_dir = MULTICOLONY_DIR / "quant_nanggroe" / "exchange"
         results["exchanges_linked"] = exchange_dir.exists()
 
-        # 4. Link daemon manager
         dm = MULTICOLONY_DIR / "daemon_manager.py"
         results["daemon_linked"] = dm.exists()
 
         return results
 
     def print_colony_report(self):
-        """Pretty-print colony status."""
+        """Pretty-print full colony + domain capability report."""
         s = self.status()
+        health = self.report_health()
         print(f"\n{'='*60}")
-        print(f"  🏛️  AI-MultiColony-Ecosystem → BLACKHORNET")
+        print(f"  BLACKHORNET — MultiColony Bridge v2")
         print(f"{'='*60}")
-        print(f"  Available: {'✅' if s['available'] else '❌'}")
+        print(f"  Colony Available: {'YES' if s['available'] else 'NO'}")
         if not s['available']:
-            print(f"  Clone: git clone https://github.com/dhaher-labs/AI-MultiColony-Ecosystem")
             return
 
-        print(f"  Capabilities: {s['available_count']}/{s['total_capabilities']} available")
-        print(f"\n  📊 Engine: {s['engine_modules']} modules")
-        print(f"  📈 Strategies: {s['strategies']} types")
-        print(f"  💱 Exchanges: {', '.join(s['exchanges'][:5])}")
-        print(f"  🛡️  Risk: {len(s['risk_modules'])} modules")
-        print(f"  🤖 Agents: {s['agents_discovered']} discovered")
-        print(f"\n  Active Capabilities:")
+        print(f"\n  Capability Domains ({health['total_capabilities']} total):")
+        for domain, caps in CAPABILITY_DOMAINS.items():
+            print(f"\n    [{domain.upper()}]")
+            for name, desc in caps.items():
+                print(f"      {name:<25} {desc}")
+
+        print(f"\n  Quant Nanggroe Engine ({s['available_count']}/{s['total_capabilities']}):")
         for cap, available in s['capabilities'].items():
-            icon = "✅" if available else "❌"
+            icon = "+" if available else "-"
             desc = COLONY_CAPABILITIES.get(cap.replace('engine.', 'engine.'), cap)
             print(f"    {icon} {cap:<25} {desc}")
+
+        print(f"\n  Engine Modules: {s['engine_modules']}")
+        print(f"  Strategies: {s['strategies']}")
+        print(f"  Exchanges: {', '.join(s['exchanges'][:5])}")
+        print(f"  Risk Modules: {len(s['risk_modules'])}")
+        print(f"  Agents Discovered: {s['agents_discovered']}")
 
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="BLACKHORNET ← MultiColony Bridge")
+    parser = argparse.ArgumentParser(description="BLACKHORNET MultiColony Bridge v2")
     parser.add_argument("--status", action="store_true", help="Colony status")
     parser.add_argument("--integrate", action="store_true", help="Wire into hornet")
     parser.add_argument("--strategies", action="store_true", help="List strategies")
     parser.add_argument("--exchanges", action="store_true", help="List exchanges")
     parser.add_argument("--report", action="store_true", help="Full report")
+    parser.add_argument("--health", action="store_true", help="Health check")
+    parser.add_argument("--capabilities", action="store_true", help="List all capabilities")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO,
@@ -247,7 +323,15 @@ def main():
 
     bridge = ColonyBridge()
 
-    if args.report or args.status:
+    if args.health:
+        print(json.dumps(bridge.report_health(), indent=2, default=str))
+    elif args.capabilities:
+        caps = bridge.get_capabilities()
+        for domain, items in caps.items():
+            print(f"\n[{domain}]")
+            for name, desc in items.items():
+                print(f"  {name:<25} {desc}")
+    elif args.report or args.status:
         bridge.print_colony_report()
         if args.status:
             print(json.dumps(bridge.status(), indent=2, default=str))
@@ -256,10 +340,10 @@ def main():
         print(json.dumps(results, indent=2))
     elif args.strategies:
         for s in bridge.get_strategies():
-            print(f"  📈 {s['name']:<25} ({s['size_kb']}KB)")
+            print(f"  {s['name']:<25} ({s['size_kb']}KB)")
     elif args.exchanges:
         for e in bridge.get_exchanges():
-            print(f"  💱 {e}")
+            print(f"  {e}")
 
 
 if __name__ == "__main__":
