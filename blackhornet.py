@@ -149,24 +149,24 @@ class BlackHornetNest:
             )
             logger.info("  🧠 Mnemosyne started")
 
-        # 3. Immortal Daemon from blackhornet
+        # 3. BH Doctor (replaces immortal_daemon + memory_bridge)
         hq_dir = NEST_DIR / "blackhornet"
         if hq_dir.exists():
             subprocess.Popen(
-                [sys.executable, "src/immortal_daemon.py"],
+                [sys.executable, "bh-doctor", "start"],
                 cwd=str(hq_dir),
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
             )
-            logger.info("  🛡️ Immortal Daemon started")
+            logger.info("  ⚕️ BH Doctor started")
 
-        # 4. Memory Bridge
+        # 4. Unified Launcher (core services)
         if hq_dir.exists():
             subprocess.Popen(
-                [sys.executable, "src/memory_bridge.py", "--bot", "blackhornet-orchestrator"],
+                [sys.executable, "-m", "src.integration.unified_launcher"],
                 cwd=str(hq_dir),
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
             )
-            logger.info("  🧬 Memory Bridge started")
+            logger.info("  🧬 Unified Launcher started")
 
         # 5. MultiColony — wire engine patterns
         mc_dir = NEST_DIR / "AI-MultiColony-Ecosystem"
@@ -218,9 +218,9 @@ class BlackHornetNest:
         except:
             pass
 
-        # Check Daemon
+        # Check Daemon (unified launcher)
         result = subprocess.run(
-            ["pgrep", "-f", "immortal_daemon"],
+            ["pgrep", "-f", "unified_launcher"],
             capture_output=True, text=True
         )
         health["daemon_running"] = bool(result.stdout.strip())

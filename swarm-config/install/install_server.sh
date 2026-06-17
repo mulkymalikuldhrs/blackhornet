@@ -24,7 +24,7 @@ echo "[3/5] Cloning repositories..."
 mkdir -p ~/.bh/shared-workspace
 cd ~/.bh/shared-workspace
 git clone https://github.com/dhaher-labs/ProxyGateLLM.git 2>/dev/null || (cd ProxyGateLLM && git pull)
-git clone https://github.com/dhaher-labs/mnemosyne.git 2>/dev/null || (cd mnemosyne && git pull)
+git clone https://github.com/dhaher-labs/mnemosyne.git 2>/dev/null || echo "⚠ mnemosyne not cloned (optional)"
 git clone https://github.com/dhaher-labs/blackhornet.git 2>/dev/null || (cd blackhornet && git pull)
 git clone https://github.com/dhaher-labs/agent.git github-sync 2>/dev/null || (cd github-sync && git pull)
 

@@ -165,7 +165,7 @@ clone() {
   # Clone repos
   cd "$target"
   git clone "https://github.com/dhaher-labs/ProxyGateLLM.git" 2>/dev/null || true
-  git clone "https://github.com/dhaher-labs/mnemosyne.git" 2>/dev/null || true
+  git clone "https://github.com/dhaher-labs/mnemosyne.git" 2>/dev/null || echo "⚠ mnemosyne not cloned (optional)"
   git clone "https://github.com/dhaher-labs/blackhornet.git" 2>/dev/null || true
   git clone "https://github.com/dhaher-labs/agent.git" 2>/dev/null || true
   

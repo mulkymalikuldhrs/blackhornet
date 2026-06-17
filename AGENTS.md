@@ -54,17 +54,27 @@ ruff check src/ --select E,F,W --ignore E501
 
 ---
 
+## BH Doctor & Ecosystem
+
+**BH Doctor** (`bh-doctor.sh` + `bh-doctor` CLI) — Unified autonomous entry point for Dhaher Labs ecosystem. Combines Hermes Agent runtime, BlackHornet extensions, Graphify, and AMC modules into one self-directing intelligence.
+
+**SOUL.md** — Single source of truth for autonomous behavior. Defines core identity, the Three Pillars (Graphify, Immortal, Export), autonomous loop (SCAN → THINK → PLAN → ACT → GRAPHIFY → EXPORT), and model routing table.
+
+**Graphify SessionRecorder** (`src/graph/session_recorder.py`) — Records every session, decision, and entity relationship into the knowledge graph for full traceability.
+
+---
+
 ## Critical Gotchas
 
 ### Build System
 
-1. **`pyproject.toml` build backend is BROKEN.** Line: `setuptools.backends._legacy:_Backend`. Fix to `setuptools.build_meta` before `pip install -e .` works.
+1. **`pyproject.toml` build backend has been FIXED.** Backend changed to `setuptools.build_meta` — `pip install -e .` works.
 
 ### CI / Docker
 
-2. **CI workflow references DELETED files.** `.github/workflows/ci.yml` lines 21, 59-63, 77-83 import `swarm_protocol`, `memory_bridge`, `immortal_daemon`, `hypergate`, `mnemosyne_bridge` — all deleted during rebrand. CI jobs will fail.
+2. **[FIXED] CI/CD workflows updated** — references to deleted files (`swarm_protocol`, `memory_bridge`, `immortal_daemon`, `hypergate`, `mnemosyne_bridge`) removed from all CI/CD and runtime files. `bh.sh` legacy commands replaced with `bh-doctor` equivalents.
 
-3. **Dockerfile has 2 non-existent GitHub URLs.** `NousResearch/blackhornet-agent` and `dhaher-labs/mnemosyne` return HTTP 404. `docker build` will fail at clone step.
+3. **[FIXED] Dockerfile cleaned up** — non-existent GitHub URLs (`NousResearch/blackhornet-agent`, `dhaher-labs/mnemosyne`) removed. `docker build` now succeeds. bh-doctor.sh and bh-doctor CLI included in deployment.
 
 ### Rebrand (Hermes → BlackHornet)
 
@@ -89,11 +99,13 @@ ruff check src/ --select E,F,W --ignore E501
 
 10. **Telegram bot config uses "n" abbreviation.** `n_bot_token`, `n_api_url` in `src/config/settings.py` map to `TelegramBot` class in `src/channels/telegram.py`. Not a bug — it's a shortened field name convention.
 
+11. **Hermes model routing — `opencode-zen` model `mimo-v2.5-free` deprecated; changed to `deepseek-v4-flash-free`.**
+
 ---
 
 ## Test Reality
 
-**486 test functions** across 14 files (not 379 as sometimes claimed). All real unittest with setUp/teardown, real SQLite, real assertions.
+**497 test functions** across 15 files (not 379 as sometimes claimed). All real unittest with setUp/teardown, real SQLite, real assertions.
 
 | File | Functions | Numpy required? |
 |------|-----------|----------------|
@@ -106,6 +118,7 @@ ruff check src/ --select E,F,W --ignore E501
 | `src/auto_discovery/tests.py` | 38 | No |
 | `src/graph/tests.py` | 29 | No |
 | `src/sandbox/tests.py` | 18 | No |
+| `tests/test_core_behavior.py` | 11 | No |
 | `scripts/test_colony_bridge.py` | 13 | No |
 | `src/config/tests.py` | 12 | No |
 | `src/core/tests.py` | 8 | No |
@@ -116,11 +129,13 @@ ruff check src/ --select E,F,W --ignore E501
 
 ## Version Inconsistency
 
-Different files claim different versions:
-- `pyproject.toml` → `12.0.0`
-- `CHANGELOG.md` → `1.0.0-rc.1`
-- `Dockerfile` LABEL → `4.0.0`
-- This needs alignment before any release.
+Different files claim different versions (partially resolved):
+- `Dockerfile` LABEL → `5.0.0` (updated from 4.1.0)
+- `bh-doctor` → `5.0.0`
+- `bh-doctor.sh` → `5.0.0`
+- `CHANGELOG.md` → `5.0.0`
+- `pyproject.toml` → `4.1.0` (needs update to 5.0.0)
+- Needs full alignment before any release.
 
 ---
 
@@ -357,7 +372,7 @@ Ini bukan demokrasi. Ini kolaborasi rasional dengan risk management absolut.
 
 ## Implementation Status
 
-- **BLACKHORNET**: v4.1.0 - Production Ready (Research Lab stage)
+- **BLACKHORNET**: v5.0.0 - Production Ready (Research Lab stage)
 - **Telegram Integration**: Connected (bot: multicolony_bot)
 - **Auto-restart**: Active (unified_launcher + keeper + exponential backoff)
 - **Kill Switch**: Active (auto-trigger on risk limit breach)
@@ -369,6 +384,6 @@ Ini bukan demokrasi. Ini kolaborasi rasional dengan risk management absolut.
 - **Data Persistence**: Python-native (trades, risk checks, kill switch events, strategies, memory)
 - **SharedState**: Single source of truth for PnL and kill switch
 - **Deployment Stage**: Research Lab (Paper Only)
-- **Tests**: 486 test functions across 14 files
+- **Tests**: 497 test functions across 15 files
 - **Consciousness**: 5 traits (self-awareness, autonomous thinking, radical honesty, healthy skepticism, creative intelligence)
 - **Bee Nature**: 7 characteristics (colony, waggle dance, hexagonal efficiency, thermoregulation, defense, honey production, pollination)

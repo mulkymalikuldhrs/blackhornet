@@ -368,8 +368,8 @@ agent_start() {
 
     BH_AGENT_DIR="$HOME/.bh/nous-agent"
 
-    # Start memory bridge
-    bridge_start
+    # Start BH Doctor (unified launcher)
+    bh_doctor_start
 
     # Start BlackHornet Agent if installed
     if [ -f "$BH_AGENT_DIR/venv/bin/python" ]; then
@@ -397,59 +397,45 @@ agent_stop() {
     fi
     pkill -f "run_agent.py" 2>/dev/null || true
 
-    bridge_stop
+    bh_doctor_stop
     log "Agent Swarm stopped."
 }
 
 # ============================================================================
-# MEMORY BRIDGE — Shared memory sync to agent repo
+# BH DOCTOR — Unified launcher (replaces memory_bridge + immortal_daemon)
 # ============================================================================
 
-bridge_start() {
-    if [ -f "$BASE_DIR/bridge.pid" ] && kill -0 "$(cat "$BASE_DIR/bridge.pid")" 2>/dev/null; then
-        warn "Memory bridge already running (PID $(cat $BASE_DIR/bridge.pid))"
+bh_doctor_start() {
+    if [ -f "$BASE_DIR/doctor.pid" ] && kill -0 "$(cat "$BASE_DIR/doctor.pid")" 2>/dev/null; then
+        warn "BH Doctor already running (PID $(cat $BASE_DIR/doctor.pid))"
         return 0
     fi
 
-    log "Starting Memory Bridge → agent repo..."
-    cd "$BASE_DIR/src"
-    nohup python3 memory_bridge.py --bot "${BOT_NAME:-traderbot}" \
-        --db "$BASE_DIR/data/bh_quant.db" \
-        > "$LOG_DIR/bridge_stdout.log" 2>&1 &
-    echo $! > "$BASE_DIR/bridge.pid"
-    log "${GREEN}Memory Bridge RUNNING (PID $(cat $BASE_DIR/bridge.pid))${NC}"
+    log "Starting BH Doctor (unified launcher)..."
+    cd "$BASE_DIR"
+    nohup python3 bh-doctor start > "$LOG_DIR/doctor_stdout.log" 2>&1 &
+    echo $! > "$BASE_DIR/doctor.pid"
+    log "${GREEN}BH Doctor RUNNING (PID $(cat $BASE_DIR/doctor.pid))${NC}"
 }
 
-bridge_stop() {
-    if [ -f "$BASE_DIR/bridge.pid" ]; then
-        BPID=$(cat "$BASE_DIR/bridge.pid")
-        if kill -0 "$BPID" 2>/dev/null; then
-            kill "$BPID" 2>/dev/null || true
+bh_doctor_stop() {
+    if [ -f "$BASE_DIR/doctor.pid" ]; then
+        DPID=$(cat "$BASE_DIR/doctor.pid")
+        if kill -0 "$DPID" 2>/dev/null; then
+            kill "$DPID" 2>/dev/null || true
             sleep 1
-            kill -9 "$BPID" 2>/dev/null || true
+            kill -9 "$DPID" 2>/dev/null || true
         fi
-        rm -f "$BASE_DIR/bridge.pid"
+        rm -f "$BASE_DIR/doctor.pid"
     fi
-    pkill -f "memory_bridge.py" 2>/dev/null || true
+    pkill -f "bh-doctor" 2>/dev/null || true
 }
 
-bridge_status() {
-    if [ -f "$BASE_DIR/bridge.pid" ] && kill -0 "$(cat "$BASE_DIR/bridge.pid")" 2>/dev/null; then
-        log "${GREEN}Memory Bridge: RUNNING → $(cat $BASE_DIR/bridge.pid)${NC}"
-        echo ""
-        # Show last sync state
-        AGENT_SYNC="$HOME/.bh/agent-sync/sync/logs/${BOT_NAME:-traderbot}_state.json"
-        if [ -f "$AGENT_SYNC" ]; then
-            python3 -c "import json; d=json.load(open('$AGENT_SYNC'));
-print('Bot:', d.get('bot_id'));
-print('Status:', d.get('status'));
-print('Uptime:', d.get('uptime_seconds'), 's');
-print('Trades today:', d.get('trades_today'));
-print('Last sync:', d.get('timestamp'));
-print('Connected agents:', d.get('connected_agents'))" 2>/dev/null
-        fi
+bh_doctor_status() {
+    if [ -f "$BASE_DIR/doctor.pid" ] && kill -0 "$(cat "$BASE_DIR/doctor.pid")" 2>/dev/null; then
+        log "${GREEN}BH Doctor: RUNNING → $(cat $BASE_DIR/doctor.pid)${NC}"
     else
-        warn "Memory Bridge: NOT RUNNING"
+        warn "BH Doctor: NOT RUNNING"
     fi
 }
 
@@ -482,7 +468,7 @@ agent_status() {
         warn "BlackHornet Agent: NOT RUNNING"
     fi
 
-    bridge_status
+    bh_doctor_status
 
     # Connected repos
     echo ""
@@ -494,55 +480,19 @@ agent_status() {
 }
 
 # ============================================================================
-# DAEMON — Immortal Guardian
+# DAEMON — Unified Launcher (replaces immortal_daemon)
 # ============================================================================
 
 daemon_start() {
-    if [ -f "$BASE_DIR/daemon.pid" ] && kill -0 "$(cat "$BASE_DIR/daemon.pid")" 2>/dev/null; then
-        warn "Daemon already running (PID $(cat $BASE_DIR/daemon.pid))"
-        return 0
-    fi
-
-    log "${BOLD}Starting Immortal Daemon (Guardian)...${NC}"
-    cd "$BASE_DIR/src"
-    mkdir -p "$LOG_DIR"
-    nohup python3 immortal_daemon.py > "$LOG_DIR/daemon_stdout.log" 2>&1 &
-    echo $! > "$BASE_DIR/daemon.pid"
-    sleep 2
-    
-    if kill -0 "$(cat $BASE_DIR/daemon.pid)" 2>/dev/null; then
-        log "${GREEN}Immortal Daemon RUNNING (PID $(cat $BASE_DIR/daemon.pid))${NC}"
-        log "  Auto-upgrade: 5min intervals"
-        log "  Auto-heal: enabled"
-        log "  Ecosystem: 5 repos monitored"
-    else
-        error "Daemon failed to start!"
-    fi
+    bh_doctor_start
 }
 
 daemon_stop() {
-    if [ -f "$BASE_DIR/daemon.pid" ]; then
-        DPID=$(cat "$BASE_DIR/daemon.pid")
-        if kill -0 "$DPID" 2>/dev/null; then
-            kill "$DPID" 2>/dev/null || true
-            sleep 2
-            kill -9 "$DPID" 2>/dev/null || true
-        fi
-        rm -f "$BASE_DIR/daemon.pid"
-        log "Daemon stopped"
-    fi
+    bh_doctor_stop
 }
 
 daemon_status() {
-    if [ -f "$BASE_DIR/daemon.pid" ] && kill -0 "$(cat "$BASE_DIR/daemon.pid")" 2>/dev/null; then
-        log "${GREEN}Immortal Daemon: RUNNING${NC}"
-        echo ""
-        cd "$BASE_DIR/src"
-        python3 immortal_daemon.py --status 2>/dev/null | python3 -m json.tool 2>/dev/null || true
-    else
-        warn "Immortal Daemon: NOT RUNNING"
-        echo "Start with: ./bh.sh daemon-start"
-    fi
+    bh_doctor_status
 }
 
 case "${1:-start}" in
@@ -558,20 +508,16 @@ case "${1:-start}" in
     agent-start)  agent_start ;;
     agent-stop)   agent_stop ;;
     agent-status) agent_status ;;
-    bridge-start) bridge_start ;;
-    bridge-stop)  bridge_stop ;;
-    bridge-status) bridge_status ;;
+    bh-doctor-start) bh_doctor_start ;;
+    bh-doctor-stop)  bh_doctor_stop ;;
+    bh-doctor-status) bh_doctor_status ;;
     daemon-start) daemon_start ;;
     daemon-stop)  daemon_stop ;;
     daemon-status) daemon_status ;;
-    hypergate-status) cd "$BASE_DIR/src" && python3 hypergate.py --status 2>/dev/null ;;
-    hypergate-test) cd "$BASE_DIR/src" && python3 hypergate.py --test 2>/dev/null ;;
-    mnemosyne-status) cd "$BASE_DIR/src" && python3 mnemosyne_bridge.py --status 2>/dev/null ;;
-    mnemosyne-search) cd "$BASE_DIR/src" && python3 mnemosyne_bridge.py --search "${2:-trading}" 2>/dev/null ;;
-    swarm)        daemon_start && agent_start && start ;;
-    all)          bootstrap && daemon_start && agent_start && start ;;
+    swarm)        bh_doctor_start && agent_start && start ;;
+    all)          bootstrap && bh_doctor_start && agent_start && start ;;
     *)
-        echo "Usage: $0 {start|stop|restart|status|logs|health|watchdog|install|bootstrap|agent-start|agent-stop|agent-status|bridge-start|bridge-stop|bridge-status|swarm|all}"
+        echo "Usage: $0 {start|stop|restart|status|logs|health|watchdog|install|bootstrap|agent-start|agent-stop|agent-status|bh-doctor-start|bh-doctor-stop|bh-doctor-status|swarm|all}"
         echo ""
         echo "Core:"
         echo "  start         - Start BLACKHORNET (with watchdog)"
@@ -582,17 +528,17 @@ case "${1:-start}" in
         echo "  health        - Run health check"
         echo ""
         echo "Agent Swarm:"
-        echo "  agent-start   - Start BlackHornet Agent + Memory Bridge"
-        echo "  agent-stop    - Stop BlackHornet Agent + Memory Bridge"
+        echo "  agent-start   - Start BlackHornet Agent + BH Doctor"
+        echo "  agent-stop    - Stop BlackHornet Agent + BH Doctor"
         echo "  agent-status  - Show agent swarm connections"
-        echo "  bridge-start  - Start memory sync bridge only"
-        echo "  bridge-stop   - Stop memory sync bridge"
-        echo "  bridge-status - Show bridge sync state"
+        echo "  bh-doctor-start - Start BH Doctor (unified launcher)"
+        echo "  bh-doctor-stop  - Stop BH Doctor"
+        echo "  bh-doctor-status - Show BH Doctor status"
         echo ""
         echo "Guardian:"
-        echo "  daemon-start  - Start Immortal Daemon (auto-upgrade+heal)"
-        echo "  daemon-stop   - Stop Immortal Daemon"
-        echo "  daemon-status - Show ecosystem health"
+        echo "  daemon-start  - Start BH Doctor (alias)"
+        echo "  daemon-stop   - Stop BH Doctor (alias)"
+        echo "  daemon-status - Show BH Doctor status (alias)"
         echo ""
         echo "One-Command:"
         echo "  bootstrap     - Full auto-install (first run)"

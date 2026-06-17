@@ -45,26 +45,25 @@ def main():
     else:
         print(f"{M}{B}║{N}   {no('ProxyGateLLM OFFLINE')}")
 
-    # Daemon
-    print(f"{M}{B}║{N} {hd('🛡️ IMMORTAL DAEMON')}")
-    dp = check_proc('immortal_daemon')
+    # BH Doctor / Unified Launcher
+    print(f"{M}{B}║{N} {hd('⚕️ BH DOCTOR')}")
+    dp = check_proc('unified_launcher')
     if dp:
-        print(f"{M}{B}║{N}   {ok('Daemon RUNNING (PID ' + dp + ')')}")
+        print(f"{M}{B}║{N}   {ok('Launcher RUNNING (PID ' + dp + ')')}")
     else:
-        print(f"{M}{B}║{N}   {no('Daemon STOPPED')}")
+        print(f"{M}{B}║{N}   {no('Launcher STOPPED')}")
 
     # Swarm
     print(f"{M}{B}║{N} {hd('🐝 SWARM')}")
     try:
-        from swarm_protocol import SwarmProtocol
-        s = SwarmProtocol()
-        agents = s.discover_agents()
+        from src.swarm.swarm_orchestrator import SwarmOrchestrator
+        so = SwarmOrchestrator()
+        agents = so.discover_agents()
         alive = sum(1 for a in agents if a.get('is_alive'))
         print(f"{M}{B}║{N}   {ok(str(alive) + '/' + str(len(agents)) + ' agents alive')}")
         for a in agents[:3]:
             icon = '🟢' if a.get('is_alive') else '🔴'
             print(f"{M}{B}║{N}     {icon} {a['agent_id'][:10]} | {a.get('agent_type','?'):12} | {a.get('repo','?')}")
-        s.stop()
     except Exception as e:
         print(f"{M}{B}║{N}   {wn('Swarm: ' + str(e)[:40])}")
 

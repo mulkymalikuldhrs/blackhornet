@@ -4,7 +4,7 @@ FROM python:3.11-slim
 LABEL org.opencontainers.image.title="BH Hive"
 LABEL org.opencontainers.image.description="Autonomous Multi-Agent Trading Ecosystem — swarm intelligence, self-healing, immortal"
 LABEL org.opencontainers.image.authors="Mulky Malikul Dhaher"
-LABEL org.opencontainers.image.version="4.1.0"
+LABEL org.opencontainers.image.version="5.0.0"
 
 # System deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -19,6 +19,9 @@ ENV PATH="/root/.local/bin:$PATH"
 
 # Copy BlackHornet source
 COPY . /blackhornet
+
+# Ensure bh-doctor scripts are executable
+RUN chmod +x /blackhornet/bh-doctor.sh /blackhornet/bh-doctor 2>/dev/null || true
 
 # Install Python deps
 RUN pip install -e .

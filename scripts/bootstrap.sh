@@ -112,11 +112,8 @@ if [ ! -d "$AGENT_SYNC_DIR" ]; then
     }
 fi
 
-# Copy memory bridge module
-mkdir -p "$REPO_DIR/src/bridge"
-cp "$REPO_DIR/src/memory_bridge.py" "$REPO_DIR/src/bridge/__init__.py" 2>/dev/null || true
-
-echo -e "${GREEN}✓ Agent memory sync bridge ready${NC}"
+# BH Doctor handles memory sync
+echo -e "${GREEN}✓ BH Doctor memory sync available${NC}"
 
 # ── Immortal setup (auto-restart + cron) ──────────────────────────────
 echo -e "${CYAN}[6/6]${NC} Configuring immortal auto-restart..."
@@ -130,7 +127,7 @@ CRON_JOB="* * * * * cd $REPO_DIR && bash bh.sh health > /dev/null 2>&1 || bash b
 # Make scripts executable
 chmod +x "$REPO_DIR/bh.sh" 2>/dev/null || true
 chmod +x "$REPO_DIR/src/watchdog.py" 2>/dev/null || true
-chmod +x "$REPO_DIR/src/memory_bridge.py" 2>/dev/null || true
+chmod +x "$REPO_DIR/bh-doctor" "$REPO_DIR/bh-doctor.sh" 2>/dev/null || true
 
 echo -e "${GREEN}✓ Immortal auto-restart configured${NC}"
 

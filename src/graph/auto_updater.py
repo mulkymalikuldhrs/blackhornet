@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
@@ -83,6 +84,66 @@ class AutoGraphUpdater:
             logger.warning("Graph update from episode failed: %s", e)
         self._update_count += count
         return count
+
+    def on_conversation(self, topic: str, summary: str,
+                         participants: Optional[List[str]] = None) -> int:
+        count = 0
+        if not self._graph:
+            return 0
+        try:
+            conv_node = self._graph.find_or_create(
+                f"conversation:{topic[:50]}", "conversation",
+                {"topic": topic, "summary": summary[:200]},
+            )
+            count += 1
+            for participant in (participants or []):
+                p_node = self._graph.find_or_create(
+                    f"participant:{participant}", "participant",
+                )
+                self._graph.add_edge(conv_node, p_node, "includes")
+                count += 1
+        except Exception as e:
+            logger.warning("Graph update from conversation failed: %s", e)
+        self._update_count += count
+        return count
+
+    def on_decision(self, agent_id: str, decision: str, context: str,
+                    confidence: float = 0.5) -> int:
+        count = 0
+        if not self._graph:
+            return 0
+        try:
+            agent_node = self._graph.find_or_create(f"agent:{agent_id}", "agent")
+            dec_label = f"decision:{agent_id}:{decision[:50]}"
+            dec_node = self._graph.find_or_create(
+                dec_label, "decision",
+                {"decision": decision[:200], "context": context[:200],
+                 "confidence": confidence},
+            )
+            self._graph.add_edge(agent_node, dec_node, "made_decision")
+            count += 2
+        except Exception as e:
+            logger.warning("Graph update from decision failed: %s", e)
+        self._update_count += count
+        return count
+
+    def auto_export(self, export_dir: str) -> Dict[str, Any]:
+        if not self._graph:
+            return {"error": "No graph store available"}
+        try:
+            export_path = os.path.expanduser(export_dir)
+            os.makedirs(export_path, exist_ok=True)
+            timestamp = time.strftime("%Y%m%d_%H%M%S")
+            data = self._graph.export_json()
+            filepath = os.path.join(export_path, f"graph_export_{timestamp}.json")
+            with open(filepath, "w") as f:
+                json.dump(data, f, indent=2)
+            logger.info("Exported graph to %s", filepath)
+            return {"export_path": filepath, "nodes": len(data["nodes"]),
+                    "edges": len(data["edges"])}
+        except Exception as e:
+            logger.warning("Graph export failed: %s", e)
+            return {"error": str(e)}
 
     def on_entity_event(self, entity: Any) -> int:
         count = 0

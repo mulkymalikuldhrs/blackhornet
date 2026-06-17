@@ -12,6 +12,7 @@ from .entity_tracker import EntityTracker, Entity
 from .relationship_mapper import RelationshipMapper, Relationship
 from .graph_visualizer import GraphVisualizer, VisualGraph
 from .auto_updater import AutoGraphUpdater
+from .session_recorder import SessionRecorder
 
 __all__ = [
     "GraphStore", "GraphNode", "GraphEdge",
@@ -19,4 +20,5 @@ __all__ = [
     "RelationshipMapper", "Relationship",
     "GraphVisualizer", "VisualGraph",
     "AutoGraphUpdater",
+    "SessionRecorder",
 ]

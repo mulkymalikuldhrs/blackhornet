@@ -14,6 +14,8 @@ blackhornet-os/
 ├── ALL.md                             # Comprehensive Combined Reference
 ├── requirements.txt                   # Python Dependencies
 ├── bh.sh                          # Main Control Script (start/stop/restart/status/logs/health/install)
+├── bh-doctor.sh                   # BH Doctor unified shell entry point (35KB)
+├── bh-doctor                      # BH Doctor CLI tool (16KB)
 │
 ├── src/                               # Source Code
 │   ├── bh_quant.py                # Main Agent Controller (blackhornet class)
@@ -53,6 +55,9 @@ blackhornet-os/
 │       ├── backtest_engine.py         # Backtest Engine: Dynamic Spread, Slippage, Latency Simulation
 │       └── math_engine.py             # Math Engine: Statistical analysis, probability calculations
 │
+├── src/graph/                         # Knowledge Graph (Graphify)
+│   └── session_recorder.py            # Session Recorder: entity/relationship tracking
+│
 ├── scripts/                           # Infrastructure Scripts
 │   ├── keeper.py                      # Cron-based health monitor (1-minute intervals)
 │   ├── install_termux.sh             # Android Termux installer with Termux:Boot
@@ -71,6 +76,7 @@ blackhornet-os/
 │
 ├── data/                              # Runtime Data (generated)
 │   ├── sessions.json                 # Session memory (conversation history, decisions, PnL)
+│   ├── session-export/               # BH Doctor session export directory
 │   └── memory_*.md                   # Markdown memory exports (last 10 retained)
 │
 ├── logs/                              # Runtime Logs (generated)
@@ -91,16 +97,18 @@ blackhornet-os/
 
 | File | Purpose | Size | Modified |
 |------|---------|------|----------|
-| `AGENTS.md` | Single Source of Truth - constitutional rules, risk parameters, agent taxonomy, trading framework | ~8KB | v3.0.0 |
+| `AGENTS.md` | Single Source of Truth - constitutional rules, risk parameters, agent taxonomy, trading framework | ~8KB | v5.0.0 |
 | `README.md` | Quick start, architecture overview, commands, risk summary | ~2KB | v1.0.0 |
-| `CHANGELOG.md` | Complete version history from v1.0.0 to current | ~8KB | v3.2.0 |
+| `CHANGELOG.md` | Complete version history from v1.0.0 to current | ~8KB | v5.0.0 |
 | `PR.md` | PR templates, review criteria, proposed PRs, workflow | ~6KB | v3.2.0 |
-| `STRUCTURE.md` | This file - project structure documentation | ~5KB | v3.2.0 |
-| `ARCHITECTURE.md` | Deep-dive architecture with data flow diagrams | ~10KB | v3.2.0 |
-| `UPGRADE_PLAN.md` | Autonomous upgrade roadmap from Stage 1 to Full Autonomous | ~8KB | v3.2.0 |
-| `ALL.md` | Comprehensive combined reference document | ~35KB | v3.2.0 |
+| `STRUCTURE.md` | This file - project structure documentation | ~5KB | v5.0.0 |
+| `ARCHITECTURE.md` | Deep-dive architecture with data flow diagrams | ~10KB | v5.0.0 |
+| `UPGRADE_PLAN.md` | Autonomous upgrade roadmap from Stage 1 to Full Autonomous | ~8KB | v5.0.0 |
+| `ALL.md` | Comprehensive combined reference document | ~35KB | v5.0.0 |
 | `requirements.txt` | Python dependencies: aiohttp, python-dotenv, yfinance, requests | ~100B | v1.0.0 |
 | `bh.sh` | Bash control script for all operations | ~10KB | v2.0.0 |
+| `bh-doctor.sh` | BH Doctor unified shell entry point | ~35KB | v5.0.0 |
+| `bh-doctor` | BH Doctor CLI tool for autonomous operations | ~16KB | v5.0.0 |
 
 ### Source Code (`src/`)
 

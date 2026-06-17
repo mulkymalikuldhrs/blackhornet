@@ -15,6 +15,36 @@ The foundational agent framework is adapted from **Nous Research Hermes Agent** 
 
 ---
 
+## 1.5 BH Doctor — Unified Entry Point
+
+```
+BH Doctor CLI (bh-doctor.sh / bh-doctor)
+  │
+  ├── Hermes Agent Runtime
+  │   ├── Agent loop, Tools (90+)
+  │   ├── Gateway (Telegram, CLI, TUI)
+  │   └── Memory plugin system
+  │
+  ├── BlackHornet Extension
+  │   ├── Swarm (PSO+ABC+Stigmergy)
+  │   ├── Memory (STM/LTM/Semantic/Episodic)
+  │   ├── Thinking (19 modules)
+  │   ├── Trading (22 tools, 5-layer)
+  │   └── Self-healing (Phi-accrual, Circuit Breaker)
+  │
+  ├── Graphify — Knowledge Graph
+  │   ├── GraphStore (SQLite property graph)
+  │   ├── EntityTracker
+  │   ├── RelationshipMapper
+  │   └── SessionRecorder
+  │
+  └── AMC Worker Modules — Sources, finance, organism
+```
+
+The BH Doctor provides a single entry point for all autonomous operations, combining the Hermes Agent runtime, BlackHornet extensions, Graphify knowledge graph, and AMC worker modules under one unified interface.
+
+---
+
 ## 2. 5-Layer Agent Architecture
 
 ```
@@ -390,16 +420,82 @@ Every trade must pass through the Risk Officer's 9 checkpoints before execution.
 
 ---
 
-## 7. Deployment Architecture
+## 7. Graphify + Session Export Architecture
 
-### 7.1 Current: Research Lab (Stage 1)
+```
+┌─────────────────────────────────────────────────────────────┐
+│  GRAPHIFY — Knowledge Graph Engine                          │
+│                                                              │
+│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐    │
+│  │ GraphStore  │  │ Entity       │  │ Relationship     │    │
+│  │ (SQLite PG) │  │ Tracker      │  │ Mapper           │    │
+│  └─────────────┘  └──────────────┘  └──────────────────┘    │
+│  ┌─────────────┐  ┌────────────────────────────────────┐    │
+│  │ Session     │  │ AutoGraphUpdater + Visualizer       │    │
+│  │ Recorder    │  │ (JSON/DOT/ASCII/Cytoscape)          │    │
+│  └─────────────┘  └────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  SESSION EXPORT PIPELINE                                     │
+│                                                              │
+│  1. Every session → data/session-export/{session_id}.json   │
+│  2. Every memory → shared-memory.md                          │
+│  3. Every graph → JSON export                                │
+│  4. Push to Codeberg + GitLab                                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## 8. Immortal Gateway Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  IMMORTAL GATEWAY — Self-Healing Infrastructure             │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  LAYER 1: Watchdog (10s interval)                    │   │
+│  │  ┌──────────────────────────────────────────────┐    │   │
+│  │  │ Phi-accrual failure detector                 │    │   │
+│  │  │ Exponential backoff: 5→10→20→40→80→120s     │    │   │
+│  │  │ Crash loop: max 10/hr, then 5-min cooldown   │    │   │
+│  │  │ Telegram alert on every crash/restart         │    │   │
+│  │  └──────────────────────────────────────────────┘    │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  LAYER 2: Keeper (1-min cron)                        │   │
+│  │  ┌──────────────────────────────────────────────┐    │   │
+│  │  │ PID verification + health.json check          │    │   │
+│  │  │ Auto-restart if both BH and watchdog dead     │    │   │
+│  │  └──────────────────────────────────────────────┘    │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  LAYER 3: On-Boot (Termux:Boot / systemd / cron)     │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  LAYER 4: Self-Healing Orchestrator                  │   │
+│  │  ┌──────────────────────────────────────────────┐    │   │
+│  │  │ Circuit Breaker — prevent cascade failure     │    │   │
+│  │  │ RecoveryManager — retry/restart/failover      │    │   │
+│  │  │ Continuous monitoring loop                    │    │   │
+│  │  └──────────────────────────────────────────────┘    │   │
+│  └──────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## 9. Deployment Architecture
+
+### 9.1 Current: Research Lab (Stage 1)
 
 - Paper trading only
 - No real money at risk
 - All executions logged but not sent to brokers
 - Full audit trail for strategy validation
 
-### 7.2 Target Platforms
+### 9.2 Target Platforms
 
 | Platform | Runtime | On-Boot | Status |
 |----------|---------|---------|--------|
@@ -408,7 +504,7 @@ Every trade must pass through the Risk Officer's 9 checkpoints before execution.
 | Any (fallback) | Python 3.x | cron @reboot | Supported |
 | VPS (planned) | Docker container | Docker restart policy | Planned |
 
-### 7.3 Communication Channels
+### 9.3 Communication Channels
 
 | Channel | Purpose | Direction |
 |---------|---------|-----------|
@@ -419,9 +515,9 @@ Every trade must pass through the Risk Officer's 9 checkpoints before execution.
 
 ---
 
-## 8. Cross-Reference: Source Architecture Patterns
+## 10. Cross-Reference: Source Architecture Patterns
 
-### 8.1 From Quant-Nanggroe-AI: Deterministic Agent Execution
+### 10.1 From Quant-Nanggroe-AI: Deterministic Agent Execution
 
 The most significant architectural pattern adopted from Quant-Nanggroe-AI is the **Deterministic Agent Execution** framework. In this model, agents are forbidden from providing subjective opinions or "vibes-based" analysis. Instead, they output normalized numerical values (Pressure vectors 0.0-1.0) that are compiled by the Pressure Normalization Engine and fed into the Decision Synthesis Engine. This eliminates LLM hallucination from the decision pipeline.
 
@@ -432,7 +528,7 @@ Key patterns adopted:
 - **Darwinian Strategy Evolution**: Auto-KILL strategies with negative expectancy
 - **Reality Simulation**: Backtesting with Dynamic Spread, Variable Slippage, Latency
 
-### 8.2 From AI-MultiColony-Ecosystem: Unified Agent Registry
+### 10.2 From AI-MultiColony-Ecosystem: Unified Agent Registry
 
 The agent management pattern from AI-MultiColony-Ecosystem inspires the tool initialization structure in BH. While the current implementation uses a simple dictionary, the planned evolution will incorporate a proper agent registry with lifecycle management, metadata storage, and dynamic discovery.
 
@@ -441,7 +537,7 @@ Key patterns adopted:
 - **Graceful Degradation**: Tool import wrapped in try/except with `TOOLS_AVAILABLE` flag
 - **Lifecycle Tracking**: Session-based restart count and crash logging
 
-### 8.3 From Vibe-Trading: Alpha Purity & Safety
+### 10.3 From Vibe-Trading: Alpha Purity & Safety
 
 The Alpha Zoo architecture from Vibe-Trading introduces rigorous safety patterns for quantitative code. When integrated (PR-004), these patterns will ensure that alpha factor computations are pure mathematical functions with no side effects.
 
@@ -450,7 +546,7 @@ Key patterns to adopt:
 - **Lookahead Bias Prevention**: Sentinel future-row injection tests
 - **CI Grep Gates**: Reject `yaml.load()` without `safe_load`, trademark leaks, data leaks
 
-### 8.4 From AutoHedge: Swarm Execution Pipeline
+### 10.4 From AutoHedge: Swarm Execution Pipeline
 
 The AutoHedge architecture provides the template for a specialized multi-agent execution pipeline. When integrated (PR-005), it will add a Director/Quant/Risk/Execution chain specifically for crypto markets.
 
