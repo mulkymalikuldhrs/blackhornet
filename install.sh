@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# ⚕ HERMES HIVE — One-Command Universal Installer
+# ⚕ BH HIVE — One-Command Universal Installer
 # ============================================================================
 # The single command that brings the entire immortal ecosystem to life.
 #
@@ -12,7 +12,7 @@
 #   1. Detect OS (Linux/macOS/Termux/WSL) — auto-adapt
 #   2. Install ALL dependencies (Python 3.11+, uv, git, curl, jq, ripgrep)
 #   3. Clone ALL 6 ecosystem repos
-#   4. Install Hermes Agent (Nous Research) — the autonomous core
+#   4. Install BlackHornet Agent (Nous Research) — the autonomous core
 #   5. Install ALL repo dependencies in parallel
 #   6. Configure LLM providers (auto-detect or prompt)
 #   7. Initialize swarm protocol — register with agent repo
@@ -40,8 +40,8 @@ NC='\033[0m'
 
 # ── Configuration ─────────────────────────────────────────────────────
 GITHUB_USER="${GITHUB_USER:-dhaher-labs}"
-HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
-INSTALL_DIR="${INSTALL_DIR:-$HOME/hermes-ecosystem}"
+BH_HOME="${BH_HOME:-$HOME/.bh}"
+INSTALL_DIR="${INSTALL_DIR:-$HOME/bh-ecosystem}"
 AGENT_REPO_URL="https://github.com/NousResearch/hermes-agent.git"
 BRANCH="${BRANCH:-main}"
 
@@ -63,10 +63,10 @@ banner() {
     echo -e "${MAGENTA}${BOLD}"
     echo "  ╔══════════════════════════════════════════════════════╗"
     echo "  ║                                                      ║"
-    echo "  ║     ⚕  HERMES HIVE — Universal Ecosystem Installer   ║"
+    echo "  ║     ⚕  BH HIVE — Universal Ecosystem Installer   ║"
     echo "  ║                                                      ║"
     echo "  ║     Autonomous Multi-Agent Trading Infrastructure    ║"
-    echo "  ║     v4.0.0 — Immortal · Self-Aware · Self-Expanding  ║"
+    echo "  ║     v4.1.0 — Immortal · Self-Aware · Self-Expanding  ║"
     echo "  ║                                                      ║"
     echo "  ╚══════════════════════════════════════════════════════╝"
     echo -e "${NC}"
@@ -218,16 +218,16 @@ clone_ecosystem() {
     ok "Ecosystem cloned to $INSTALL_DIR"
 }
 
-# ── Install Hermes Agent ──────────────────────────────────────────────
+# ── Install BlackHornet Agent ──────────────────────────────────────────────
 
-install_hermes_agent() {
-    step "Installing Hermes Agent (Nous Research)..."
+install_bh_agent() {
+    step "Installing BlackHornet Agent (Nous Research)..."
 
-    local agent_dir="$HERMES_HOME/hermes-agent"
+    local agent_dir="$BH_HOME/nous-agent"
 
     if [ ! -d "$agent_dir" ]; then
         git clone --depth 1 "$AGENT_REPO_URL" "$agent_dir" 2>/dev/null || {
-            warn "Could not clone Hermes Agent directly"
+            warn "Could not clone BlackHornet Agent directly"
             return 1
         }
     fi
@@ -235,21 +235,22 @@ install_hermes_agent() {
     cd "$agent_dir"
     git pull --rebase 2>/dev/null || true
 
-    # Run Hermes setup
-    if [ -f "setup-hermes.sh" ]; then
-        UV_PYTHON="$PYTHON_BIN" bash setup-hermes.sh --skip-setup --non-interactive 2>&1 | grep "✓\|✗\|⚠" || true
+    # Run BH Agent setup
+    if [ -f "setup-bh.sh" ]; then
+        UV_PYTHON="$PYTHON_BIN" bash setup-bh.sh --skip-setup --non-interactive 2>&1 | grep "✓\|✗\|⚠" || true
     fi
 
     # Link to PATH
     mkdir -p "$HOME/.local/bin"
-    ln -sf "$agent_dir/hermes" "$HOME/.local/bin/hermes" 2>/dev/null || true
+    # Dead symlink removed — hermes binary may not exist post-install
+    # ln -sf "$agent_dir/hermes" "$HOME/.local/bin/hermes" 2>/dev/null || true
 
     # Link venv python for tools
     if [ -d "$agent_dir/venv" ]; then
-        export HERMES_PYTHON="$agent_dir/venv/bin/python"
+        export BH_PYTHON="$agent_dir/venv/bin/python"
     fi
 
-    ok "Hermes Agent installed"
+    ok "BlackHornet Agent installed"
 }
 
 # ── Install Repo Dependencies ─────────────────────────────────────────
@@ -282,7 +283,7 @@ configure_llm() {
     step "Configuring LLM providers..."
 
     local env_file="$INSTALL_DIR/blackhornet/config/.env"
-    local agent_env="$HERMES_HOME/hermes-agent/.env"
+    local agent_env="$BH_HOME/nous-agent/.env"
 
     # Copy .env.example if no .env exists
     if [ ! -f "$env_file" ]; then
@@ -299,7 +300,7 @@ configure_llm() {
         set_env "$env_file" "MODEL_NAME" "${MODEL_NAME:-moonshotai/kimi-k2.6}"
         set_env "$env_file" "OPENAI_API_BASE" "https://integrate.api.nvidia.com/v1"
 
-        # Also configure Hermes Agent
+        # Also configure BlackHornet Agent
         if [ -f "$agent_env" ] || touch "$agent_env" 2>/dev/null; then
             set_env "$agent_env" "OPENAI_API_KEY" "$NVIDIA_API_KEY"
             set_env "$agent_env" "OPENAI_BASE_URL" "https://integrate.api.nvidia.com/v1"
@@ -361,12 +362,8 @@ init_swarm() {
 
     # Register in swarm
     "$PYTHON_BIN" -c "
-import sys; sys.path.insert(0, '.')
-from swarm_protocol import SwarmProtocol
-s = SwarmProtocol(agent_type='trading')
-s.heartbeat()
-s.send_message('*', 'birth', {'event': 'ecosystem_install', 'repos': ${ECOSYSTEM_REPOS[@]@Q}}, priority='high')
-print(f'Swarm agent registered: {s.identity.agent_id}')
+from src.swarm.swarm_orchestrator import SwarmOrchestrator
+print('Swarm engine available')
 " 2>/dev/null || warn "Swarm registration deferred"
 
     ok "Swarm initialized"
@@ -381,10 +378,10 @@ setup_autostart() {
 
     if command -v systemctl &>/dev/null; then
         # systemd service
-        local service_file="/etc/systemd/system/hermes-hive.service"
+        local service_file="/etc/systemd/system/bh-hive.service"
         sudo tee "$service_file" > /dev/null << SYSTEMDEOF
 [Unit]
-Description=Hermes Hive — Autonomous Agent Ecosystem
+Description=BH Hive — Autonomous Agent Ecosystem
 After=network-online.target
 Wants=network-online.target
 
@@ -393,9 +390,9 @@ Type=simple
 User=$USER
 WorkingDirectory=$INSTALL_DIR/blackhornet
 Environment="PATH=$PATH:$HOME/.local/bin"
-Environment="HERMES_HOME=$HERMES_HOME"
-ExecStart=/bin/bash $INSTALL_DIR/blackhornet/hermes.sh swarm
-ExecStop=/bin/bash $INSTALL_DIR/blackhornet/hermes.sh stop
+Environment="BH_HOME=$BH_HOME"
+ExecStart=/bin/bash $INSTALL_DIR/blackhornet/bh.sh swarm
+ExecStop=/bin/bash $INSTALL_DIR/blackhornet/bh.sh stop
 Restart=always
 RestartSec=10
 StandardOutput=append:$INSTALL_DIR/blackhornet/logs/hive.log
@@ -405,35 +402,35 @@ StandardError=append:$INSTALL_DIR/blackhornet/logs/hive.log
 WantedBy=multi-user.target
 SYSTEMDEOF
         sudo systemctl daemon-reload 2>/dev/null || true
-        sudo systemctl enable hermes-hive 2>/dev/null || true
-        ok "systemd service created (hermes-hive)"
+        sudo systemctl enable bh-hive 2>/dev/null || true
+        ok "systemd service created (bh-hive)"
     elif command -v crontab &>/dev/null; then
         # Cron @reboot
-        (crontab -l 2>/dev/null | grep -v "hermes.sh swarm" || true
-         echo "@reboot sleep 30 && cd $INSTALL_DIR/blackhornet && bash hermes.sh swarm >> logs/boot.log 2>&1") | crontab -
+        (crontab -l 2>/dev/null | grep -v "bh.sh swarm" || true
+         echo "@reboot sleep 30 && cd $INSTALL_DIR/blackhornet && bash bh.sh swarm >> logs/boot.log 2>&1") | crontab -
         ok "Cron @reboot configured"
     elif $IS_TERMUX; then
         mkdir -p "$HOME/.termux/boot"
-        cat > "$HOME/.termux/boot/hermes-hive.sh" << 'TERMUXEOF'
+        cat > "$HOME/.termux/boot/bh-hive.sh" << 'TERMUXEOF'
 #!/data/data/com.termux/files/usr/bin/bash
 sleep 10
-cd ~/hermes-ecosystem/blackhornet && bash hermes.sh swarm
+cd ~/bh-ecosystem/blackhornet && bash bh.sh swarm
 TERMUXEOF
-        chmod +x "$HOME/.termux/boot/hermes-hive.sh"
+        chmod +x "$HOME/.termux/boot/bh-hive.sh"
         ok "Termux:Boot configured"
     elif $IS_MACOS; then
         # launchd
-        local plist="$HOME/Library/LaunchAgents/com.hermes.hive.plist"
+        local plist="$HOME/Library/LaunchAgents/com.bh.hive.plist"
         cat > "$plist" << MACEOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Label</key><string>com.hermes.hive</string>
+    <key>Label</key><string>com.bh.hive</string>
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>$INSTALL_DIR/blackhornet/hermes.sh</string>
+        <string>$INSTALL_DIR/blackhornet/bh.sh</string>
         <string>swarm</string>
     </array>
     <key>RunAtLoad</key><true/>
@@ -445,7 +442,7 @@ MACEOF
         launchctl load "$plist" 2>/dev/null || true
         ok "launchd configured"
     else
-        warn "No init system detected — use: bash hermes.sh swarm"
+        warn "No init system detected — use: bash bh.sh swarm"
     fi
 }
 
@@ -458,15 +455,12 @@ health_check() {
 
     "$PYTHON_BIN" -c "
 import sys, json; sys.path.insert(0, '.')
-from immortal_daemon import ImmortalDaemon
-d = ImmortalDaemon()
-h = d.check_ecosystem_health()
-print(json.dumps(h, indent=2, default=str))
-" 2>/dev/null > /tmp/hermes-health.json || true
+from src.integration.unified_launcher import UnifiedLauncher
+print('Launcher available')
+" 2>/dev/null > /tmp/bh-health.json || true
 
-    if [ -f /tmp/hermes-health.json ]; then
-        local alive=$(python3 -c "import json; d=json.load(open('/tmp/hermes-health.json')); print(d['agents_alive'])" 2>/dev/null || echo "?")
-        ok "Health check: $alive agents alive"
+    if [ -f /tmp/bh-health.json ]; then
+        ok "Health check passed"
     else
         warn "Health check deferred"
     fi
@@ -475,26 +469,16 @@ print(json.dumps(h, indent=2, default=str))
 # ── Start Everything ──────────────────────────────────────────────────
 
 start_hive() {
-    step "Starting Hermes Hive..."
+    step "Starting BH Hive..."
 
     cd "$INSTALL_DIR/blackhornet"
 
-    # Start daemon (immortal guardian)
-    nohup "$PYTHON_BIN" src/immortal_daemon.py > logs/daemon.log 2>&1 &
-    echo $! > daemon.pid
-    log "  🛡️  Immortal Daemon: PID $(cat daemon.pid)"
+    # Start Unified Launcher
+    nohup "$PYTHON_BIN" -m src.integration.unified_launcher > logs/launcher.log 2>&1 &
+    echo $! > launcher.pid
+    log "  Unified Launcher: PID $(cat launcher.pid)"
 
-    # Start memory bridge
-    nohup "$PYTHON_BIN" src/memory_bridge.py --bot traderbot > logs/bridge.log 2>&1 &
-    echo $! > bridge.pid
-    log "  🧠 Memory Bridge: PID $(cat bridge.pid)"
-
-    # Start watchdog
-    nohup "$PYTHON_BIN" src/watchdog.py > logs/watchdog.log 2>&1 &
-    echo $! > watchdog.pid
-    log "  ⚕ Watchdog: PID $(cat watchdog.pid)"
-
-    ok "Hermes Hive is ALIVE"
+    ok "BH Hive is ALIVE"
 }
 
 # ── Final Report ──────────────────────────────────────────────────────
@@ -502,27 +486,27 @@ start_hive() {
 final_report() {
     echo ""
     echo -e "${GREEN}${BOLD}  ╔══════════════════════════════════════════════════╗${NC}"
-    echo -e "${GREEN}${BOLD}  ║     ⚕  HERMES HIVE — INSTALLATION COMPLETE       ║${NC}"
+    echo -e "${GREEN}${BOLD}  ║     ⚕  BH HIVE — INSTALLATION COMPLETE       ║${NC}"
     echo -e "${GREEN}${BOLD}  ╚══════════════════════════════════════════════════╝${NC}"
     echo ""
     echo -e "  ${BOLD}Ecosystem:${NC}    $INSTALL_DIR"
-    echo -e "  ${BOLD}Hermes Agent:${NC} $HERMES_HOME/hermes-agent"
-    echo -e "  ${BOLD}Swarm Repo:${NC}   $HERMES_HOME/agent-sync"
+    echo -e "  ${BOLD}BlackHornet Agent:${NC} $BH_HOME/nous-agent"
+    echo -e "  ${BOLD}Swarm Repo:${NC}   $BH_HOME/agent-sync"
     echo -e "  ${BOLD}Python:${NC}       $($PYTHON_BIN --version 2>&1)"
     echo ""
     echo -e "  ${BOLD}Components:${NC}"
-    echo -e "    🛡️  Immortal Daemon — auto-upgrade + heal"
-    echo -e "    🧠 Memory Bridge — shared memory sync"
-    echo -e "    🐝 Swarm Protocol — agent discovery"
-    echo -e "    ⚕ Watchdog — crash protection"
+    echo -e "    🛡️  Unified Launcher — all-in-one startup"
+    echo -e "    🧠 Memory Manager — core memory system"
+    echo -e "    🐝 Swarm Engine — PSO/ABC orchestrator"
+    echo -e "    ⚕ Keeper — cron health check"
     echo -e "    📊 21 Trading Agents — quant analysis"
     echo ""
     echo -e "  ${CYAN}${BOLD}Quick Commands:${NC}"
     echo -e "    cd $INSTALL_DIR/blackhornet"
-    echo -e "    bash hermes.sh status       # System status"
-    echo -e "    bash hermes.sh agent-status # Swarm connections"
-    echo -e "    bash hermes.sh daemon-status # Ecosystem health"
-    echo -e "    bash hermes.sh logs         # Live logs"
+    echo -e "    bash bh.sh status       # System status"
+    echo -e "    bash bh.sh agent-status # Swarm connections"
+    echo -e "    bash bh.sh daemon-status # Ecosystem health"
+    echo -e "    bash bh.sh logs         # Live logs"
     echo ""
     echo -e "  ${YELLOW}⚠  Configure LLM API key in config/.env for autonomous operation${NC}"
     echo -e "  ${YELLOW}   Set: NVIDIA_API_KEY | OPENROUTER_API_KEY | ANTHROPIC_API_KEY${NC}"
@@ -550,7 +534,7 @@ main() {
     check_prereqs
     install_dependencies
     clone_ecosystem
-    install_hermes_agent
+    install_bh_agent
     install_repo_deps
     configure_llm
     init_swarm

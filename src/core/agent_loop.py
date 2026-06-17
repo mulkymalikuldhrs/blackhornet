@@ -186,7 +186,7 @@ class AgentLoop:
                     raise AgentTimeoutError(
                         f"Loop timeout after {time.time() - start_time:.1f}s",
                         agent_id=self.agent_id,
-                        timeout=self.config.timeout,
+                        timeout_ms=int(self.config.timeout * 1000),
                     )
 
                 self._iteration += 1
@@ -268,8 +268,8 @@ class AgentLoop:
             if len(self._messages) > 20:
                 condensed = self._messages[:2] + self._messages[-10:]
                 llm_messages = [m.to_dict() for m in condensed]
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("message_condensation_failed", error=str(e))
 
         # Get available tools
         tools = self._tool_registry.get_openai_schemas()

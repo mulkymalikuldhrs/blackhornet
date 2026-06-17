@@ -32,14 +32,14 @@ logs/
 *.log
 
 # PID & Health
-.hermes/
+.bh/
 *.pid
 health.json
 
 # Data (runtime)
 data/sessions.json
 data/memory_*.md
-data/hermes_quant.db
+data/bh_quant.db
 
 # IDE
 .vscode/

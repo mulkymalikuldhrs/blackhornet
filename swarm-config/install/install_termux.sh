@@ -9,9 +9,9 @@ echo "==================================="
 pkg update -y
 pkg install -y git curl python nodejs termux-api termux-boot 2>/dev/null || true
 
-# 1. Install Hermes Agent
+# 1. Install BlackHornet Agent
 if ! command -v hermes &>/dev/null; then
-  echo "[1/4] Installing Hermes Agent..."
+  echo "[1/4] Installing BlackHornet Agent..."
   curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
 fi
 
@@ -23,12 +23,12 @@ done
 
 # 3. Clone repos
 echo "[3/4] Cloning repositories..."
-mkdir -p ~/.hermes/shared-workspace
-cd ~/.hermes/shared-workspace
+mkdir -p ~/.bh/shared-workspace
+cd ~/.bh/shared-workspace
 for repo in ProxyGateLLM mnemosyne blackhornet; do
   git clone "https://github.com/dhaher-labs/${repo}.git" 2>/dev/null || true
 done
-cd ~/.hermes && git clone https://github.com/dhaher-labs/agent.git github-sync 2>/dev/null || true
+cd ~/.bh && git clone https://github.com/dhaher-labs/agent.git github-sync 2>/dev/null || true
 
 # 4. Termux:Boot
 echo "[4/4] Setting up Termux:Boot..."
@@ -42,9 +42,9 @@ BOOTEOF
 chmod +x ~/.termux/boot/dhaher-swarm
 
 # Start proxy
-cd ~/.hermes/shared-workspace/ProxyGateLLM && npm install --silent 2>/dev/null || true
+cd ~/.bh/shared-workspace/ProxyGateLLM && npm install --silent 2>/dev/null || true
 
 echo ""
 echo "✅ Dhaher Swarm Termux installation complete!"
 echo "  Auto-start on boot via Termux:Boot enabled"
-echo "  Edit ~/.hermes/profiles/*/.env with your tokens"
+echo "  Edit ~/.bh/profiles/*/.env with your tokens"

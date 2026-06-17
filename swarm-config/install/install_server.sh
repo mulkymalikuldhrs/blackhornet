@@ -7,9 +7,9 @@ set -e
 echo "🧬 Dhaher Swarm — Server Installer"
 echo "=================================="
 
-# 1. Install Hermes Agent
+# 1. Install BlackHornet Agent
 if ! command -v hermes &>/dev/null; then
-  echo "[1/5] Installing Hermes Agent..."
+  echo "[1/5] Installing BlackHornet Agent..."
   curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
 fi
 
@@ -21,8 +21,8 @@ done
 
 # 3. Clone repos
 echo "[3/5] Cloning repositories..."
-mkdir -p ~/.hermes/shared-workspace
-cd ~/.hermes/shared-workspace
+mkdir -p ~/.bh/shared-workspace
+cd ~/.bh/shared-workspace
 git clone https://github.com/dhaher-labs/ProxyGateLLM.git 2>/dev/null || (cd ProxyGateLLM && git pull)
 git clone https://github.com/dhaher-labs/mnemosyne.git 2>/dev/null || (cd mnemosyne && git pull)
 git clone https://github.com/dhaher-labs/blackhornet.git 2>/dev/null || (cd blackhornet && git pull)
@@ -30,7 +30,7 @@ git clone https://github.com/dhaher-labs/agent.git github-sync 2>/dev/null || (c
 
 # 4. Install ProxyGateLLM deps
 echo "[4/5] Installing ProxyGateLLM..."
-cd ~/.hermes/shared-workspace/ProxyGateLLM && npm install --silent 2>/dev/null || true
+cd ~/.bh/shared-workspace/ProxyGateLLM && npm install --silent 2>/dev/null || true
 
 # 5. Setup auto-start
 echo "[5/5] Setting up auto-start..."
@@ -60,6 +60,6 @@ echo ""
 echo "✅ Dhaher Swarm server installation complete!"
 echo ""
 echo "Next steps:"
-echo "  1. Edit ~/.hermes/profiles/*/.env with your TELEGRAM_BOT_TOKEN + API keys"
+echo "  1. Edit ~/.bh/profiles/*/.env with your TELEGRAM_BOT_TOKEN + API keys"
 echo "  2. Run: sudo systemctl start dhaher-swarm"
 echo "  3. Check: sudo systemctl status dhaher-swarm"

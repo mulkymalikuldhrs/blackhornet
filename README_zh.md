@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- 动画：打字标题 -->
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=36&duration=3000&pause=1000&color=00FF88&center=true&vCenter=true&multiline=true&repeat=true&width=800&height=120&lines=HERMES+QUANT+OS;自主多代理交易基础设施" alt="BLACKHORNET" />
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=36&duration=3000&pause=1000&color=00FF88&center=true&vCenter=true&multiline=true&repeat=true&width=800&height=120&lines=BLACKHORNET+OS;自主多代理交易基础设施" alt="BLACKHORNET" />
 
 <br/>
 
@@ -63,7 +63,7 @@
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=18&duration=4000&pause=1000&color=00FF88&center=true&vCenter=true&repeat=true&width=700&height=40&lines=Jarvis级自主交易系统;SaaS+本地部署生产就绪" alt="打字" />
 </div>
 
-Hermes Quant Operating System 是一个**生产级自主多代理交易和研究基础设施**，旨在实现持续资本增长和绝对风险保全。系统运行遵循一个原则：交易决策必须是**确定性的、基于数据的，并受制于任何代理都无法绕过的风险约束**——包括LLM本身。
+BlackHornet Quant Operating System 是一个**生产级自主多代理交易和研究基础设施**，旨在实现持续资本增长和绝对风险保全。系统运行遵循一个原则：交易决策必须是**确定性的、基于数据的，并受制于任何代理都无法绕过的风险约束**——包括LLM本身。
 
 该架构将四个参考仓库中最强的模式综合成一个统一的交易系统，建立在Nous Research Hermes Agent框架之上：
 
@@ -96,7 +96,7 @@ Hermes Quant Operating System 是一个**生产级自主多代理交易和研究
         │  Fork 与适配
         ▼
 ┌───────────────────────────────────────────────────┐
-│        HERMES QUANT OPERATING SYSTEM               │
+│        BLACKHORNET QUANT OPERATING SYSTEM               │
 │        (blackhornet)                             │
 │                                                    │
 │  ┌─────────────────────────────────────────────┐  │
@@ -212,7 +212,7 @@ RISK_WEEKLY_MAX    = 0.03     # 3.0% — 不可覆盖
 ┌─────────────────────────────────────────┐
 │  第3层：开机启动                         │
 │  Termux:Boot / systemd / cron @reboot   │
-│  → 启动时运行 hermes.sh start           │
+│  → 启动时运行 bh.sh start           │
 └──────────────────┬──────────────────────┘
                    │
 ┌──────────────────▼──────────────────────┐
@@ -267,7 +267,7 @@ cp config/.env.example config/.env
 # 使用您的API密钥编辑 config/.env
 
 # 使用watchdog启动（自动重启）
-bash hermes.sh start
+bash bh.sh start
 ```
 
 ---
@@ -275,13 +275,13 @@ bash hermes.sh start
 ## 命令
 
 ```bash
-bash hermes.sh start      # 使用watchdog启动（自动重启）
-bash hermes.sh stop       # 优雅停止所有进程
-bash hermes.sh restart    # 重启Hermes + Watchdog
-bash hermes.sh status     # 系统健康与PnL状态
-bash hermes.sh logs       # 查看最新日志
-bash hermes.sh health     # 详细健康检查
-bash hermes.sh install    # 安装开机启动 + 自动重启
+bash bh.sh start      # 使用watchdog启动（自动重启）
+bash bh.sh stop       # 优雅停止所有进程
+bash bh.sh restart    # 重启BlackHornet + Watchdog
+bash bh.sh status     # 系统健康与PnL状态
+bash bh.sh logs       # 查看最新日志
+bash bh.sh health     # 详细健康检查
+bash bh.sh install    # 安装开机启动 + 自动重启
 ```
 
 ### Telegram Bot 命令
@@ -394,7 +394,7 @@ DATA_DIR=./data
 ```
 blackhornet/
 ├── src/
-│   ├── hermes_quant.py              # 主代理控制器
+│   ├── bh_quant.py              # 主代理控制器
 │   ├── watchdog.py                  # Watchdog守护进程（10秒监控）
 │   └── tools/
 │       ├── __init__.py
@@ -430,7 +430,7 @@ blackhornet/
 │   └── system_prompt.py             # 交易系统提示
 ├── schemas/
 │   └── trading_journal.sql          # 7表SQL架构
-├── hermes.sh                        # 控制脚本
+├── bh.sh                        # 控制脚本
 ├── AGENTS.md                        # 运营宪法
 ├── CHANGELOG.md                     # 版本历史
 ├── ARCHITECTURE.md                  # 系统架构
@@ -448,7 +448,7 @@ blackhornet/
 
 | 版本 | 日期 | 代号 | 关键特性 |
 |---|---|---|---|
-| 1.0.0 | 2026-05-20 | Genesis | 11个交易工具，Hermes Agent适配 |
+| 1.0.0 | 2026-05-20 | Genesis | 11个交易工具，BlackHornet Agent适配 |
 | 1.1.0 | 2026-05-21 | Polyglot | 多提供商LLM支持（NVIDIA + Groq + OpenCode） |
 | 2.0.0 | 2026-05-22 | Immortal | 自动重启与开机启动基础设施（3层） |
 | 3.0.0 | 2026-05-23 | Constitution | AGENTS.md宪政框架，硬编码风险规则 |
@@ -546,7 +546,7 @@ Nous Research原始Hermes Agent同样采用MIT许可证。
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:1A1A2E,50:16213E,100:0F3460&height=80&section=footer&text=&fontSize=0&animation=fadeIn" width="100%" alt="Footer Wave" />
 
-**HERMES QUANT OPERATING SYSTEM**
+**BLACKHORNET QUANT OPERATING SYSTEM**
 
 *自主。确定性。风险优先。*
 

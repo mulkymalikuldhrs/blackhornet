@@ -1,0 +1,22 @@
+[Unit]
+Description=BH Hive — Autonomous Agent Empire
+Documentation=https://github.com/dhaher-labs/blackhornet
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/bh-ecosystem/blackhornet
+Environment="PATH=/usr/local/bin:/usr/bin:/bin:/root/.local/bin"
+Environment="BH_HOME=/root/.bh"
+ExecStartPre=/bin/bash -c 'cd /root/bh-ecosystem/ProxyGateLLM && PORT=3333 nohup node index.js > /tmp/proxygate.log 2>&1 &'
+ExecStart=/bin/bash /root/bh-ecosystem/blackhornet/bh.sh swarm
+ExecStop=/bin/bash /root/bh-ecosystem/blackhornet/bh.sh stop
+Restart=always
+RestartSec=10
+StandardOutput=append:/root/bh-ecosystem/blackhornet/logs/hive.log
+StandardError=append:/root/bh-ecosystem/blackhornet/logs/hive.log
+
+[Install]
+WantedBy=multi-user.target

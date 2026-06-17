@@ -2,6 +2,8 @@
 
 Defines AgentState, AgentRole, AgentConfig, AgentOutput, and AgentCapabilities
 for the full agent lifecycle.
+
+AgentState is defined in models.py (unified superset).
 """
 
 from __future__ import annotations
@@ -13,17 +15,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-
-class AgentState(str, Enum):
-    """Possible states of an agent."""
-
-    IDLE = "idle"
-    RUNNING = "running"
-    PAUSED = "paused"
-    ERROR = "error"
-    TERMINATED = "terminated"
-    WAITING = "waiting"
-    THINKING = "thinking"
+from .models import AgentState
 
 
 class AgentRole(str, Enum):

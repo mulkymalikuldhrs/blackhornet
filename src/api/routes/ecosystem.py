@@ -25,7 +25,7 @@ def create_router() -> APIRouter:
         """Check health of all ecosystem services.
 
         Returns a status object for each integrated package:
-        Crucix OSINT, HermesQuant Trading, Autonomous Organism.
+        Crucix OSINT, BlackHornetQuant Trading, Autonomous Organism.
         """
         result: Dict[str, Any] = {
             "ecosystem": "AI-MultiColony-Ecosystem",
@@ -51,18 +51,18 @@ def create_router() -> APIRouter:
                 "error": str(exc),
             }
 
-        # Check HermesQuant
+        # Check BlackHornetQuant
         try:
-            from src.integrations.hermes_bridge import HermesQuantBridge
+            from src.integrations.bh_quant_bridge import BlackHornetQuantBridge
 
-            hermes = HermesQuantBridge()
-            available = await hermes.is_available()
-            result["services"]["hermes_quant"] = {
+            bridge = BlackHornetQuantBridge()
+            available = await bridge.is_available()
+            result["services"]["bh_quant"] = {
                 "status": "available" if available else "unavailable",
                 "type": "quantitative_trading",
             }
         except Exception as exc:
-            result["services"]["hermes_quant"] = {
+            result["services"]["bh_quant"] = {
                 "status": "unavailable",
                 "error": str(exc),
             }
@@ -112,13 +112,13 @@ def create_router() -> APIRouter:
             logger.error("ecosystem_crucix_error", error=str(exc))
             return {"error": str(exc), "status": "unavailable"}
 
-    @router.get("/hermes", summary="HermesQuant trading status")
-    async def hermes_status() -> Dict[str, Any]:
-        """HermesQuant trading engine status and portfolio data."""
+    @router.get("/bh", summary="BlackHornetQuant trading status")
+    async def bh_quant_status() -> Dict[str, Any]:
+        """BlackHornetQuant trading engine status and portfolio data."""
         try:
-            from src.integrations.hermes_bridge import HermesQuantBridge
+            from src.integrations.bh_quant_bridge import BlackHornetQuantBridge
 
-            bridge = HermesQuantBridge()
+            bridge = BlackHornetQuantBridge()
             portfolio = await bridge.get_portfolio_status()
             available = await bridge.is_available()
             return {
@@ -126,7 +126,7 @@ def create_router() -> APIRouter:
                 "portfolio": portfolio,
             }
         except Exception as exc:
-            logger.error("ecosystem_hermes_error", error=str(exc))
+            logger.error("ecosystem_bh_error", error=str(exc))
             return {"error": str(exc), "status": "unavailable"}
 
     @router.get("/organism", summary="Autonomous Organism status")
@@ -159,13 +159,13 @@ def create_router() -> APIRouter:
         """Combined dashboard data from all ecosystem services.
 
         This is the primary endpoint for the unified dashboard,
-        aggregating data from Crucix, HermesQuant, and Autonomous Organism.
+        aggregating data from Crucix, BlackHornetQuant, and Autonomous Organism.
         """
         overview: Dict[str, Any] = {
             "ecosystem": "AI-MultiColony-Ecosystem",
             "version": "3.0.0",
             "crucix": {},
-            "hermes_quant": {},
+            "bh_quant": {},
             "autonomous_organism": {},
         }
 
@@ -188,16 +188,16 @@ def create_router() -> APIRouter:
             logger.exception("Failed to get Crucix data for overview")
             overview["crucix"] = {"status": "unavailable"}
 
-        # HermesQuant data
+        # BlackHornetQuant data
         try:
-            from src.integrations.hermes_bridge import HermesQuantBridge
+            from src.integrations.bh_quant_bridge import BlackHornetQuantBridge
 
-            bridge = HermesQuantBridge()
+            bridge = BlackHornetQuantBridge()
             portfolio = await bridge.get_portfolio_status()
-            overview["hermes_quant"] = portfolio
+            overview["bh_quant"] = portfolio
         except Exception:
-            logger.exception("Failed to get HermesQuant data for overview")
-            overview["hermes_quant"] = {"status": "unavailable"}
+            logger.exception("Failed to get BlackHornetQuant data for overview")
+            overview["bh_quant"] = {"status": "unavailable"}
 
         # Organism data
         try:

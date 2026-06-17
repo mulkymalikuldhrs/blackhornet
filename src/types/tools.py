@@ -2,6 +2,8 @@
 
 Merges AI-Manus tool_type pattern, Nanobot ToolRegistry tags, and
 OpenManus BaseTool/ToolResult Pydantic models.
+
+ToolCall and ToolResult are defined in models.py (unified superset).
 """
 
 from __future__ import annotations
@@ -12,6 +14,8 @@ from enum import Enum
 from typing import Any, Optional
 
 from pydantic import BaseModel, Field
+
+from .models import ToolCall, ToolResult
 
 
 class ToolType(str, Enum):
@@ -41,62 +45,6 @@ class ToolParameter(BaseModel):
     examples: Optional[list[Any]] = None
 
     model_config = {"arbitrary_types_allowed": True}
-
-
-class ToolCall(BaseModel):
-    """A call to a tool by an agent.
-
-    Represents the LLM's request to invoke a tool.
-    """
-
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    tool_name: str
-    arguments: dict[str, Any] = Field(default_factory=dict)
-    agent_id: Optional[str] = None
-    timestamp: float = Field(default_factory=time.time)
-    timeout: Optional[int] = None
-
-    model_config = {"arbitrary_types_allowed": True}
-
-    def to_openai_format(self) -> dict[str, Any]:
-        """Convert to OpenAI function calling format."""
-        return {
-            "id": self.id,
-            "type": "function",
-            "function": {
-                "name": self.tool_name,
-                "arguments": str(self.arguments),
-            },
-        }
-
-
-class ToolResult(BaseModel):
-    """Result of a tool execution.
-
-    Following OpenManus ToolResult pattern.
-    """
-
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    tool_call_id: str = ""
-    tool_name: str = ""
-    success: bool = True
-    output: str = ""
-    error: Optional[str] = None
-    exit_code: Optional[int] = None
-    execution_time: Optional[float] = None
-    metadata: dict[str, Any] = Field(default_factory=dict)
-    timestamp: float = Field(default_factory=time.time)
-
-    model_config = {"arbitrary_types_allowed": True}
-
-    def to_message(self) -> dict[str, Any]:
-        """Convert to an OpenAI tool message format."""
-        content = self.output if self.success else f"Error: {self.error}"
-        return {
-            "role": "tool",
-            "tool_call_id": self.tool_call_id,
-            "content": content,
-        }
 
 
 class ToolDefinition(BaseModel):

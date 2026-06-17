@@ -36,19 +36,19 @@ pip3 install aiohttp python-dotenv yfinance 2>/dev/null || true
 echo -e "${BOLD}${GREEN}[2/5] Installing files...${NC}"
 mkdir -p "$INSTALL_DIR"
 cp -r "$SCRIPT_DIR"/* "$INSTALL_DIR/"
-chmod +x "$INSTALL_DIR/hermes.sh"
+chmod +x "$INSTALL_DIR/bh.sh"
 chmod +x "$INSTALL_DIR/src/"*.py
 chmod +x "$INSTALL_DIR/scripts/"*.py
-mkdir -p "$INSTALL_DIR/logs" "$INSTALL_DIR/data" "$INSTALL_DIR/.hermes/memories"
+mkdir -p "$INSTALL_DIR/logs" "$INSTALL_DIR/data" "$INSTALL_DIR/.bh/memories"
 
 # Update paths
-sed -i "s|/workspace/hermes_quant|$INSTALL_DIR|g" "$INSTALL_DIR/config/.env" 2>/dev/null || true
+sed -i "s|/workspace/bh_quant|$INSTALL_DIR|g" "$INSTALL_DIR/config/.env" 2>/dev/null || true
 
 # Install systemd service
 echo -e "${BOLD}${GREEN}[3/5] Installing systemd service...${NC}"
 cat > /etc/systemd/system/blackhornet.service << EOF
 [Unit]
-Description=Hermes Quant Operating System
+Description=BlackHornet Operating System
 After=network-online.target
 Wants=network-online.target
 
@@ -56,9 +56,9 @@ Wants=network-online.target
 Type=forking
 User=$SERVICE_USER
 WorkingDirectory=$INSTALL_DIR
-ExecStart=/bin/bash $INSTALL_DIR/hermes.sh start
-ExecStop=/bin/bash $INSTALL_DIR/hermes.sh stop
-ExecReload=/bin/bash $INSTALL_DIR/hermes.sh restart
+ExecStart=/bin/bash $INSTALL_DIR/bh.sh start
+ExecStop=/bin/bash $INSTALL_DIR/bh.sh stop
+ExecReload=/bin/bash $INSTALL_DIR/bh.sh restart
 PIDFile=$INSTALL_DIR/watchdog.pid
 Restart=on-failure
 RestartSec=10
@@ -75,7 +75,7 @@ systemctl enable blackhornet
 # Install cron health check
 echo -e "${BOLD}${GREEN}[4/5] Installing cron keeper...${NC}"
 CRON_CMD="*/1 * * * * cd $INSTALL_DIR && python3 scripts/keeper.py >> $INSTALL_DIR/logs/keeper_cron.log 2>&1"
-(crontab -u $SERVICE_USER -l 2>/dev/null | grep -v "hermes"; echo "$CRON_CMD") | crontab -u $SERVICE_USER - || true
+(crontab -u $SERVICE_USER -l 2>/dev/null | grep -v "bh"; echo "$CRON_CMD") | crontab -u $SERVICE_USER - || true
 
 # Start
 echo -e "${BOLD}${GREEN}[5/5] Starting BLACKHORNET...${NC}"

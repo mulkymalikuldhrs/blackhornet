@@ -3,9 +3,17 @@
 Provides the unified memory gateway (MemoryManager), Letta-style paging
 (LettaStylePaging), vector store (VectorStore), eight condenser types,
 knowledge base (KnowledgeBase), temporal knowledge graph
-(TemporalKnowledgeGraph), and session memory (SessionMemory).
+(TemporalKnowledgeGraph), session memory (SessionMemory),
+consolidation pipeline (MemoryConsolidator), forgetting mechanism
+(ForgettingMechanism), short/long-term/semantic/episodic stores.
 """
 
+from .short_term import ShortTermMemory, STMEntry
+from .long_term import LongTermMemory, LTMEntry
+from .semantic import SemanticMemory, SemanticEntry, compute_ngrams, ngram_similarity
+from .episodic import EpisodicMemory, Episode
+from .consolidation import MemoryConsolidator, ConsolidationReport
+from .forgetting import ForgettingMechanism, ForgettingReport
 from .manager import MemoryManager, MemoryTier
 from .paging import LettaStylePaging, PagingManager, MemoryPage, WorkingSetEntry
 from .vector import VectorStore, VectorDocument, QueryResult, CollectionInfo
@@ -33,6 +41,26 @@ from .knowledge_graph import TemporalKnowledgeGraph, Triple, Entity, EvolutionEn
 from .session import SessionMemory, Session, Message, CompactionResult
 
 __all__ = [
+    # Short-term
+    "ShortTermMemory",
+    "STMEntry",
+    # Long-term
+    "LongTermMemory",
+    "LTMEntry",
+    # Semantic
+    "SemanticMemory",
+    "SemanticEntry",
+    "compute_ngrams",
+    "ngram_similarity",
+    # Episodic
+    "EpisodicMemory",
+    "Episode",
+    # Consolidation
+    "MemoryConsolidator",
+    "ConsolidationReport",
+    # Forgetting
+    "ForgettingMechanism",
+    "ForgettingReport",
     # Manager
     "MemoryManager",
     "MemoryTier",

@@ -1,4 +1,4 @@
-# HERMES QUANT OPERATING SYSTEM - PROJECT STRUCTURE
+# BLACKHORNET OPERATING SYSTEM - PROJECT STRUCTURE
 
 ## Directory Tree
 
@@ -13,10 +13,10 @@ blackhornet-os/
 ├── UPGRADE_PLAN.md                    # Autonomous Upgrade Roadmap
 ├── ALL.md                             # Comprehensive Combined Reference
 ├── requirements.txt                   # Python Dependencies
-├── hermes.sh                          # Main Control Script (start/stop/restart/status/logs/health/install)
+├── bh.sh                          # Main Control Script (start/stop/restart/status/logs/health/install)
 │
 ├── src/                               # Source Code
-│   ├── hermes_quant.py                # Main Agent Controller (blackhornet class)
+│   ├── bh_quant.py                # Main Agent Controller (blackhornet class)
 │   ├── watchdog.py                    # Watchdog Daemon (10s check, exponential backoff)
 │   │
 │   └── tools/                         # Trading Tools (21 Agent Modules)
@@ -74,12 +74,12 @@ blackhornet-os/
 │   └── memory_*.md                   # Markdown memory exports (last 10 retained)
 │
 ├── logs/                              # Runtime Logs (generated)
-│   ├── hermes_quant_YYYYMMDD.log    # Daily Hermes log
+│   ├── bh_quant_YYYYMMDD.log    # Daily BH log
 │   ├── watchdog_stdout.log          # Watchdog output log
 │   ├── keeper_YYYYMMDD.log          # Keeper log
 │   └── boot.log                     # On-boot startup log
 │
-└── .hermes/                           # Internal State (generated)
+└── .bh/                           # Internal State (generated)
     └── health.json                   # Health status file (read by keeper/status)
 ```
 
@@ -100,13 +100,13 @@ blackhornet-os/
 | `UPGRADE_PLAN.md` | Autonomous upgrade roadmap from Stage 1 to Full Autonomous | ~8KB | v3.2.0 |
 | `ALL.md` | Comprehensive combined reference document | ~35KB | v3.2.0 |
 | `requirements.txt` | Python dependencies: aiohttp, python-dotenv, yfinance, requests | ~100B | v1.0.0 |
-| `hermes.sh` | Bash control script for all operations | ~10KB | v2.0.0 |
+| `bh.sh` | Bash control script for all operations | ~10KB | v2.0.0 |
 
 ### Source Code (`src/`)
 
 | File | Lines | Purpose | Layer | Source |
 |------|-------|---------|-------|--------|
-| `hermes_quant.py` | ~900 | Main agent loop, Telegram bot, tool orchestration, memory management | All | Original |
+| `bh_quant.py` | ~900 | Main agent loop, Telegram bot, tool orchestration, memory management | All | Original |
 | `watchdog.py` | ~200 | Process monitor with exponential backoff, crash loop detection | Infra | v2.0.0 |
 
 ### Trading Tools (`src/tools/`)
@@ -139,7 +139,7 @@ blackhornet-os/
 
 | File | Purpose | Trigger |
 |------|---------|---------|
-| `keeper.py` | Lightweight health check: verifies Hermes PID, checks health.json, restarts if needed | Cron (1-min) |
+| `keeper.py` | Lightweight health check: verifies BH PID, checks health.json, restarts if needed | Cron (1-min) |
 | `install_termux.sh` | Installs Python deps, creates Termux:Boot entry, sets up data/logs directories | Manual |
 | `install_server.sh` | Installs Python deps, creates systemd service, enables on-boot | Manual (sudo) |
 
@@ -167,7 +167,7 @@ blackhornet-os/
 
 ## Source Repository Map
 
-| Hermes Component | Source Repository | Version | Adaptation Notes |
+| BH Component | Source Repository | Version | Adaptation Notes |
 |------------------|-------------------|---------|------------------|
 | Core agent loop | `nousresearch/hermes` | latest | Adapted from Hermes Agent; added trading tools, Telegram bot, risk framework |
 | 10 tools (v3.1) | `dhaher-labs/Quant-Nanggroe-AI` | v15.2.0 | Ported from TypeScript services to Python tools; adapted Deterministic Agent Execution |

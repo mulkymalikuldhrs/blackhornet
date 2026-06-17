@@ -1,8 +1,8 @@
-# HERMES QUANT OPERATING SYSTEM - ARCHITECTURE
+# BLACKHORNET OPERATING SYSTEM - ARCHITECTURE
 
 ## 1. System Overview
 
-Hermes Quant Operating System is an autonomous multi-agent trading and research infrastructure designed for consistent capital growth with strict risk preservation. The system operates on the principle that trading decisions must be deterministic, data-grounded, and subject to absolute risk constraints that no agent can override.
+BlackHornet Operating System is an autonomous multi-agent trading and research infrastructure designed for consistent capital growth with strict risk preservation. The system operates on the principle that trading decisions must be deterministic, data-grounded, and subject to absolute risk constraints that no agent can override.
 
 The architecture draws from four key reference repositories maintained by the owner (Mulky Malikul Dhaher), synthesizing their strongest patterns into a unified trading system:
 
@@ -225,7 +225,7 @@ blackhornet.process_telegram_update()
 │  │ Termux:Boot  │  │ systemd      │  │ cron @reboot     │  │
 │  │ (Android)    │  │ (Linux)      │  │ (Fallback)       │  │
 │  │ sleep 10     │  │ After=network│  │ sleep 30         │  │
-│  │ → hermes.sh  │  │ → hermes.sh  │  │ → hermes.sh      │  │
+│  │ → bh.sh  │  │ → bh.sh  │  │ → bh.sh      │  │
 │  │   start      │  │   start      │  │   start          │  │
 │  └──────────────┘  └──────────────┘  └──────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
@@ -234,10 +234,10 @@ blackhornet.process_telegram_update()
 ┌─────────────────────────────────────────────────────────────┐
 │  LAYER 2: KEEPER (Cron, 1-minute interval)                  │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │ 1. Check hermes.pid exists and process is alive     │    │
+│  │ 1. Check bh.pid exists and process is alive     │    │
 │  │ 2. Check watchdog.pid exists and process is alive   │    │
-│  │ 3. Read .hermes/health.json                         │    │
-│  │ 4. If Hermes dead AND Watchdog dead → restart both  │    │
+│  │ 3. Read .bh/health.json                         │    │
+│  │ 4. If BH dead AND Watchdog dead → restart both  │    │
 │  │ 5. Log to logs/keeper_YYYYMMDD.log                  │    │
 │  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
@@ -246,13 +246,13 @@ blackhornet.process_telegram_update()
 ┌─────────────────────────────────────────────────────────────┐
 │  LAYER 1: WATCHDOG (10-second interval)                     │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │ 1. Check if Hermes process is alive (every 10s)     │    │
+│  │ 1. Check if BH process is alive (every 10s)     │    │
 │  │ 2. If dead → restart with exponential backoff        │    │
 │  │    Delay: 5s → 10s → 20s → 40s → 80s → 120s (cap) │    │
 │  │ 3. Crash loop detection: max 10 restarts/hour       │    │
 │  │    If exceeded → 5-minute cooldown                  │    │
 │  │ 4. Telegram alert on every crash/restart            │    │
-│  │ 5. Update .hermes/health.json                       │    │
+│  │ 5. Update .bh/health.json                       │    │
 │  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
                           │
@@ -312,7 +312,7 @@ RISK_DAILY_MAX = 0.01          # 1%   - NO OVERRIDE
 RISK_WEEKLY_MAX = 0.03         # 3%   - NO OVERRIDE
 ```
 
-These are Python module-level constants in `hermes_quant.py`. They are not loaded from configuration files, not stored in environment variables, and not passed as function parameters. To change them requires editing the source code directly, which would be caught by PR review.
+These are Python module-level constants in `bh_quant.py`. They are not loaded from configuration files, not stored in environment variables, and not passed as function parameters. To change them requires editing the source code directly, which would be caught by PR review.
 
 ### 5.2 Kill Switch Architecture
 
@@ -434,7 +434,7 @@ Key patterns adopted:
 
 ### 8.2 From AI-MultiColony-Ecosystem: Unified Agent Registry
 
-The agent management pattern from AI-MultiColony-Ecosystem inspires the tool initialization structure in Hermes. While the current implementation uses a simple dictionary, the planned evolution will incorporate a proper agent registry with lifecycle management, metadata storage, and dynamic discovery.
+The agent management pattern from AI-MultiColony-Ecosystem inspires the tool initialization structure in BH. While the current implementation uses a simple dictionary, the planned evolution will incorporate a proper agent registry with lifecycle management, metadata storage, and dynamic discovery.
 
 Key patterns adopted:
 - **Centralized Tool Dictionary**: All tools registered in `self.tools = {}`

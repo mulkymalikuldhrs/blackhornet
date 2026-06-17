@@ -1,4 +1,4 @@
-# HERMES QUANT OPERATING SYSTEM - Configuration
+# BLACKHORNET QUANT OPERATING SYSTEM - Configuration
 # Version: 4.0.0
 # Owner: Mulky Malikul Dhaher
 
@@ -14,7 +14,7 @@ system:
 # ===========================================
 # RISK RULES (HARDCODED IN SOURCE - DO NOT MODIFY HERE)
 # These values are for reference only.
-# Actual enforcement is in src/hermes_quant.py
+# Actual enforcement is in src/bh_quant.py
 # ===========================================
 risk:
   max_risk_per_trade: 0.005    # 0.5% - HARDCODED

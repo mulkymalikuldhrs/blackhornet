@@ -1,4 +1,4 @@
-# HERMES QUANT OPERATING SYSTEM - COMPREHENSIVE REFERENCE
+# BLACKHORNET OPERATING SYSTEM - COMPREHENSIVE REFERENCE
 
 > Autonomous Multi-Agent Trading & Research Infrastructure
 > Owner: Mulky Malikul Dhaher
@@ -11,7 +11,7 @@
 
 ## 1.1 System Identity
 
-**Name:** Hermes Quant Operating System
+**Name:** BlackHornet Operating System
 **Owner:** Mulky Malikul Dhaher
 **GitHub:** github.com/dhaher-labs
 **Mission:** Autonomous multi-agent trading & research untuk consistent capital growth dengan strict risk preservation
@@ -51,7 +51,7 @@
 | Stop loss | MANDATORY (no exception) | IMPOSSIBLE |
 | Minimum confluence | 3/5 | IMPOSSIBLE |
 
-These are Python module-level constants (`RISK_MAX_PER_TRADE`, `RISK_DAILY_MAX`, `RISK_WEEKLY_MAX`) in `hermes_quant.py`. They are not loaded from configuration files, not stored in environment variables, and not passed as function parameters. To change them requires editing source code, which is caught by PR review.
+These are Python module-level constants (`RISK_MAX_PER_TRADE`, `RISK_DAILY_MAX`, `RISK_WEEKLY_MAX`) in `bh_quant.py`. They are not loaded from configuration files, not stored in environment variables, and not passed as function parameters. To change them requires editing source code, which is caught by PR review.
 
 ## 2.2 Risk Officer 9-Checkpoint Gate
 
@@ -273,8 +273,8 @@ User → Telegram Bot API → blackhornet
 
 | Layer | Component | Interval | Action |
 |-------|-----------|----------|--------|
-| Layer 1 | Watchdog | 10 seconds | Monitor Hermes, restart on crash with exponential backoff |
-| Layer 2 | Keeper | 1 minute (cron) | Health check, restart if both Hermes and Watchdog dead |
+| Layer 1 | Watchdog | 10 seconds | Monitor BH, restart on crash with exponential backoff |
+| Layer 2 | Keeper | 1 minute (cron) | Health check, restart if both BH and Watchdog dead |
 | Layer 3 | On-Boot | System startup | Termux:Boot / systemd / cron @reboot |
 
 ### Watchdog Exponential Backoff
@@ -303,14 +303,14 @@ Failover: NVIDIA → Groq (all keys) → OpenCode (all keys) → Degraded mode
 
 | Command | Description |
 |---------|-------------|
-| `./hermes.sh start` | Start Hermes with watchdog |
-| `./hermes.sh stop` | Stop everything |
-| `./hermes.sh restart` | Restart |
-| `./hermes.sh status` | System status |
-| `./hermes.sh logs [type]` | Tail logs (hermes/watchdog/keeper/all) |
-| `./hermes.sh health` | Run health check |
-| `./hermes.sh watchdog` | Start watchdog only |
-| `./hermes.sh install` | Install on-boot + auto-restart |
+| `./bh.sh start` | Start BH with watchdog |
+| `./bh.sh stop` | Stop everything |
+| `./bh.sh restart` | Restart |
+| `./bh.sh status` | System status |
+| `./bh.sh logs [type]` | Tail logs (bh/watchdog/keeper/all) |
+| `./bh.sh health` | Run health check |
+| `./bh.sh watchdog` | Start watchdog only |
+| `./bh.sh install` | Install on-boot + auto-restart |
 
 ## 6.4 Telegram Bot Commands
 
@@ -342,9 +342,9 @@ blackhornet-os/
 ├── UPGRADE_PLAN.md        # Autonomous Upgrade Roadmap
 ├── ALL.md                 # This document
 ├── requirements.txt       # Python Dependencies
-├── hermes.sh              # Control Script
+├── bh.sh              # Control Script
 ├── src/
-│   ├── hermes_quant.py    # Main Agent Controller
+│   ├── bh_quant.py    # Main Agent Controller
 │   ├── watchdog.py        # Watchdog Daemon
 │   └── tools/             # 21 Trading Tools
 │       ├── market_data_tool.py
@@ -381,14 +381,14 @@ blackhornet-os/
 ├── docs/
 ├── data/                  # Generated at runtime
 ├── logs/                  # Generated at runtime
-└── .hermes/               # Generated at runtime
+└── .bh/               # Generated at runtime
 ```
 
 ---
 
 # PART 8: SOURCE REPOSITORY MAP
 
-| Hermes Component | Source Repository | Version | Adaptation |
+| BH Component | Source Repository | Version | Adaptation |
 |------------------|-------------------|---------|------------|
 | Core agent loop | `nousresearch/hermes` | latest | Added trading tools, Telegram bot, risk framework |
 | 10 tools (v3.1) | `dhaher-labs/Quant-Nanggroe-AI` | v15.2.0 | Ported TypeScript → Python; Deterministic Agent Execution |
@@ -402,7 +402,7 @@ blackhornet-os/
 
 | Version | Date | Codename | Key Feature |
 |---------|------|----------|-------------|
-| 1.0.0 | 2026-05-20 | Genesis | 11 trading tools, Hermes Agent adaptation |
+| 1.0.0 | 2026-05-20 | Genesis | 11 trading tools, BlackHornet Agent adaptation |
 | 1.1.0 | 2026-05-21 | Polyglot | Multi-provider LLM support |
 | 2.0.0 | 2026-05-22 | Immortal | Auto-restart & on-boot infrastructure |
 | 3.0.0 | 2026-05-23 | Constitution | AGENTS.md constitutional framework |

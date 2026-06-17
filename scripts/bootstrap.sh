@@ -8,7 +8,7 @@
 #
 # Installs:
 #   1. Python 3.11+ (if needed)
-#   2. Hermes Agent from Nous Research (autonomous core)
+#   2. BlackHornet Agent from Nous Research (autonomous core)
 #   3. blackhornet trading tools + dependencies
 #   4. Shared memory sync bridge → dhaher-labs/agent
 #   5. Immortal cron/auto-restart setup
@@ -24,7 +24,7 @@ MAGENTA='\033[0;35m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
+BH_HOME="${BH_HOME:-$HOME/.bh}"
 AGENT_REPO="https://github.com/dhaher-labs/agent.git"
 HERMES_AGENT_REPO="https://github.com/NousResearch/hermes-agent.git"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -35,9 +35,9 @@ echo -e "${CYAN}Autonomous Multi-Agent Trading Infrastructure${NC}"
 echo ""
 
 # ── Guard: don't reinstall if already bootstrapped ──────────────────
-if [ -f "$HERMES_HOME/.bootstrapped" ]; then
-    echo -e "${GREEN}✓ Already bootstrapped at $HERMES_HOME${NC}"
-    echo -e "${CYAN}→ Run 'hermes chat' to start the agent${NC}"
+if [ -f "$BH_HOME/.bootstrapped" ]; then
+    echo -e "${GREEN}✓ Already bootstrapped at $BH_HOME${NC}"
+    echo -e "${CYAN}→ Run 'bh chat' to start the agent${NC}"
     exit 0
 fi
 
@@ -76,23 +76,23 @@ if ! command -v uv &>/dev/null; then
 fi
 echo -e "${GREEN}✓ uv $(uv --version)${NC}"
 
-# ── Hermes Agent (Nous Research) ──────────────────────────────────────
-echo -e "${CYAN}[3/6]${NC} Installing Hermes Agent (Nous Research)..."
-HERMES_AGENT_DIR="$HERMES_HOME/hermes-agent"
-if [ ! -d "$HERMES_AGENT_DIR" ]; then
-    git clone "$HERMES_AGENT_REPO" "$HERMES_AGENT_DIR" --depth 1
+# ── BlackHornet Agent (Nous Research) ──────────────────────────────────────
+echo -e "${CYAN}[3/6]${NC} Installing BlackHornet Agent (Nous Research)..."
+BH_AGENT_DIR="$BH_HOME/nous-agent"
+if [ ! -d "$BH_AGENT_DIR" ]; then
+    git clone "$HERMES_AGENT_REPO" "$BH_AGENT_DIR" --depth 1
 fi
-cd "$HERMES_AGENT_DIR"
+cd "$BH_AGENT_DIR"
 
-# Run Hermes Agent setup (non-interactive)
-UV_PYTHON="$PYTHON_BIN" bash setup-hermes.sh --skip-setup 2>&1 | tail -5
-echo -e "${GREEN}✓ Hermes Agent v$(./venv/bin/python hermes --version 2>/dev/null | grep -oP 'v[\d.]+' | head -1)${NC}"
+# Run BlackHornet Agent setup (non-interactive)
+UV_PYTHON="$PYTHON_BIN" bash setup-bh.sh --skip-setup 2>&1 | tail -5
+echo -e "${GREEN}✓ BlackHornet Agent v$(./venv/bin/python bh --version 2>/dev/null | grep -oP 'v[\d.]+' | head -1)${NC}"
 
-# ── Hermes Agent → system PATH ────────────────────────────────────────
+# ── BlackHornet Agent → system PATH ────────────────────────────────────────
 mkdir -p "$HOME/.local/bin"
-ln -sf "$HERMES_AGENT_DIR/hermes" "$HOME/.local/bin/hermes"
-chmod +x "$HOME/.local/bin/hermes" 2>/dev/null || true
-echo -e "${GREEN}✓ 'hermes' command linked to ~/.local/bin${NC}"
+ln -sf "$BH_AGENT_DIR/bh" "$HOME/.local/bin/bh"
+chmod +x "$HOME/.local/bin/bh" 2>/dev/null || true
+echo -e "${GREEN}✓ 'bh' command linked to ~/.local/bin${NC}"
 
 # ── blackhornet dependencies ────────────────────────────────────────
 echo -e "${CYAN}[4/6]${NC} Installing blackhornet dependencies..."
@@ -102,7 +102,7 @@ echo -e "${GREEN}✓ Trading tools dependencies installed${NC}"
 
 # ── Agent Memory Sync Bridge ──────────────────────────────────────────
 echo -e "${CYAN}[5/6]${NC} Setting up Agent Swarm memory sync..."
-AGENT_SYNC_DIR="$HERMES_HOME/agent-sync"
+AGENT_SYNC_DIR="$BH_HOME/agent-sync"
 
 if [ ! -d "$AGENT_SYNC_DIR" ]; then
     git clone "$AGENT_REPO" "$AGENT_SYNC_DIR" 2>/dev/null || {
@@ -122,36 +122,36 @@ echo -e "${GREEN}✓ Agent memory sync bridge ready${NC}"
 echo -e "${CYAN}[6/6]${NC} Configuring immortal auto-restart..."
 
 # Install cron job for auto-restart every minute
-CRON_JOB="* * * * * cd $REPO_DIR && bash hermes.sh health > /dev/null 2>&1 || bash hermes.sh start > /dev/null 2>&1"
-(crontab -l 2>/dev/null | grep -v "hermes.sh" ; echo "$CRON_JOB") | crontab - 2>/dev/null || {
+CRON_JOB="* * * * * cd $REPO_DIR && bash bh.sh health > /dev/null 2>&1 || bash bh.sh start > /dev/null 2>&1"
+(crontab -l 2>/dev/null | grep -v "bh.sh" ; echo "$CRON_JOB") | crontab - 2>/dev/null || {
     echo -e "${YELLOW}⚠ Cron not available — will use watchdog.py instead${NC}"
 }
 
 # Make scripts executable
-chmod +x "$REPO_DIR/hermes.sh" 2>/dev/null || true
+chmod +x "$REPO_DIR/bh.sh" 2>/dev/null || true
 chmod +x "$REPO_DIR/src/watchdog.py" 2>/dev/null || true
 chmod +x "$REPO_DIR/src/memory_bridge.py" 2>/dev/null || true
 
 echo -e "${GREEN}✓ Immortal auto-restart configured${NC}"
 
 # ── Mark as bootstrapped ──────────────────────────────────────────────
-mkdir -p "$HERMES_HOME"
-touch "$HERMES_HOME/.bootstrapped"
+mkdir -p "$BH_HOME"
+touch "$BH_HOME/.bootstrapped"
 
 echo ""
 echo -e "${GREEN}${BOLD}══════════════════════════════════════════════${NC}"
 echo -e "${GREEN}${BOLD}  ⚕ BLACKHORNET — INSTALLED & IMMORTAL  ${NC}"
 echo -e "${GREEN}${BOLD}══════════════════════════════════════════════${NC}"
 echo ""
-echo -e "  ${BOLD}Hermes Agent:${NC}   $HERMES_AGENT_DIR"
+echo -e "  ${BOLD}BlackHornet Agent:${NC}   $BH_AGENT_DIR"
 echo -e "  ${BOLD}blackhornet:${NC}  $REPO_DIR"
 echo -e "  ${BOLD}Agent Swarm:${NC}    $AGENT_SYNC_DIR"
 echo ""
 echo -e "${CYAN}Quick start:${NC}"
-echo "  hermes chat              # Start autonomous agent"
-echo "  bash hermes.sh start     # Start trading system"
-echo "  bash hermes.sh status    # Check system status"
+echo "  bh chat              # Start autonomous agent"
+echo "  bash bh.sh start     # Start trading system"
+echo "  bash bh.sh status    # Check system status"
 echo ""
-echo -e "${YELLOW}⚠  Set LLM API key in $HERMES_AGENT_DIR/.env before starting:${NC}"
+echo -e "${YELLOW}⚠  Set LLM API key in $BH_AGENT_DIR/.env before starting:${NC}"
 echo "  OPENROUTER_API_KEY=your_key_here"
 echo ""

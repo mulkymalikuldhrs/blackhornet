@@ -87,13 +87,13 @@ echo -e "${GREEN}Files copied to $INSTALL_DIR${NC}"
 # ============================================================================
 
 echo -e "${BOLD}${GREEN}[4/8] Setting permissions...${NC}"
-chmod +x "$INSTALL_DIR/hermes.sh" 2>/dev/null || true
+chmod +x "$INSTALL_DIR/bh.sh" 2>/dev/null || true
 chmod +x "$INSTALL_DIR/scripts/"*.py 2>/dev/null || true
 chmod +x "$INSTALL_DIR/scripts/"*.sh 2>/dev/null || true
 chmod +x "$INSTALL_DIR/src/"*.py 2>/dev/null || true
 mkdir -p "$INSTALL_DIR/logs"
 mkdir -p "$INSTALL_DIR/data"
-mkdir -p "$INSTALL_DIR/.hermes/memories"
+mkdir -p "$INSTALL_DIR/.bh/memories"
 echo -e "${GREEN}Permissions set.${NC}"
 
 # ============================================================================
@@ -105,7 +105,7 @@ echo -e "${BOLD}${GREEN}[5/8] Configuring environment...${NC}"
 # Update .env paths for Termux
 if [ -f "$INSTALL_DIR/config/.env" ]; then
     # Update paths
-    sed -i "s|/workspace/hermes_quant|$INSTALL_DIR|g" "$INSTALL_DIR/config/.env" 2>/dev/null || true
+    sed -i "s|/workspace/bh_quant|$INSTALL_DIR|g" "$INSTALL_DIR/config/.env" 2>/dev/null || true
 fi
 
 echo -e "${GREEN}Environment configured.${NC}"
@@ -125,22 +125,22 @@ cat > "$BOOT_DIR/blackhornet.sh" << BOOTSCRIPT
 # Triggered by Termux:Boot plugin
 
 # Wait for network connectivity
-echo "[HERMES] Waiting for network..." >> $INSTALL_DIR/logs/boot.log
+echo "[BH] Waiting for network..." >> $INSTALL_DIR/logs/boot.log
 sleep 15
 
 # Verify network
 until ping -c 1 api.telegram.org > /dev/null 2>&1; do
-    echo "[HERMES] Network not ready, waiting..." >> $INSTALL_DIR/logs/boot.log
+    echo "[BH] Network not ready, waiting..." >> $INSTALL_DIR/logs/boot.log
     sleep 5
 done
 
-echo "[HERMES] Network ready! Starting BLACKHORNET..." >> $INSTALL_DIR/logs/boot.log
+echo "[BH] Network ready! Starting BLACKHORNET..." >> $INSTALL_DIR/logs/boot.log
 
-# Start Hermes via control script
+# Start BH via control script
 cd $INSTALL_DIR
-bash hermes.sh start >> $INSTALL_DIR/logs/boot.log 2>&1
+bash bh.sh start >> $INSTALL_DIR/logs/boot.log 2>&1
 
-echo "[HERMES] Boot sequence complete." >> $INSTALL_DIR/logs/boot.log
+echo "[BH] Boot sequence complete." >> $INSTALL_DIR/logs/boot.log
 BOOTSCRIPT
 
 chmod +x "$BOOT_DIR/blackhornet.sh"
@@ -158,10 +158,10 @@ pkg install cronie -y 2>/dev/null || true
 
 # Add keeper to crontab (every minute)
 CRON_ENTRY="*/1 * * * * cd $INSTALL_DIR && python3 scripts/keeper.py >> $INSTALL_DIR/logs/keeper_cron.log 2>&1"
-REBOOT_ENTRY="@reboot sleep 30 && cd $INSTALL_DIR && bash hermes.sh start >> $INSTALL_DIR/logs/boot.log 2>&1"
+REBOOT_ENTRY="@reboot sleep 30 && cd $INSTALL_DIR && bash bh.sh start >> $INSTALL_DIR/logs/boot.log 2>&1"
 
 # Install crontab
-(crontab -l 2>/dev/null | grep -v "hermes"; echo "$CRON_ENTRY"; echo "$REBOOT_ENTRY") | crontab - 2>/dev/null || true
+(crontab -l 2>/dev/null | grep -v "bh"; echo "$CRON_ENTRY"; echo "$REBOOT_ENTRY") | crontab - 2>/dev/null || true
 
 # Start crond
 crond 2>/dev/null || true
@@ -169,13 +169,13 @@ crond 2>/dev/null || true
 echo -e "${GREEN}Health monitoring configured (every 1 minute).${NC}"
 
 # ============================================================================
-# Step 8: Start Hermes
+# Step 8: Start BH
 # ============================================================================
 
 echo -e "${BOLD}${GREEN}[8/8] Starting BLACKHORNET...${NC}"
 
 cd "$INSTALL_DIR"
-bash hermes.sh start
+bash bh.sh start
 
 # ============================================================================
 # Done!
@@ -187,11 +187,11 @@ echo "║   BLACKHORNET INSTALLED SUCCESSFULLY!       ║"
 echo "╚══════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "${CYAN}Quick Commands:${NC}"
-echo "  Start:     cd $INSTALL_DIR && bash hermes.sh start"
-echo "  Stop:      cd $INSTALL_DIR && bash hermes.sh stop"
-echo "  Status:    cd $INSTALL_DIR && bash hermes.sh status"
-echo "  Logs:      cd $INSTALL_DIR && bash hermes.sh logs"
-echo "  Restart:   cd $INSTALL_DIR && bash hermes.sh restart"
+echo "  Start:     cd $INSTALL_DIR && bash bh.sh start"
+echo "  Stop:      cd $INSTALL_DIR && bash bh.sh stop"
+echo "  Status:    cd $INSTALL_DIR && bash bh.sh status"
+echo "  Logs:      cd $INSTALL_DIR && bash bh.sh logs"
+echo "  Restart:   cd $INSTALL_DIR && bash bh.sh restart"
 echo ""
 echo -e "${CYAN}On-Boot:${NC}  Enabled (Termux:Boot)"
 echo -e "${CYAN}Watchdog: ${GREEN}Active (auto-restart on crash)${NC}"

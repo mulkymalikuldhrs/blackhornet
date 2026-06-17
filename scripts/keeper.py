@@ -15,9 +15,9 @@ from datetime import datetime
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent.resolve()
-HERMES_SCRIPT = BASE_DIR / "src" / "hermes_quant.py"
+BH_SCRIPT = BASE_DIR / "src" / "bh_quant.py"
 WATCHDOG_SCRIPT = BASE_DIR / "src" / "watchdog.py"
-PID_FILE = BASE_DIR / "hermes.pid"
+PID_FILE = BASE_DIR / "bh.pid"
 WATCHDOG_PID_FILE = BASE_DIR / "watchdog.pid"
 LOG_DIR = BASE_DIR / "logs"
 CONFIG_ENV = BASE_DIR / "config" / ".env"
@@ -64,30 +64,30 @@ def start_watchdog():
     log("Watchdog daemon started")
 
 
-def start_hermes_direct():
-    """Start Hermes directly (fallback if no watchdog)"""
+def start_bh_direct():
+    """Start BH directly (fallback if no watchdog)"""
     log("Starting BLACKHORNET directly...")
     subprocess.Popen(
-        [sys.executable, str(HERMES_SCRIPT)],
+        [sys.executable, str(BH_SCRIPT)],
         stdout=open(LOG_DIR / "stdout.log", 'a'),
         stderr=subprocess.STDOUT,
         cwd=str(BASE_DIR / "src"),
         start_new_session=True
     )
-    log("Hermes started")
+    log("BH started")
 
 
 def main():
     log("=" * 40)
-    log("HERMES KEEPER CHECK")
+    log("BH KEEPER CHECK")
     log("=" * 40)
 
     # Check if watchdog is running
     watchdog_running = is_process_running(WATCHDOG_PID_FILE, "watchdog.py")
-    hermes_running = is_process_running(PID_FILE, "hermes_quant.py")
+    bh_running = is_process_running(PID_FILE, "bh_quant.py")
 
     log(f"Watchdog: {'RUNNING' if watchdog_running else 'NOT RUNNING'}")
-    log(f"Hermes: {'RUNNING' if hermes_running else 'NOT RUNNING'}")
+    log(f"BH: {'RUNNING' if bh_running else 'NOT RUNNING'}")
 
     if not watchdog_running:
         log("Watchdog not running! Starting watchdog...")
@@ -98,12 +98,12 @@ def main():
         if is_process_running(WATCHDOG_PID_FILE, "watchdog.py"):
             log("Watchdog started successfully!")
         else:
-            log("Watchdog failed to start! Starting Hermes directly...", "WARN")
-            if not hermes_running:
-                start_hermes_direct()
+            log("Watchdog failed to start! Starting BH directly...", "WARN")
+            if not bh_running:
+                start_bh_direct()
 
-    elif not hermes_running:
-        log("Watchdog running but Hermes not detected. Watchdog should auto-restart.")
+    elif not bh_running:
+        log("Watchdog running but BH not detected. Watchdog should auto-restart.")
         # Don't double-start - let watchdog handle it
 
     else:

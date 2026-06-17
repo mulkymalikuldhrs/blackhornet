@@ -44,7 +44,7 @@ class AgentType(str, enum.Enum):
 
 
 class AgentState(str, enum.Enum):
-    """Lifecycle states of an agent."""
+    """Lifecycle and operational states of an agent."""
     REGISTERED = "registered"
     INITIALIZING = "initializing"
     READY = "ready"
@@ -54,6 +54,11 @@ class AgentState(str, enum.Enum):
     COMPACTING = "compacting"
     DRAINING = "draining"
     TERMINATED = "terminated"
+    IDLE = "idle"
+    RUNNING = "running"
+    PAUSED = "paused"
+    ERROR = "error"
+    THINKING = "thinking"
 
 
 class AutonomyLevel(int, enum.Enum):
@@ -98,6 +103,7 @@ class TaskPriority(int, enum.Enum):
     CRITICAL = 4
     HIGH = 3
     MEDIUM = 2
+    NORMAL = 2
     LOW = 1
 
 
@@ -127,7 +133,7 @@ class MemoryTier(str, enum.Enum):
 
 
 class HandType(str, enum.Enum):
-    """The 7 specialist hand types in a colony."""
+    """Specialist hand types in a colony."""
     SECURITY = "security"
     CODE = "code"
     RESEARCH = "research"
@@ -135,10 +141,21 @@ class HandType(str, enum.Enum):
     VOICE = "voice"
     COMPUTE = "compute"
     INTEGRATION = "integration"
+    DATA = "data"
+    INFRASTRUCTURE = "infrastructure"
+    COMMUNICATION = "communication"
+    PLANNING = "planning"
+    EXECUTION = "execution"
 
 
 class EventType(str, enum.Enum):
     """Event types emitted by the event bus."""
+    ACTION = "action"
+    OBSERVATION = "observation"
+    SYSTEM = "system"
+    ERROR = "error"
+    LIFECYCLE = "lifecycle"
+    CUSTOM = "custom"
     AGENT_SPAWNED = "agent_spawned"
     AGENT_TERMINATED = "agent_terminated"
     AGENT_STATE_CHANGED = "agent_state_changed"
@@ -436,23 +453,54 @@ class ToolSpec(BaseModel):
 class ToolCall(BaseModel):
     """A tool invocation request."""
     call_id: str = Field(default_factory=_uid)
-    tool_name: str
+    id: str = ""
+    tool_name: str = ""
     arguments: Dict[str, Any] = Field(default_factory=dict)
     agent_id: Optional[str] = None
     colony_id: Optional[str] = None
     autonomy_level: AutonomyLevel = AutonomyLevel.L1_SAFE_OPS
     session_id: Optional[str] = None
+    timestamp: Optional[float] = None
+    timeout: Optional[int] = None
+
+    def to_openai_format(self) -> Dict[str, Any]:
+        """Convert to OpenAI function calling format."""
+        return {
+            "id": self.id or self.call_id,
+            "type": "function",
+            "function": {
+                "name": self.tool_name,
+                "arguments": str(self.arguments),
+            },
+        }
 
 
 class ToolResult(BaseModel):
     """Result of a tool invocation."""
-    call_id: str
-    tool_name: str
+    call_id: str = ""
+    id: str = ""
+    tool_call_id: str = ""
+    tool_name: str = ""
     status: str = "success"
+    success: bool = True
+    output: str = ""
     data: Any = None
     error: Optional[str] = None
+    exit_code: Optional[int] = None
+    execution_time: Optional[float] = None
     execution_time_ms: float = 0.0
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    timestamp: Optional[float] = None
     audit_id: Optional[str] = None
+
+    def to_message(self) -> Dict[str, Any]:
+        """Convert to an OpenAI tool message format."""
+        content = self.output if self.success else f"Error: {self.error}"
+        return {
+            "role": "tool",
+            "tool_call_id": self.tool_call_id or self.call_id,
+            "content": content,
+        }
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -5,10 +5,10 @@
 # ============================================================
 set -e
 
-REPO_DIR="/root/.hermes/github-sync"
+REPO_DIR="/root/.bh/github-sync"
 SYNC_DIR="${REPO_DIR}/sync"
-SHARED_WS="/root/.hermes/shared-workspace"
-PROFILES_DIR="/root/.hermes/profiles"
+SHARED_WS="/root/.bh/shared-workspace"
+PROFILES_DIR="/root/.bh/profiles"
 TIMESTAMP=$(date -Iseconds)
 
 log() { echo "[$(date '+%H:%M:%S')] $1"; }

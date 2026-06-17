@@ -1,8 +1,8 @@
-# Hermes Hive — Production Deployment Guide
+# BlackHornet Hive — Production Deployment Guide
 
 > **Sovereign:** Mulky Malikul Dhaher  
-> **Empire:** 7 repos, 21+ autonomous agents, immortal infrastructure  
-> **Status:** PRODUCTION READY
+> **Empire:** 25 packages, 10 specialized agents, swarm intelligence  
+> **Status:** PRODUCTION READY (v4.1.0)
 
 ---
 
@@ -16,7 +16,7 @@ This single command:
 1. Detects your OS (Linux/macOS/Termux/WSL)
 2. Installs all dependencies (Python 3.11+, Node.js, Git)
 3. Clones all 7 ecosystem repos
-4. Installs Hermes Agent (Nous Research)
+4. Installs BlackHornet Agent (Nous Research)
 5. Starts ProxyGateLLM (10 free LLM providers, 468 models)
 6. Configures Mnemosyne (knowledge memory + RAG)
 7. Initializes swarm protocol
@@ -33,35 +33,35 @@ This single command:
 ```bash
 # Prerequisites: git, curl
 curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/install.sh | bash
-cd ~/hermes-ecosystem/blackhornet
+cd ~/blackhornet-ecosystem/blackhornet
 
 # Start everything
-bash hermes.sh all
+bash blackhornet.sh all
 
 # Verify
-bash hermes.sh status
-bash hermes.sh agent-status
-bash hermes.sh daemon-status
+bash blackhornet.sh status
+bash blackhornet.sh agent-status
+bash blackhornet.sh daemon-status
 ```
 
 ### Method 2: Docker
 
 ```bash
 docker run -d \
-  --name hermes-hive \
+  --name blackhornet-hive \
   --restart always \
-  -v ~/.hermes:/root/.hermes \
+  -v ~/.blackhornet:/root/.blackhornet \
   -p 3333:3333 \
   -e NVIDIA_API_KEY=your_key \
-  ghcr.io/dhaher-labs/hermes-hive:latest
+  ghcr.io/dhaher-labs/blackhornet-hive:latest
 ```
 
 ### Method 3: systemd (Linux servers)
 
 ```bash
-sudo cp deploy/hermes-hive.service /etc/systemd/system/
+sudo cp deploy/blackhornet-hive.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now hermes-hive
+sudo systemctl enable --now blackhornet-hive
 ```
 
 ### Method 4: Termux (Android)
@@ -77,7 +77,7 @@ bash install.sh
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   HERMES HIVE — Sovereign Empire             │
+│                   BLACKHORNET HIVE — Sovereign Empire             │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  Layer 0: LLM Gateway                                       │
@@ -89,13 +89,13 @@ bash install.sh
 │                                                             │
 │  Layer 1: Autonomous Core                                   │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │  Hermes Agent (Nous Research)                        │    │
+│  │  BlackHornet Agent (Nous Research)                        │    │
 │  │  Self-improving · Tool-calling · Memory · Skills     │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                                                             │
 │  Layer 2: Swarm Intelligence                                │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │  Swarm Protocol · Memory Bridge · Immortal Daemon    │    │
+│  │  SwarmOrchestrator · PSO · ABC · Stigmergy          │    │
 │  │  Discovery · Sync · Upgrade · Heal · Expand          │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                                                             │
@@ -126,30 +126,27 @@ bash install.sh
 Run these commands to verify production readiness:
 
 ```bash
-# 1. Core services
-curl http://localhost:3333/health          # ProxyGateLLM
-bash hermes.sh daemon-status               # Immortal Daemon
-bash hermes.sh agent-status                # Swarm agents
+# 1. Install
+pip install -e .
+# Expected: Successfully installed blackhornet-colony-4.1.0
 
-# 2. LLM connectivity
-cd src && python3 hypergate.py --test      # LLM test
+# 2. Run tests (non-numpy)
+python3 -m pytest src/memory/tests.py src/thinking/tests.py src/core/tests.py \
+  src/types/tests.py src/ui/tests.py src/graph/tests.py src/config/tests.py \
+  src/sandbox/tests.py src/auto_discovery/tests.py src/integration/tests.py -v
+# Expected: All tests pass
 
-# 3. Trading pipeline
-python3 -c "
-from tools.market_data_tool import MarketDataTool
-from tools.technical_analysis_tool import TechnicalAnalysisTool
-from tools.risk_officer_tool import RiskOfficerTool
-import json
-md = MarketDataTool()
-print('XAUUSD:', json.loads(md.get_ohlcv('XAUUSD','1d',3))['data'][-1]['close'])
-ta = TechnicalAnalysisTool()
-print('Trend:', json.loads(ta.analyze('XAUUSD','1d'))['smc_structure']['trend'])
-ro = RiskOfficerTool()
-print('Risk:', json.loads(ro.check_trade('XAUUSD','BUY',0.01,4230,4200,10000))['verdict'])
-"
+# 3. Lint
+ruff check src/ --select E,F,W --ignore E501
+# Expected: 0 errors
 
-# 4. Swarm health
-cd src && python3 swarm_protocol.py --list
+# 4. Verify no secrets
+grep -r "nvapi-\|ghp_\|sk-" config/ src/ 2>/dev/null
+# Expected: No output (no secrets in code)
+
+# 5. Verify version
+python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml'))['project']['version'])"
+# Expected: 4.1.0
 ```
 
 All should return ✅ without errors for production readiness.
@@ -158,22 +155,23 @@ All should return ✅ without errors for production readiness.
 
 ## Security
 
-- **API keys:** Never committed. Use `.env` (gitignored). See `.env.example`.
-- **Wallet addresses:** Never hardcoded. Use environment variables only.
+- **API keys:** Use `config/.env` (gitignored). Never commit real values.
+- **Wallet addresses:** Use environment variables only. Never hardcode.
 - **Risk limits:** Hardcoded in source. No agent can override.
 - **Deployment stage:** Defaults to `research_lab` (paper trading only).
-- **GitHub tokens:** Use fine-grained PATs with minimal scopes.
+- **Secrets scan:** `grep -r "nvapi-\|ghp_\|sk-" config/ src/` should return 0 hits.
 
 ---
 
 ## Upgrading
 
-The Immortal Daemon auto-upgrades every 5 minutes. Manual upgrade:
+Pull latest changes and restart:
 
 ```bash
-cd ~/hermes-ecosystem/blackhornet
+cd ~/blackhornet-ecosystem/blackhornet
 git pull
-bash hermes.sh restart
+pip install -e .
+# Restart services as needed
 ```
 
 ---

@@ -1,4 +1,4 @@
-# HERMES QUANT OPERATING SYSTEM - PULL REQUEST GUIDE
+# BLACKHORNET OPERATING SYSTEM - PULL REQUEST GUIDE
 
 ## PR Template
 
@@ -97,7 +97,7 @@ Related to #
 
 3. **Memory Management**: New tools must not create unbounded data structures. Use rolling windows or capped lists.
 
-4. **Import Safety**: Tool imports in `hermes_quant.py` must be wrapped in try/except with `TOOLS_AVAILABLE` flag.
+4. **Import Safety**: Tool imports in `blackhornet_quant.py` must be wrapped in try/except with `TOOLS_AVAILABLE` flag.
 
 5. **Configuration**: New configurable parameters must have sensible defaults and be documented in `blackhornet.yaml`.
 
@@ -108,7 +108,7 @@ Related to #
 ### Feature PRs (feat)
 New agents, tools, or capabilities. Must include:
 - Tool class with standard interface methods
-- Integration in `hermes_quant.py` tool initialization
+- Integration in `blackhornet_quant.py` tool initialization
 - System prompt update (if new tool is user-facing)
 - Telegram command addition (if applicable)
 - Testing evidence
@@ -147,7 +147,7 @@ Watchdog, keeper, on-boot, deployment. Must include:
 
 3. Test
    python3 -m py_compile src/tools/new_tool.py
-   python3 src/hermes_quant.py --dry-run  # if available
+   python3 src/blackhornet_quant.py --dry-run  # if available
 
 4. Document
    - Update CHANGELOG.md
@@ -249,7 +249,7 @@ Watchdog, keeper, on-boot, deployment. Must include:
 - New swarm execution mode in Execution Tool
 - Director Agent for thesis generation
 - Quant Agent for statistical validation
-- Risk Manager Agent for position sizing (subordinate to Hermes Risk Officer)
+- Risk Manager Agent for position sizing (subordinate to BlackHornet Risk Officer)
 - Execution Agent for order generation
 - Solana venue integration via Jupiter API
 

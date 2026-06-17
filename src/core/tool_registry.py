@@ -18,6 +18,38 @@ from src.config.logging_config import get_logger
 from src.core.tool_base import BaseTool
 from src.types.tools import ToolCall, ToolDefinition, ToolParameter, ToolResult, ToolType
 
+
+class FunctionTool(BaseTool):
+    """A function wrapped as a BaseTool."""
+
+    def __init__(self, func: Callable, definition: ToolDefinition):
+        self._func = func
+        self._definition = definition
+
+    @property
+    def definition(self) -> ToolDefinition:
+        return self._definition
+
+    async def execute(self, tool_call: ToolCall) -> ToolResult:
+        try:
+            if inspect.iscoroutinefunction(self._func):
+                result = await self._func(**tool_call.arguments)
+            else:
+                result = self._func(**tool_call.arguments)
+            return ToolResult(
+                tool_call_id=tool_call.id,
+                tool_name=tool_call.tool_name,
+                success=True,
+                output=str(result),
+            )
+        except Exception as e:
+            return ToolResult(
+                tool_call_id=tool_call.id,
+                tool_name=tool_call.tool_name,
+                success=False,
+                error=str(e),
+            )
+
 logger = get_logger(__name__)
 
 
@@ -165,43 +197,17 @@ class ToolRegistry:
         tool_tags = tags or []
         tool_params = parameters or []
 
-        class FunctionTool(BaseTool):
-            _func: Callable = func
-            _def: ToolDefinition = ToolDefinition(
-                name=tool_name,
-                description=tool_description,
-                tool_type=tool_type,
-                parameters=tool_params,
-                tags=tool_tags,
-            )
+        definition = ToolDefinition(
+            name=tool_name,
+            description=tool_description,
+            tool_type=tool_type,
+            parameters=tool_params,
+            tags=tool_tags,
+        )
 
-            @property
-            def definition(self) -> ToolDefinition:
-                return self._def
-
-            async def execute(self, tool_call: ToolCall) -> ToolResult:
-                try:
-                    if inspect.iscoroutinefunction(self._func):
-                        result = await self._func(**tool_call.arguments)
-                    else:
-                        result = self._func(**tool_call.arguments)
-                    return ToolResult(
-                        tool_call_id=tool_call.id,
-                        tool_name=tool_call.tool_name,
-                        success=True,
-                        output=str(result),
-                    )
-                except Exception as e:
-                    return ToolResult(
-                        tool_call_id=tool_call.id,
-                        tool_name=tool_call.tool_name,
-                        success=False,
-                        error=str(e),
-                    )
-
-        FunctionTool.__name__ = f"{tool_name.title()}Tool"
-        FunctionTool.__qualname__ = f"{tool_name.title()}Tool"
-        self._register_class(FunctionTool)
+        tool = FunctionTool(func=func, definition=definition)
+        tool.__name__ = f"{tool_name.title()}Tool"
+        self.register_instance(tool, tags=tool_tags)
 
     def get(self, name: str) -> BaseTool:
         """Get a tool by name.
@@ -365,45 +371,22 @@ def tool(
         tool_tags = tags or []
         tool_params = parameters or []
 
-        class FunctionTool(BaseTool):
-            _func: Callable = func
-            _definition: ToolDefinition = ToolDefinition(
-                name=tool_name,
-                description=tool_description,
-                tool_type=tool_type,
-                parameters=tool_params,
-                tags=tool_tags,
-            )
+        definition = ToolDefinition(
+            name=tool_name,
+            description=tool_description,
+            tool_type=tool_type,
+            parameters=tool_params,
+            tags=tool_tags,
+        )
 
-            @property
-            def definition(self) -> ToolDefinition:
-                return self._definition
-
-            async def execute(self, tool_call: ToolCall) -> ToolResult:
-                try:
-                    if inspect.iscoroutinefunction(self._func):
-                        result = await self._func(**tool_call.arguments)
-                    else:
-                        result = self._func(**tool_call.arguments)
-                    return ToolResult(
-                        tool_call_id=tool_call.id,
-                        tool_name=tool_call.tool_name,
-                        success=True,
-                        output=str(result),
-                    )
-                except Exception as e:
-                    return ToolResult(
-                        tool_call_id=tool_call.id,
-                        tool_name=tool_call.tool_name,
-                        success=False,
-                        error=str(e),
-                    )
-
-        FunctionTool.__name__ = f"{tool_name.title()}Tool"
-        FunctionTool.__qualname__ = f"{tool_name.title()}Tool"
+        tool_cls = type(
+            f"{tool_name.title()}Tool",
+            (FunctionTool,),
+            {"__init__": lambda self: FunctionTool.__init__(self, func=func, definition=definition)},
+        )
 
         # Attach metadata to the function for discovery
-        func._tool_cls = FunctionTool
+        func._tool_cls = tool_cls
         func._tool_name = tool_name
         func._tool_tags = tool_tags
 

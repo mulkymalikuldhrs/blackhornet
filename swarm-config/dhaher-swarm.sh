@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# DHAHER SWARM — Unified Control Script (based on blackhornet hermes.sh)
+# DHAHER SWARM — Unified Control Script (based on blackhornet bh.sh)
 # ============================================================================
 # Usage: ./dhaher-swarm.sh [start|stop|restart|status|logs|health|install|clone]
 #
@@ -15,7 +15,7 @@
 set -euo pipefail
 
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SWARM_DIR="/root/.hermes"
+SWARM_DIR="/root/.bh"
 PROFILES_DIR="${SWARM_DIR}/profiles"
 SHARED_WS="${SWARM_DIR}/shared-workspace"
 LOG_DIR="${SWARM_DIR}/supervisor-logs"
@@ -43,8 +43,8 @@ TOKENS[researchbot]="8848363753:AAGy4CkkJgF4On5IPHDUiiS5atJgkI8LvtM"
 start_gateway() {
   local p="$1"
   rm -f "${PROFILES_DIR}/${p}/gateway.pid" "${PROFILES_DIR}/${p}/gateway.lock" "${PROFILES_DIR}/${p}/gateway_state.json" 2>/dev/null
-  rm -f /root/.local/state/hermes/gateway-locks/telegram-bot-token-*.lock 2>/dev/null
-  HERMES_HOME="${PROFILES_DIR}/${p}" setsid hermes gateway run --accept-hooks --replace >> "${LOG_DIR}/${p}.log" 2>&1 &
+  rm -f /root/.local/state/bh/gateway-locks/telegram-bot-token-*.lock 2>/dev/null
+  BH_HOME="${PROFILES_DIR}/${p}" setsid hermes gateway run --accept-hooks --replace >> "${LOG_DIR}/${p}.log" 2>&1 &
   echo $! > "${PID_DIR}/${p}.pid"
 }
 
@@ -175,17 +175,17 @@ clone() {
 set -e
 echo "🧬 Dhaher Swarm — Self-Cloning Installer"
 echo "========================================="
-# Install Hermes Agent
+# Install BlackHornet Agent
 if ! command -v hermes &>/dev/null; then
-  echo "Installing Hermes Agent..."
+  echo "Installing BlackHornet Agent..."
   curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
 fi
 # Setup profiles
 BASE=$(dirname "$0")
 for p in autobot clawbot fangbot hackerbot devbot traderbot researchbot; do
   hermes profile create "$p" --clone-from default --no-alias 2>/dev/null || true
-  [ -f "$BASE/profiles/$p/SOUL.md" ] && cp "$BASE/profiles/$p/SOUL.md" ~/.hermes/profiles/$p/
-  [ -f "$BASE/profiles/$p/config.yaml" ] && cp "$BASE/profiles/$p/config.yaml" ~/.hermes/profiles/$p/
+  [ -f "$BASE/profiles/$p/SOUL.md" ] && cp "$BASE/profiles/$p/SOUL.md" ~/.bh/profiles/$p/
+  [ -f "$BASE/profiles/$p/config.yaml" ] && cp "$BASE/profiles/$p/config.yaml" ~/.bh/profiles/$p/
 done
 # Setup ProxyGateLLM
 cd "$BASE/ProxyGateLLM" && npm install --silent 2>/dev/null || true

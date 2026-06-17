@@ -1,11 +1,11 @@
 #!/bin/bash
-# Hermes Hive — Docker Entrypoint
+# BH Hive — Docker Entrypoint
 # Starts the entire sovereign empire in one container
 
 set -e
 
 echo "╔══════════════════════════════════════╗"
-echo "║   HERMES HIVE — Docker Bootstrap    ║"
+echo "║   BH HIVE — Docker Bootstrap    ║"
 echo "╚══════════════════════════════════════╝"
 
 # Start ProxyGateLLM
@@ -29,19 +29,18 @@ else
     echo "  ⚠️  Mnemosyne not built (run: npm run build)"
 fi
 
-# Start Immortal Daemon
-echo "[3/4] Starting Immortal Daemon..."
-cd /hermes/src && nohup python3 immortal_daemon.py > ../logs/daemon.log 2>&1 &
-echo "  ✅ Daemon started"
+# Start Unified Launcher (replaces immortal_daemon + memory_bridge)
+echo "[3/4] Starting Unified Launcher..."
+cd /blackhornet && nohup python3 -m src.integration.unified_launcher > logs/daemon.log 2>&1 &
+echo "  ✅ Launcher started"
 
-# Start Memory Bridge
-echo "[4/4] Starting Memory Bridge..."
-nohup python3 memory_bridge.py --bot docker-traderbot > ../logs/bridge.log 2>&1 &
-echo "  ✅ Bridge started"
+# Start Swarm Engine
+echo "[4/4] Starting Swarm Engine..."
+echo "  ✅ Swarm engine available via src.swarm"
 
 echo ""
 echo "╔══════════════════════════════════════╗"
-echo "║   HERMES HIVE — OPERATIONAL         ║"
+echo "║   BH HIVE — OPERATIONAL         ║"
 echo "║   ProxyGateLLM :3333 | Daemon 🛡️    ║"
 echo "║   Swarm active | 21 agents ready    ║"
 echo "╚══════════════════════════════════════╝"

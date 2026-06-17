@@ -1,7 +1,11 @@
 """Colony type definitions for the AI MultiColony Ecosystem.
 
 Implements colony-based agent coordination from OpenFang and MultiColony patterns.
-Defines ColonyState, HandType, ColonyConfig, and TaskAssignment.
+Defines ColonyState, ColonyConfig, and TaskAssignment.
+
+HandType and TaskPriority are imported from models.py (unified superset).
+ColonyStatus in colony.py was renamed to ColonyStatusReport to avoid
+conflict with the ColonyStatus enum in models.py.
 """
 
 from __future__ import annotations
@@ -12,6 +16,8 @@ from enum import Enum
 from typing import Any, Optional
 
 from pydantic import BaseModel, Field
+
+from .models import HandType, TaskPriority
 
 
 class ColonyState(str, Enum):
@@ -24,33 +30,6 @@ class ColonyState(str, Enum):
     ERROR = "error"
     TERMINATED = "terminated"
     IDLE = "idle"
-
-
-class HandType(str, Enum):
-    """Types of colony hands (specialized agent groups).
-
-    From OpenFang colony hand architecture.
-    """
-
-    SECURITY = "security"
-    CODE = "code"
-    RESEARCH = "research"
-    BROWSER = "browser"
-    VOICE = "voice"
-    DATA = "data"
-    INFRASTRUCTURE = "infrastructure"
-    COMMUNICATION = "communication"
-    PLANNING = "planning"
-    EXECUTION = "execution"
-
-
-class TaskPriority(str, Enum):
-    """Priority levels for colony tasks."""
-
-    LOW = "low"
-    NORMAL = "normal"
-    HIGH = "high"
-    CRITICAL = "critical"
 
 
 class TaskStatus(str, Enum):
@@ -200,8 +179,8 @@ class ColonyTask(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
 
 
-class ColonyStatus(BaseModel):
-    """Runtime status of a colony."""
+class ColonyStatusReport(BaseModel):
+    """Runtime status of a colony (BaseModel report, not the enum)."""
 
     colony_id: str
     name: str

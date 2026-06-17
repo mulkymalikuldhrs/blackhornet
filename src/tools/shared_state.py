@@ -21,7 +21,7 @@ from typing import Optional, Dict, Union, List, TypedDict
 logger = logging.getLogger("blackhornet.SharedState")
 
 # Default database path
-DEFAULT_DB_PATH = Path(__file__).parent.parent / "data" / "hermes_quant.db"
+DEFAULT_DB_PATH = Path(__file__).parent.parent / "data" / "bh_quant.db"
 
 
 class SharedState:

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlackHornet Graph Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; }
+.header { background: #161b22; border-bottom: 1px solid #30363d; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 18px; font-weight: 600; color: #58a6ff; }
+.controls { display: flex; gap: 8px; align-items: center; }
+.controls input { background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 12px; border-radius: 6px; font-size: 13px; width: 180px; }
+.controls button { background: #238636; color: #fff; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+.controls button:hover { background: #2ea043; }
+#cy { width: 100vw; height: calc(100vh - 100px); }
+.stats-bar { background: #161b22; border-top: 1px solid #30363d; padding: 8px 24px; display: flex; gap: 24px; font-size: 12px; color: #8b949e; }
+.stats-bar span { color: #58a6ff; font-weight: 600; }
+.node-info { position: absolute; top: 60px; right: 20px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; min-width: 200px; display: none; font-size: 13px; z-index: 100; }
+.node-info h3 { color: #58a6ff; margin-bottom: 8px; font-size: 14px; }
+.node-info p { margin: 4px 0; color: #8b949e; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>BlackHornet Knowledge Graph</h1>
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search node..." />
+    <button onclick="searchNode()">Search</button>
+    <button onclick="refreshGraph()" style="background:#1f6feb">Refresh</button>
+    <button onclick="resetLayout()" style="background:#21262d;border:1px solid #30363d">Reset</button>
+  </div>
+</div>
+<div id="cy"></div>
+<div class="node-info" id="nodeInfo">
+  <h3 id="infoTitle">Node</h3>
+  <p id="infoType">Type: &mdash;</p>
+  <p id="infoId">ID: &mdash;</p>
+</div>
+<div class="stats-bar">
+  <span id="nodeCount">0</span> nodes &middot; <span id="edgeCount">0</span> edges &middot; <span id="refreshTime">&mdash;</span>
+</div>
+<script>
+const cy = cytoscape({
+  container: document.getElementById('cy'),
+  style: [
+    { selector: 'node', style: { 'background-color': '#58a6ff', label: 'data(label)', 'text-valign': 'bottom', 'text-halign': 'center', color: '#c9d1d9', 'font-size': '11px', width: 20, height: 20 } },
+    { selector: 'edge', style: { width: 1, 'line-color': '#30363d', 'target-arrow-color': '#30363d', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', label: 'data(label)', color: '#8b949e', 'font-size': '9px', 'text-background-color': '#0d1117', 'text-background-opacity': 0.8 } },
+    { selector: ':selected', style: { 'border-width': 2, 'border-color': '#f0883e' } },
+    { selector: 'node[type="concept"]', style: { 'background-color': '#58a6ff' } },
+    { selector: 'node[type="person"]', style: { 'background-color': '#3fb950' } },
+    { selector: 'node[type="task"]', style: { 'background-color': '#d29922' } },
+    { selector: 'node[type="goal"]', style: { 'background-color': '#f0883e' } },
+    { selector: 'node[type="skill"]', style: { 'background-color': '#bc8cff' } },
+    { selector: 'node[type="memory"]', style: { 'background-color': '#79c0ff' } },
+    { selector: 'node[type="episode"]', style: { 'background-color': '#ff7b72' } },
+  ],
+  layout: { name: 'cose', animate: true, nodeRepulsion: 8000, idealEdgeLength: 100 },
+  wheelSensitivity: 0.3,
+});
+
+let graphData = { nodes: [], edges: [] };
+
+function refreshGraph() {
+  fetch('/api/v1/graph')
+    .then(r => r.json())
+    .then(resp => {
+      if (!resp.success) return;
+      graphData = resp.data;
+      const elements = [];
+      (graphData.nodes || []).forEach(n => {
+        elements.push({ data: { id: n.id, label: n.label, type: n.type } });
+      });
+      (graphData.edges || []).forEach(e => {
+        elements.push({ data: { source: e.source, target: e.target, label: e.relation || '' } });
+      });
+      cy.elements().remove();
+      cy.add(elements);
+      cy.layout({ name: 'cose', animate: true, nodeRepulsion: 8000, idealEdgeLength: 100 }).run();
+      document.getElementById('nodeCount').textContent = graphData.nodes.length;
+      document.getElementById('edgeCount').textContent = graphData.edges.length;
+      document.getElementById('refreshTime').textContent = new Date().toLocaleTimeString();
+    })
+    .catch(err => console.error('Refresh error:', err));
+}
+
+function searchNode() {
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  if (!q) return;
+  cy.nodes().forEach(n => {
+    const label = (n.data('label') || '').toLowerCase();
+    n.style('opacity', label.includes(q) ? 1 : 0.2);
+  });
+  cy.edges().forEach(e => {
+    const src = cy.getElementById(e.data('source'));
+    const tgt = cy.getElementById(e.data('target'));
+    e.style('opacity', (src.style('opacity') > 0.5 && tgt.style('opacity') > 0.5) ? 1 : 0.1);
+  });
+}
+
+function resetLayout() {
+  cy.nodes().style('opacity', 1);
+  cy.edges().style('opacity', 1);
+  cy.layout({ name: 'cose', animate: true, nodeRepulsion: 8000, idealEdgeLength: 100 }).run();
+}
+
+cy.on('tap', 'node', function(evt) {
+  const n = evt.target;
+  document.getElementById('infoTitle').textContent = n.data('label') || 'Node';
+  document.getElementById('infoType').textContent = 'Type: ' + (n.data('type') || '\u2014');
+  document.getElementById('infoId').textContent = 'ID: ' + (n.data('id') || '\u2014');
+  document.getElementById('nodeInfo').style.display = 'block';
+});
+
+cy.on('tap', function(evt) {
+  if (evt.target === cy) document.getElementById('nodeInfo').style.display = 'none';
+});
+
+refreshGraph();
+setInterval(refreshGraph, 30000);
+</script>
+</body>
+</html>

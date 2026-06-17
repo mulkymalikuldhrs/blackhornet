@@ -322,7 +322,7 @@ class BaseAgent(BaseModel):
             raise AgentTimeoutError(
                 f"Agent exceeded max iterations ({max_iter})",
                 agent_id=self.agent_id,
-                timeout=max_iter,
+                timeout_ms=max_iter * 1000,
             )
 
         return last_response

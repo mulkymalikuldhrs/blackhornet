@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Animasi: Header Ketik -->
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=36&duration=3000&pause=1000&color=FF6B35&center=true&vCenter=true&multiline=true&repeat=true&width=800&height=120&lines=HERMES+QUANT+OS;Infrastruktur+Trading+Otonom+Multi-Agent" alt="BLACKHORNET" />
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=36&duration=3000&pause=1000&color=FF6B35&center=true&vCenter=true&multiline=true&repeat=true&width=800&height=120&lines=BLACKHORNET+OS;Infrastruktur+Trading+Otonom+Multi-Agent" alt="BLACKHORNET" />
 
 <br/>
 
@@ -42,7 +42,7 @@
 curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/install.sh | bash
 ```
 
-**Selesai.** Satu perintah. Seluruh ekosistem immortal — 6 repo, Hermes Agent, 21 trading agent, swarm protocol, immortal daemon — terinstall sendiri. Tanpa tanya. Otonomi penuh.
+**Selesai.** Satu perintah. Seluruh ekosistem immortal — 6 repo, BH Agent, 21 trading agent, swarm protocol, immortal daemon — terinstall sendiri. Tanpa tanya. Otonomi penuh.
 
 Atau clone dulu:
 ```bash
@@ -52,9 +52,9 @@ cd blackhornet && bash install.sh
 
 Setelah install:
 ```bash
-bash hermes.sh all        # Bootstrap + daemon + agent + trading
-bash hermes.sh status      # Status sistem
-bash hermes.sh agent-status # Koneksi swarm
+bash bh.sh all        # Bootstrap + daemon + agent + trading
+bash bh.sh status      # Status sistem
+bash bh.sh agent-status # Koneksi swarm
 ```
 
 ### 🧬 Arsitektur Hive
@@ -108,9 +108,9 @@ Immortal → triple-layer proteksi
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=18&duration=4000&pause=1000&color=00FF88&center=true&vCenter=true&repeat=true&width=700&height=40&lines=Sistem+Trading+Otonom+Grade-Jarvis;Siap+Produksi+untuk+SaaS+%2B+Lokal" alt="Ketik" />
 </div>
 
-Hermes Quant Operating System adalah **infrastruktur trading dan riset otonom multi-agent tingkat produksi** yang dirancang untuk pertumbuhan modal yang konsisten dengan pelestarian risiko absolut. Sistem ini beroperasi berdasarkan prinsip bahwa keputusan trading harus **deterministik, berbasis data, dan tunduk pada batasan risiko yang tidak bisa di-override oleh agent manapun** — termasuk LLM itu sendiri.
+BlackHornet Quant Operating System adalah **infrastruktur trading dan riset otonom multi-agent tingkat produksi** yang dirancang untuk pertumbuhan modal yang konsisten dengan pelestarian risiko absolut. Sistem ini beroperasi berdasarkan prinsip bahwa keputusan trading harus **deterministik, berbasis data, dan tunduk pada batasan risiko yang tidak bisa di-override oleh agent manapun** — termasuk LLM itu sendiri.
 
-Arsitektur ini menyintesis pola terkuat dari empat repositori referensi ke dalam sistem trading terpadu, dibangun di atas framework Nous Research Hermes Agent:
+Arsitektur ini menyintesis pola terkuat dari empat repositori referensi ke dalam sistem trading terpadu, dibangun di atas framework Nous Research BH Agent:
 
 | Repositori Sumber | Kontribusi | Versi |
 |---|---|---|
@@ -141,7 +141,7 @@ Arsitektur ini menyintesis pola terkuat dari empat repositori referensi ke dalam
         │  Fork & Adaptasi
         ▼
 ┌───────────────────────────────────────────────────┐
-│        HERMES QUANT OPERATING SYSTEM               │
+│        BLACKHORNET QUANT OPERATING SYSTEM               │
 │        (blackhornet)                             │
 │                                                    │
 │  ┌─────────────────────────────────────────────┐  │
@@ -262,7 +262,7 @@ Setiap trade harus melewati semua 9 checkpoint. Risk Officer memiliki **FULL VET
 ┌─────────────────────────────────────────┐
 │  LAPISAN 3: ON-BOOT                     │
 │  Termux:Boot / systemd / cron @reboot   │
-│  → Menjalankan hermes.sh start on boot  │
+│  → Menjalankan bh.sh start on boot  │
 └──────────────────┬──────────────────────┘
                    │
 ┌──────────────────▼──────────────────────┐
@@ -318,7 +318,7 @@ cp config/.env.example config/.env
 # Edit config/.env dengan API keys Anda
 
 # Mulai dengan watchdog (auto-restart)
-bash hermes.sh start
+bash bh.sh start
 ```
 
 ---
@@ -326,13 +326,13 @@ bash hermes.sh start
 ## Perintah
 
 ```bash
-bash hermes.sh start      # Mulai dengan watchdog (auto-restart)
-bash hermes.sh stop       # Hentikan semua secara graceful
-bash hermes.sh restart    # Restart Hermes + Watchdog
-bash hermes.sh status     # Kesehatan sistem & status PnL
-bash hermes.sh logs       # Tail log terbaru
-bash hermes.sh health     # Health check detail
-bash hermes.sh install    # Install on-boot + auto-restart
+bash bh.sh start      # Mulai dengan watchdog (auto-restart)
+bash bh.sh stop       # Hentikan semua secara graceful
+bash bh.sh restart    # Restart BH + Watchdog
+bash bh.sh status     # Kesehatan sistem & status PnL
+bash bh.sh logs       # Tail log terbaru
+bash bh.sh health     # Health check detail
+bash bh.sh install    # Install on-boot + auto-restart
 ```
 
 ### Perintah Telegram Bot
@@ -445,7 +445,7 @@ Sistem mengikuti **pipeline deployment 5 tahap**. Kemajuan tahap memerlukan pers
 ```
 blackhornet/
 ├── src/
-│   ├── hermes_quant.py              # Controller agent utama
+│   ├── bh_quant.py              # Controller agent utama
 │   ├── watchdog.py                  # Daemon watchdog (monitor 10s)
 │   └── tools/
 │       ├── __init__.py
@@ -481,7 +481,7 @@ blackhornet/
 │   └── system_prompt.py             # Prompt sistem trading
 ├── schemas/
 │   └── trading_journal.sql          # Skema SQL 7-tabel
-├── hermes.sh                        # Script kontrol
+├── bh.sh                        # Script kontrol
 ├── AGENTS.md                        # Konstitusi operasional
 ├── CHANGELOG.md                     # Riwayat versi
 ├── ARCHITECTURE.md                  # Arsitektur sistem
@@ -499,7 +499,7 @@ blackhornet/
 
 | Versi | Tanggal | Nama Kode | Fitur Utama |
 |---|---|---|---|
-| 1.0.0 | 2026-05-20 | Genesis | 11 trading tools, adaptasi Hermes Agent |
+| 1.0.0 | 2026-05-20 | Genesis | 11 trading tools, adaptasi BH Agent |
 | 1.1.0 | 2026-05-21 | Polyglot | Dukungan LLM multi-provider (NVIDIA + Groq + OpenCode) |
 | 2.0.0 | 2026-05-22 | Immortal | Infrastruktur auto-restart & on-boot (3 lapisan) |
 | 3.0.0 | 2026-05-23 | Constitution | Framework konstitusional AGENTS.md, aturan risiko hardcoded |
@@ -589,7 +589,7 @@ Kami menerima kontribusi dari developer, analis kuantitatif, insinyur risiko, da
 
 Proyek ini dilisensikan di bawah MIT License — lihat file [LICENSE](./LICENSE) untuk detail.
 
-Hermes Agent asli oleh Nous Research juga dilisensikan di bawah MIT.
+BH Agent asli oleh Nous Research juga dilisensikan di bawah MIT.
 
 ---
 
@@ -597,7 +597,7 @@ Hermes Agent asli oleh Nous Research juga dilisensikan di bawah MIT.
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:1A1A2E,50:16213E,100:0F3460&height=80&section=footer&text=&fontSize=0&animation=fadeIn" width="100%" alt="Footer Wave" />
 
-**HERMES QUANT OPERATING SYSTEM**
+**BLACKHORNET QUANT OPERATING SYSTEM**
 
 *Otonom. Deterministik. Risk-First.*
 

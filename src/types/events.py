@@ -2,6 +2,8 @@
 
 Merges OpenHands Action/Observation pattern with Nanobot event types.
 Defines EventType, Action, Observation, Event, and EventStream.
+
+EventType is defined in models.py (unified superset).
 """
 
 from __future__ import annotations
@@ -14,16 +16,7 @@ from typing import Any, AsyncIterator, Callable, Coroutine, Optional
 
 from pydantic import BaseModel, Field
 
-
-class EventType(str, Enum):
-    """Top-level event types in the system."""
-
-    ACTION = "action"
-    OBSERVATION = "observation"
-    SYSTEM = "system"
-    ERROR = "error"
-    LIFECYCLE = "lifecycle"
-    CUSTOM = "custom"
+from .models import EventType
 
 
 class ActionType(str, Enum):

@@ -12,7 +12,7 @@ from typing import Any, Optional
 from src.config.logging_config import get_logger
 from src.core.base_agent import BaseAgent
 from src.types.agent import AgentCapabilities, AgentConfig, AgentRole, AgentState, SubagentSpawn
-from src.types.colony import ColonyConfig, ColonyTask, ColonyStatus, ColonyState, HandType
+from src.types.colony import ColonyConfig, ColonyTask, ColonyStatusReport, ColonyState, HandType
 from src.agents.colony.prompts import (
     COLONY_SYSTEM_PROMPT,
     COLONY_COORDINATION_PROMPT,
@@ -308,13 +308,13 @@ class ColonyAgent(BaseAgent):
 
         return response.content
 
-    def get_colony_status(self) -> ColonyStatus:
+    def get_colony_status(self) -> ColonyStatusReport:
         """Get the structured colony status.
 
         Returns:
-            ColonyStatus with current metrics.
+            ColonyStatusReport with current metrics.
         """
-        return ColonyStatus(
+        return ColonyStatusReport(
             colony_id=self.config.colony_id or self.agent_id,
             name=self.name,
             state=ColonyState.ACTIVE if self.state == AgentState.RUNNING else ColonyState.IDLE,

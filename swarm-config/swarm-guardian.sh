@@ -6,7 +6,7 @@
 # Auto-nudges idle agents, rotates keys on rate limits, restarts dead
 # ============================================================
 
-SWARM_DIR="/root/.hermes"
+SWARM_DIR="/root/.bh"
 WS="/root/.openclaw-autoclaw/workspace"
 LOG_DIR="${SWARM_DIR}/supervisor-logs"
 HEALTH_LOG="${LOG_DIR}/health.log"
@@ -70,9 +70,9 @@ restart_agent() {
   rm -f "${SWARM_DIR}/profiles/${p}/gateway.pid" \
         "${SWARM_DIR}/profiles/${p}/gateway.lock" \
         "${SWARM_DIR}/profiles/${p}/gateway_state.json" 2>/dev/null
-  rm -f /root/.local/state/hermes/gateway-locks/telegram-bot-token-*.lock 2>/dev/null
+  rm -f /root/.local/state/bh/gateway-locks/telegram-bot-token-*.lock 2>/dev/null
   # Start
-  HERMES_HOME="${SWARM_DIR}/profiles/${p}" \
+  BH_HOME="${SWARM_DIR}/profiles/${p}" \
     setsid hermes gateway run --accept-hooks --replace \
     >> "${LOG_DIR}/${p}.log" 2>&1 &
   echo $! > "${LOG_DIR}/${p}.pid"

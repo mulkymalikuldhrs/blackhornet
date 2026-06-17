@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""HERMES HIVE — Sovereign Control Panel"""
+"""BLACKHORNET HIVE — Sovereign Control Panel"""
 import sys, json, os, urllib.request, subprocess
 from pathlib import Path
 from datetime import datetime, timezone
@@ -28,7 +28,7 @@ def check_proc(name):
 def main():
     print()
     print(f"{M}{B}╔══════════════════════════════════════════════════╗{N}")
-    print(f"{M}{B}║{N}  {B}HERMES HIVE — Sovereign Control{N}                    {M}{B}║{N}")
+    print(f"{M}{B}║{N}  {B}BLACKHORNET HIVE — Sovereign Control{N}                    {M}{B}║{N}")
     print(f"{M}{B}║{N}  {D}Empire of Mulky Malikul Dhaher{N}                       {M}{B}║{N}")
     print(f"{M}{B}║{N}  {D}{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}{N}                           {M}{B}║{N}")
     print(f"{M}{B}╠══════════════════════════════════════════════════╣{N}")

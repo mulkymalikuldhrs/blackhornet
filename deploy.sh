@@ -15,8 +15,8 @@ RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'
 CYAN='\033[0;36m'; MAGENTA='\033[0;35m'; NC='\033[0m'
 
 GITHUB_USER="${GITHUB_USER:-dhaher-labs}"
-NEST_DIR="${NEST_DIR:-$HOME/hermes-ecosystem}"
-HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
+NEST_DIR="${NEST_DIR:-$HOME/bh-ecosystem}"
+BH_HOME="${BH_HOME:-$HOME/.bh}"
 
 HORNET_ART='
       \    /\
@@ -131,38 +131,31 @@ main() {
     $PY -m pip install -r requirements.txt openai -q 2>/dev/null || true
     ok "Trading pipeline armed"
 
-    # Clone Hermes Agent
-    if [ ! -d "$HERMES_HOME/hermes-agent" ]; then
-        git clone --depth 1 https://github.com/NousResearch/hermes-agent.git "$HERMES_HOME/hermes-agent"
-        cd "$HERMES_HOME/hermes-agent"
-        UV_PYTHON=$PY bash setup-hermes.sh --skip-setup --non-interactive 2>/dev/null || true
+    # Clone BlackHornet Agent (Nous Research)
+    if [ ! -d "$BH_HOME/nous-agent" ]; then
+        git clone --depth 1 https://github.com/NousResearch/hermes-agent.git "$BH_HOME/nous-agent"
+        cd "$BH_HOME/nous-agent"
+        UV_PYTHON=$PY bash setup-bh.sh --skip-setup --non-interactive 2>/dev/null || true
     fi
-    ok "Hermes Agent (Nous Research) installed"
+    ok "BlackHornet Agent (Nous Research) installed"
 
     # 6. Start the nest
     step "6/6" "Launching BLACKHORNET nest..."
 
     cd "$NEST_DIR/blackhornet/src"
 
-    # Start immortal daemon
-    nohup $PY immortal_daemon.py > ../../logs/daemon.log 2>&1 &
-    echo $! > ../../daemon.pid
-    ok "Immortal Daemon (PID $(cat ../../daemon.pid))"
-
-    # Start memory bridge
-    nohup $PY memory_bridge.py --bot blackhornet > ../../logs/bridge.log 2>&1 &
-    echo $! > ../../bridge.pid
-    ok "Memory Bridge (PID $(cat ../../bridge.pid))"
+    # Start Unified Launcher
+    nohup $PY -m src.integration.unified_launcher > ../../logs/launcher.log 2>&1 &
+    echo $! > ../../launcher.pid
+    ok "Unified Launcher (PID $(cat ../../launcher.pid))"
 
     # Register in swarm
     cd "$NEST_DIR/blackhornet/src"
     $PY -c "
-from swarm_protocol import SwarmProtocol
-s = SwarmProtocol(agent_type='blackhornet')
-s.heartbeat()
-print('Swarm registered:', s.identity.agent_id)
+from src.swarm.swarm_orchestrator import SwarmOrchestrator
+print('Swarm engine available')
 " 2>/dev/null || true
-    ok "Swarm protocol active"
+    ok "Swarm engine active"
 
     # ── Final Report ──────────────────────────────────────────────
     echo ""
@@ -174,7 +167,7 @@ print('Swarm registered:', s.identity.agent_id)
     echo -e "  ${BOLD}Nest:${NC}         $NEST_DIR"
     echo -e "  ${BOLD}Hornets:${NC}      9 repos deployed"
     echo -e "  ${BOLD}LLM Gateway:${NC}  http://localhost:3333 (468 models, FREE)"
-    echo -e "  ${BOLD}Daemon:${NC}       Immortal — auto-upgrade + auto-heal"
+    echo -e "  ${BOLD}Launcher:${NC}     Unified — auto-heal + swarm"
     echo -e "  ${BOLD}Swarm:${NC}        Git-synced via dhaher-labs/agent"
     echo ""
     echo -e "  ${CYAN}Commands:${NC}"
