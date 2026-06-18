@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional
 import logging as _logging
 
 try:
-    from pydantic import Field
+    from pydantic import Field, field_validator
     from pydantic_settings import BaseSettings as _BaseSettings
 
     class _HasConfig:
@@ -62,10 +62,10 @@ try:
         model_config = {"env_prefix": "MULTICOLONY_MEMORY_"}
 
     class APISettings(_BaseSettings):
-        host: str = "0.0.0.0"
+        host: str = "127.0.0.1"
         port: int = 8000
         workers: int = 4
-        cors_origins: List[str] = Field(default_factory=lambda: ["http://localhost:3000", "http://localhost:8000", "http://localhost:8080"])
+        cors_origins: List[str] = Field(default_factory=lambda: ["http://localhost:3000", "http://localhost:8080"])
         cors_methods: List[str] = Field(default_factory=lambda: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"])
         cors_headers: List[str] = Field(default_factory=lambda: ["Authorization", "Content-Type", "X-API-Key", "X-Request-ID"])
         api_key_enabled: bool = True
@@ -78,22 +78,26 @@ try:
         ws_max_connections: int = 100
         model_config = {"env_prefix": "MULTICOLONY_API_"}
 
-        def _warn_wildcard_cors_in_production(self):
-            if self.cors_origins == ["*"]:
+        @field_validator("jwt_secret")
+        @classmethod
+        def _validate_jwt_secret(cls, v: str) -> str:
+            debug_env = os.getenv("MULTICOLONY_DEBUG", "false").lower() in ("1", "true", "yes")
+            if not v:
+                if not debug_env:
+                    raise ValueError("jwt_secret MUST be set via MULTICOLONY_API_JWT_SECRET")
+            elif v in ("change-me-in-production", "secret", "changeme"):
+                raise ValueError(f"jwt_secret set to insecure default '{v}'")
+            return v
+
+        @field_validator("cors_origins")
+        @classmethod
+        def _warn_wildcard_cors(cls, v: List[str]) -> List[str]:
+            if v == ["*"]:
                 debug_env = os.getenv("MULTICOLONY_DEBUG", "false").lower() in ("1", "true", "yes")
                 if not debug_env:
                     _logging.getLogger(__name__).warning(
                         "SECURITY WARNING: cors_origins is set to wildcard ['*'] in production."
                     )
-            return self
-
-        def _validate_jwt_secret(cls, v: str) -> str:
-            if not v:
-                debug_env = os.getenv("MULTICOLONY_DEBUG", "false").lower() in ("1", "true", "yes")
-                if not debug_env:
-                    raise ValueError("jwt_secret MUST be set via MULTICOLONY_API_JWT_SECRET")
-            elif v in ("change-me-in-production", "secret", "changeme"):
-                raise ValueError(f"jwt_secret set to insecure default '{v}'")
             return v
 
     class ChannelSettings(_BaseSettings):
@@ -125,6 +129,16 @@ try:
         escalation_default_ttl_s: int = 3600
         approval_timeout_s: int = 300
         model_config = {"env_prefix": "MULTICOLONY_SECURITY_"}
+
+        @field_validator("credential_encryption_key")
+        @classmethod
+        def _validate_encryption_key(cls, v: str) -> str:
+            if not v:
+                _logging.getLogger(__name__).warning(
+                    "SECURITY WARNING: credential_encryption_key is empty. "
+                    "Set MULTICOLONY_SECURITY_CREDENTIAL_ENCRYPTION_KEY for credential encryption."
+                )
+            return v
 
     class Settings(_BaseSettings):
         app_name: str = "ai-multicolony"

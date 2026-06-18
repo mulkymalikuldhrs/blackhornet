@@ -1,0 +1,41 @@
+# E2B Sandbox Configuration for BlackHornet
+# https://e2b.dev/docs
+
+[sandbox]
+# Base image — Python 3.11 slim with system deps
+base_image = "python:3.11-slim"
+
+# Build configuration
+build_directory = "."
+
+# Ports exposed by the sandbox
+# 3333 = ProxyGateLLM (LLM gateway)
+# 8080 = Web UI / Unified Launcher
+# 3001 = Mnemosyne (Next.js dashboard)
+ports = [3333, 8080, 3001]
+
+# CPU and memory (E2B free tier: 0.5 CPU, 512MB)
+cpu_count = 1
+memory_mb = 1024
+
+# Disk size in MB
+disk_size_mb = 1024
+
+# Startup command — runs when sandbox boots
+# Uses the Docker entrypoint which starts all services
+startup_command = "bash /entrypoint.sh"
+
+# Environment variables
+[env]
+BH_HOME = "/root/.bh"
+PYTHONDONTWRITEBYTECODE = "1"
+PYTHONUNBUFFERED = "1"
+
+# Health check configuration
+[health]
+# Primary health: ProxyGateLLM on port 3333
+command = "curl -sf http://localhost:3333/health || exit 1"
+interval_seconds = 30
+timeout_seconds = 5
+retries = 3
+start_period_seconds = 10

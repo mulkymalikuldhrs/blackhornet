@@ -10,22 +10,30 @@ B = '\033[1m'; D = '\033[2m'
 G = '\033[0;32m'; R = '\033[0;31m'; Y = '\033[0;33m'
 C = '\033[0;36m'; M = '\033[0;35m'; N = '\033[0m'
 
-def ok(s): return f"{G}✅{N} {s}"
-def no(s): return f"{R}❌{N} {s}"
-def wn(s): return f"{Y}⚠️{N} {s}"
-def hd(s): return f"{C}{B}{s}{N}"
+def ok(s: str) -> str:
+    return f"{G}✅{N} {s}"
 
-def check_url(url, t=3):
+def no(s: str) -> str:
+    return f"{R}❌{N} {s}"
+
+def wn(s: str) -> str:
+    return f"{Y}⚠️{N} {s}"
+
+def hd(s: str) -> str:
+    return f"{C}{B}{s}{N}"
+
+def check_url(url: str, t: int = 3) -> bool:
     try:
         r = urllib.request.urlopen(url, timeout=t)
         return r.status == 200
-    except: return False
+    except Exception:
+        return False
 
-def check_proc(name):
+def check_proc(name: str):
     r = subprocess.run(['pgrep', '-f', name], capture_output=True, text=True)
     return r.stdout.strip() if r.returncode == 0 else None
 
-def main():
+def main() -> None:
     print()
     print(f"{M}{B}╔══════════════════════════════════════════════════╗{N}")
     print(f"{M}{B}║{N}  {B}BLACKHORNET HIVE — Sovereign Control{N}                    {M}{B}║{N}")
@@ -40,7 +48,7 @@ def main():
             r = urllib.request.urlopen('http://localhost:3333/health', timeout=3)
             d = json.loads(r.read())
             print(f"{M}{B}║{N}   {ok('ProxyGateLLM v' + str(d.get('version','?')) + ' ONLINE')}")
-        except:
+        except Exception:
             print(f"{M}{B}║{N}   {ok('ProxyGateLLM ONLINE')}")
     else:
         print(f"{M}{B}║{N}   {no('ProxyGateLLM OFFLINE')}")

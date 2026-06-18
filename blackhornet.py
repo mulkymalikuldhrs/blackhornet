@@ -106,7 +106,7 @@ class BlackHornetNest:
     Orchestrates all hornet agents across all repos.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.running = True
         self.start_time = time.time()
         self.hornets: Dict[str, Dict] = {}
@@ -114,12 +114,12 @@ class BlackHornetNest:
         signal.signal(signal.SIGTERM, self._shutdown)
         signal.signal(signal.SIGINT, self._shutdown)
 
-    def _shutdown(self, signum, frame):
+    def _shutdown(self, signum: int, frame: object) -> None:
         logger.info("Nest shutting down...")
         self.running = False
         self.nest_status = "SHUTDOWN"
 
-    def roar(self):
+    def roar(self) -> None:
         """Display the BLACKHORNET banner."""
         print(f"\033[1;30;47m{HORNET_ART}\033[0m")
         print(f"\033[1;30;47m  {ECOSYSTEM_NAME} v{VERSION} — Sovereign: {SOVEREIGN}  \033[0m")
@@ -176,7 +176,7 @@ class BlackHornetNest:
 
         return True
 
-    def start_hornets(self):
+    def start_hornets(self) -> None:
         """Start all hornet services in the nest."""
         logger.info("Starting hornet swarm...")
 
@@ -269,7 +269,7 @@ class BlackHornetNest:
         try:
             r = urllib.request.urlopen("http://localhost:3333/health", timeout=3)
             health["proxygate"] = r.status == 200
-        except:
+        except Exception:
             pass
 
         # Check Daemon (unified launcher)
@@ -288,7 +288,7 @@ class BlackHornetNest:
                 md = MarketDataTool()
                 data = json.loads(md.get_ohlcv('XAUUSD', '1d', 1))
                 health["trading_pipeline"] = len(data.get("data", [])) > 0
-            except:
+            except Exception:
                 pass
 
         return health
@@ -332,7 +332,7 @@ class BlackHornetNest:
             logger.error(f"Self-push failed: {e}")
             return False
 
-    def immortal_daemon(self, interval: int = 300):
+    def immortal_daemon(self, interval: int = 300) -> None:
         """Immortal self-healing daemon loop.
         Every `interval` seconds:
         - Check health of all services
@@ -393,7 +393,7 @@ class BlackHornetNest:
                     )
                     logger.info("  🔧 Auto-healed: Unified Launcher restarted")
 
-    def run(self):
+    def run(self) -> None:
         """Main nest loop — keeps everything alive."""
         self.roar()
         self.deploy_nest()
@@ -421,7 +421,7 @@ class BlackHornetNest:
         logger.info("Nest closed. Hornets continue autonomously.")
 
 
-def main():
+def main() -> None:
     import argparse
     parser = argparse.ArgumentParser(description="🖤 BLACKHORNET — Sovereign Autonomous Ecosystem")
     parser.add_argument("--deploy", action="store_true", help="Deploy nest (clone all repos)")

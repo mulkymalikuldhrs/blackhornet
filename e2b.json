@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/e2b-dev/e2b/main/packages/cli/src/config/schema.json",
+  "template": {
+    "name": "blackhornet-hive",
+    "description": "BlackHornet Autonomous Multi-Agent Trading Ecosystem",
+    "base_docker_image": "python:3.11-slim",
+    "cpu_count": 1,
+    "memory_mb": 1024,
+    "disk_size_mb": 1024,
+    "ports": {
+      "3333": {
+        "alias": "ProxyGateLLM",
+        "protocol": "TCP"
+      },
+      "8080": {
+        "alias": "Web UI",
+        "protocol": "TCP"
+      },
+      "3001": {
+        "alias": "Mnemosyne",
+        "protocol": "TCP"
+      }
+    },
+    "env": {
+      "BH_HOME": "/root/.bh",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONUNBUFFERED": "1"
+    }
+  },
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "ignore": [
+      ".git",
+      "__pycache__",
+      "*.pyc",
+      "logs/*",
+      "data/*",
+      "node_modules",
+      ".pytest_cache"
+    ]
+  }
+}

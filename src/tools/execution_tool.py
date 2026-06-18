@@ -22,13 +22,15 @@ class ExecutionTool:
     """L4 Agent: Execution - Trade execution with Risk Officer gate"""
 
     MODES = ["paper", "mt5", "oanda", "binance"]
+    DEFAULT_BALANCE = 10000.0
 
-    def __init__(self, mode: str = "paper", shared_state: Optional[Any] = None) -> None:
+    def __init__(self, mode: str = "paper", shared_state: Optional[Any] = None,
+                 account_balance: Optional[float] = None) -> None:
         self.mode = mode
         self.pending_orders: List[Dict[str, Any]] = []
         self.executed_trades: List[Dict[str, Any]] = []
         self.rejected_trades: List[Dict[str, Any]] = []
-        self.account_balance = 10000.0  # Default paper balance
+        self.account_balance = account_balance or self.DEFAULT_BALANCE
         self._shared_state = shared_state
 
     @property

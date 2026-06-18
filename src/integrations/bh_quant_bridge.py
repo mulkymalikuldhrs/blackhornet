@@ -11,6 +11,7 @@ When the circuit is OPEN, unavailable/fallback responses are returned.
 from __future__ import annotations
 
 import importlib
+import json
 import logging
 import os
 import sys
@@ -148,19 +149,24 @@ class BlackHornetQuantBridge:
         result: Dict[str, Any] = {"symbol": symbol, "error": None}
 
         try:
-            # Market data
+            # Market data — fetch once, reuse for TA and SMC
             market_data = self._get_tool("market_data")
+            ohlcv_data = None
             if market_data:
                 ohlcv = market_data.get_ohlcv(symbol)
                 result["ohlcv"] = ohlcv
+                # Parse OHLCV for downstream tools
+                if isinstance(ohlcv, str):
+                    parsed = json.loads(ohlcv)
+                    ohlcv_data = parsed.get("data", [])
+                elif isinstance(ohlcv, dict):
+                    ohlcv_data = ohlcv.get("data", [])
 
             # Technical analysis
             ta = self._get_tool("technical_analysis")
-            if ta and market_data:
-                data = market_data.get_ohlcv(symbol) if hasattr(market_data, 'get_ohlcv') else []
-                if data:
-                    analysis = ta.analyze(data)
-                    result["signals"] = analysis
+            if ta and ohlcv_data:
+                analysis = ta.analyze(ohlcv_data)
+                result["signals"] = analysis
 
             # Market state / regime
             mse = self._get_tool("market_state_engine")
@@ -170,11 +176,9 @@ class BlackHornetQuantBridge:
 
             # SMC analysis
             smc = self._get_tool("smc_agent_enhanced")
-            if smc and market_data:
-                data = market_data.get_ohlcv(symbol) if hasattr(market_data, 'get_ohlcv') else []
-                if data:
-                    smc_result = smc.analyze(data)
-                    result["smc_analysis"] = smc_result
+            if smc and ohlcv_data:
+                smc_result = smc.analyze(ohlcv_data)
+                result["smc_analysis"] = smc_result
 
             self._circuit_breaker.record_success()
 
@@ -210,7 +214,9 @@ class BlackHornetQuantBridge:
 
             kill = self._get_tool("kill_switch")
             if kill:
-                ks_status = kill.check_auto_trigger()
+                daily_pnl = risk.daily_pnl if risk else 0.0
+                weekly_pnl = risk.weekly_pnl if risk else 0.0
+                ks_status = kill.check_auto_trigger(daily_pnl, weekly_pnl)
                 result["kill_switch_active"] = ks_status
 
             self._circuit_breaker.record_success()
@@ -247,8 +253,12 @@ class BlackHornetQuantBridge:
 
             decision = self._get_tool("decision_engine")
             if decision:
-                eval_result = decision.evaluate(symbol)
-                result["evaluation"] = eval_result
+                try:
+                    eval_result = decision.synthesize(symbol)
+                    result["evaluation"] = json.loads(eval_result) if isinstance(eval_result, str) else eval_result
+                except Exception as syn_err:
+                    logger.warning("DecisionEngine synthesize failed for %s: %s", symbol, syn_err)
+                    result["evaluation"] = {"action": "NO_TRADE", "error": str(syn_err)}
 
             self._circuit_breaker.record_success()
 

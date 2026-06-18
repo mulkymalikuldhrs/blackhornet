@@ -76,15 +76,15 @@ main() {
     # Python 3.11+
     PY=""
     for p in python3.11 python3.12 python3 python3.10; do
-        if command -v $p &>/dev/null; then
-            v=$($p --version 2>&1 | grep -oP '\d+\.\d+' | head -1)
+        if command -v "$p" &>/dev/null; then
+            v=$("$p" --version 2>&1 | grep -oP '\d+\.\d+' | head -1)
             if [ "$(echo "$v" | cut -d. -f1)" -ge 3 ]; then
-                PY=$p; break
+                PY="$p"; break
             fi
         fi
     done
     [ -n "$PY" ] || die "Python 3 required"
-    ok "Python: $($PY --version)"
+    ok "Python: $("$PY" --version)"
 
     # Node.js
     command -v node &>/dev/null || die "Node.js required (for ProxyGateLLM)"
@@ -142,7 +142,9 @@ main() {
     # 5. Install blackhornet deps
     step "5/6" "Arming trading hornets..."
     cd "$NEST_DIR/blackhornet"
-    $PY -m pip install -r requirements.txt openai -q 2>/dev/null || true
+    "$PY" -m venv .venv 2>/dev/null || true
+    . .venv/bin/activate 2>/dev/null || true
+    "$PY" -m pip install -r requirements.txt openai -q 2>/dev/null || true
     ok "Trading pipeline armed"
 
     # Clone BlackHornet Agent (Nous Research)
@@ -150,7 +152,7 @@ main() {
         git clone --depth 1 https://github.com/NousResearch/hermes-agent.git "$BH_HOME/nous-agent" 2>/dev/null || true
         if [ -d "$BH_HOME/nous-agent" ]; then
             cd "$BH_HOME/nous-agent"
-            UV_PYTHON=$PY bash setup-bh.sh --skip-setup --non-interactive 2>/dev/null || true
+            UV_PYTHON="$PY" bash setup-bh.sh --skip-setup --non-interactive 2>/dev/null || true
         fi
     fi
     ok "BlackHornet Agent (Nous Research) installed"
@@ -158,16 +160,15 @@ main() {
     # 6. Start the nest
     step "6/6" "Launching BLACKHORNET nest..."
 
-    cd "$NEST_DIR/blackhornet/src"
+    cd "$NEST_DIR/blackhornet"
 
-    # Start Unified Launcher
-    nohup $PY -m src.integration.unified_launcher > ../../logs/launcher.log 2>&1 &
-    echo $! > ../../launcher.pid
-    ok "Unified Launcher (PID $(cat ../../launcher.pid))"
+    # Start Unified Launcher (must run from project root for module imports)
+    nohup "$PY" -m src.integration.unified_launcher --port 8080 > logs/launcher.log 2>&1 &
+    echo "$!" > launcher.pid
+    ok "Unified Launcher (PID $(cat launcher.pid))"
 
     # Register in swarm
-    cd "$NEST_DIR/blackhornet/src"
-    $PY -c "
+    "$PY" -c "
 from src.swarm.swarm_orchestrator import SwarmOrchestrator
 print('Swarm engine available')
 " 2>/dev/null || true

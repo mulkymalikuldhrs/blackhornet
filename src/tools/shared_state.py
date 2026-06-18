@@ -162,6 +162,9 @@ class SharedState:
                 last_reset = state.get("last_reset")
                 if last_reset:
                     ro.last_reset = datetime.fromisoformat(last_reset).date()
+                last_weekly_reset = state.get("last_weekly_reset")
+                if last_weekly_reset is not None:
+                    ro.last_weekly_reset = last_weekly_reset
                 logger.info(f"Restored RiskOfficer state: daily_pnl={ro.daily_pnl:.4f}")
 
             # Restore kill switch state
@@ -212,7 +215,8 @@ class SharedState:
             "trade_count_week": ro.trade_count_week,
             "veto_count": ro.veto_count,
             "approval_count": ro.approval_count,
-            "last_reset": ro.last_reset.isoformat() if ro.last_reset else None
+            "last_reset": ro.last_reset.isoformat() if ro.last_reset else None,
+            "last_weekly_reset": getattr(ro, 'last_weekly_reset', None)
         }
         self._persist_key("risk_officer_state", json.dumps(state))
 

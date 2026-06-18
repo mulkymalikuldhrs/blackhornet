@@ -15,8 +15,11 @@ logger = logging.getLogger("blackhornet.Portfolio")
 class PortfolioTool:
     """L3 Agent: Portfolio Manager - Allocation & position sizing"""
 
-    def __init__(self) -> None:
-        self.account_balance = 10000.0
+    DEFAULT_BALANCE = 10000.0
+    MARGIN_MULTIPLIER = 0.9  # 90% of balance available for margin
+
+    def __init__(self, account_balance: Optional[float] = None) -> None:
+        self.account_balance = account_balance or self.DEFAULT_BALANCE
         self.positions: List[Dict[str, Any]] = []
         self.allocations: Dict[str, float] = {}
 
@@ -32,7 +35,7 @@ class PortfolioTool:
             "total_risk": f"{total_risk:.2%}",
             "total_exposure": round(total_exposure, 2),
             "leverage": f"{leverage:.1f}x",
-            "available_margin": round(self.account_balance * 0.9 - total_exposure, 2),
+            "available_margin": round(self.account_balance * self.MARGIN_MULTIPLIER - total_exposure, 2),
             "positions": self.positions,
             "timestamp": datetime.now().isoformat()
         }, indent=2)

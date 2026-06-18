@@ -1,0 +1,17 @@
+.git
+.gitignore
+.env
+.env.*
+*.pyc
+__pycache__
+.mypy_cache
+.pytest_cache
+.venv
+venv
+node_modules
+logs/
+data/
+*.log
+launcher.pid
+bh-ecosystem/
+.bh/

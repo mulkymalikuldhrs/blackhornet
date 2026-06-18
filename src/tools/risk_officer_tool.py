@@ -33,14 +33,22 @@ class RiskOfficerTool:
         self.veto_count = 0
         self.approval_count = 0
         self.last_reset = datetime.now().date()
+        self.last_weekly_reset = datetime.now().isocalendar()[1]  # ISO week number
 
     def _reset_daily_if_needed(self) -> None:
-        """Reset daily counters if new day"""
+        """Reset daily counters if new day, weekly counters if new week"""
         today = datetime.now().date()
+        current_week = datetime.now().isocalendar()[1]
+
         if today > self.last_reset:
             self.daily_pnl = 0.0
             self.trade_count_today = 0
             self.last_reset = today
+
+        if current_week != self.last_weekly_reset:
+            self.weekly_pnl = 0.0
+            self.trade_count_week = 0
+            self.last_weekly_reset = current_week
 
     def check_trade(self, symbol: str, direction: str, lot_size: float,
                     entry: float, stop_loss: float, account_balance: float = 10000.0,

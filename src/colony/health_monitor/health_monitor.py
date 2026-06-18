@@ -116,7 +116,7 @@ class ColonyHealthMonitor:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                print(f"Health monitor loop error: {e}")
+                logger.error(f"Health monitor loop error: {e}")
                 await asyncio.sleep(1)
 
     async def _recovery_loop(self) -> None:
@@ -127,12 +127,12 @@ class ColonyHealthMonitor:
                 if self._nest:
                     status = self._orchestrator.get_status()
                     if status.get("pending_recoveries", 0) > 0:
-                        print(f"Pending recoveries: {status['pending_recoveries']}")
+                        logger.info(f"Pending recoveries: {status['pending_recoveries']}")
                 await asyncio.sleep(10)
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                print(f"Recovery loop error: {e}")
+                logger.error(f"Recovery loop error: {e}")
                 await asyncio.sleep(1)
 
     def record_peer_heartbeat(self, peer_id: str) -> None:

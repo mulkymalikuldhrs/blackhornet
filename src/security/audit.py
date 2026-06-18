@@ -75,7 +75,7 @@ class FileAuditStorage:
 
     def __init__(self, file_path: str = "/var/log/multicolony/audit.jsonl"):
         self.file_path = Path(file_path)
-        self.file_path.parent.mkdir(parents=True, exist_ok=True)
+        self.file_path.parent.mkdir(parents=True, exist_ok=True, mode=0o750)
         self._entries: List[AuditEntry] = []
         self._hash_chain: List[str] = []
         self._load_existing()
@@ -105,11 +105,16 @@ class FileAuditStorage:
     def append(self, entry: AuditEntry, chain_hash: str) -> None:
         self._entries.append(entry)
         self._hash_chain.append(chain_hash)
-        # Append to file immediately
+        # Append to file immediately with restrictive permissions
         data = entry.model_dump(mode="json")
         data["chain_hash"] = chain_hash
-        with open(self.file_path, "a") as f:
-            f.write(json.dumps(data) + "\n")
+        fd = os.open(str(self.file_path), os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o640)
+        try:
+            with os.fdopen(fd, "a") as f:
+                f.write(json.dumps(data) + "\n")
+        except Exception:
+            os.close(fd)
+            raise
 
     def query(self, query: AuditQuery) -> List[AuditEntry]:
         results = self._entries

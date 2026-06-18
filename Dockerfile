@@ -1,5 +1,5 @@
 # BH Hive — Docker Production Image
-FROM python:3.11-slim
+FROM python:3.11-slim AS builder
 
 LABEL org.opencontainers.image.title="BH Hive"
 LABEL org.opencontainers.image.description="Autonomous Multi-Agent Trading Ecosystem — swarm intelligence, self-healing, immortal"
@@ -30,11 +30,17 @@ RUN pip install -e .
 RUN mkdir -p /root/.bh logs data
 ENV BH_HOME=/root/.bh
 
-# Expose ports
-EXPOSE 3333 3001
+# Create non-root user for security
+RUN groupadd -r blackhornet && useradd -r -g blackhornet -d /blackhornet -s /sbin/nologin blackhornet
+RUN chown -R blackhornet:blackhornet /blackhornet /root/.bh
 
 # Entrypoint — start everything
 COPY deploy/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+USER blackhornet
+
+# Expose ports
+EXPOSE 3333 3001
 
 ENTRYPOINT ["/entrypoint.sh"]

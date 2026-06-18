@@ -23,6 +23,8 @@ from src.colony_types import (
     EscalationRecord,
     AuditEntry,
     AuditEvent,
+    AuditEventType,
+    RoleDef,
 )
 from ..config import get_settings
 
