@@ -104,7 +104,7 @@ def main():
     # Repos
     print(f"{M}{B}║{N} {hd('📦 ECOSYSTEM (7 repos)')}")
     repos = ['blackhornet','Quant-Nanggroe-AI','AI-MultiColony-Ecosystem',
-             'Vibe-Trading','AutoHedge','ProxyGateLLM','mnemosyne']
+             'Vibe-Trading','ProxyGateLLM','mnemosyne']
     base = Path(__file__).parent
     ws = base.parent
     for repo in repos:

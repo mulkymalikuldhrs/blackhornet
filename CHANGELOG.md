@@ -1,5 +1,31 @@
 # Changelog — BlackHornet
 
+## [6.0.0] — 2026-06-18
+
+### Added — Sovereign Immortal Empire
+- **Multi-platform mirror fallback** — Codeberg → GitLab → GitHub for all repo clones
+- **Self-push capability** — auto-commit and push changes to all mirrors (`--self-push`)
+- **Immortal self-healing daemon** — `--immortal` flag for continuous health monitoring, auto-restart, auto-pull, auto-push
+- **Auto-heal** — ProxyGateLLM and Unified Launcher auto-restart on failure
+- **Auto-pull** — repos auto-update every 10 daemon cycles
+
+### Changed
+- **All GitHub URLs → Codeberg/GitLab** — primary mirrors moved to Codeberg (Dhaher-Labs), GitLab (mulkymalikuldhr) as fallback
+- **deploy.sh** — rewritten with `clone_repo()` multi-platform fallback, removed `GITHUB_USER` variable
+- **blackhornet.py** — ECOSYSTEM_REPOS now uses `urls` array (3 mirrors), `deploy_nest()` adds pull-on-exist + fallback clone
+- **Sovereign panel** — removed AutoHedge from ecosystem list
+
+### Removed
+- **AutoHedge** — repo does not exist on Codeberg/GitLab (404), removed from all configs
+- **GITHUB_USER** — replaced with `CODEBERG_USER` + `GITLAB_USER`
+- **Redundant "blackhornet" in deploy.sh REPOS** — already cloned in step 2
+
+### Fixed
+- Dockerfile WORKDIR consistency with entrypoint.sh paths
+- deploy.sh curl URL now points to Codeberg instead of GitHub raw
+
+---
+
 ## [5.1.0] — 2026-06-18
 
 ### Added — Phase 14: Mesh Healing + MCP Deepening + UI/TUI Hardening + Trading Intelligence

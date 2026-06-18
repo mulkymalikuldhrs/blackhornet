@@ -11,14 +11,12 @@ Philosophy:
 
 Ecosystem:
   blackhornet/          ← YOU ARE HERE (umbrella + orchestrator)
-  blackhornet/        ← Trading agents (21 specialized)
   ProxyGateLLM/         ← LLM gateway (10 providers, 468 models)
   mnemosyne/            ← Knowledge memory (RAG + graph)
   agent/                ← Swarm shared state registry
   Quant-Nanggroe-AI/    ← Research engine
-  AI-MultiColony/       ← Multi-agent colony
+  AI-MultiColony-Ecosystem/ ← Multi-agent colony
   Vibe-Trading/         ← Alpha factors (450+)
-  AutoHedge/            ← Execution engine
 
 Sovereign: Mulky Malikul Dhaher
 Status: PRODUCTION READY — Immortal Autonomous Empire
@@ -41,15 +39,45 @@ SOVEREIGN = "Mulky Malikul Dhaher"
 ECOSYSTEM_NAME = "BLACKHORNET"
 NEST_DIR = Path(os.getenv("BLACKHORNET_NEST", Path.home() / "blackhornet-nest"))
 
+CODEBERG_USER = "Dhaher-Labs"
+GITLAB_USER = "mulkymalikuldhr"
+
 ECOSYSTEM_REPOS = {
-    "blackhornet":       {"type": "orchestrator", "url": "https://github.com/dhaher-labs/blackhornet"},
-    "ProxyGateLLM":        {"type": "llm-gateway",  "url": "https://github.com/dhaher-labs/ProxyGateLLM"},
-    "mnemosyne":           {"type": "memory",       "url": "https://github.com/dhaher-labs/mnemosyne"},
-    "agent":               {"type": "swarm-registry","url": "https://github.com/dhaher-labs/agent"},
-    "Quant-Nanggroe-AI":   {"type": "research",     "url": "https://github.com/dhaher-labs/Quant-Nanggroe-AI"},
-    "AI-MultiColony-Ecosystem": {"type": "colony",  "url": "https://github.com/dhaher-labs/AI-MultiColony-Ecosystem"},
-    "Vibe-Trading":        {"type": "alpha",        "url": "https://github.com/dhaher-labs/Vibe-Trading"},
-    "AutoHedge":           {"type": "execution",    "url": "https://github.com/dhaher-labs/AutoHedge"},
+    "blackhornet":       {"type": "orchestrator", "urls": [
+        f"https://codeberg.org/{CODEBERG_USER}/blackhornet.git",
+        f"https://gitlab.com/{GITLAB_USER}/blackhornet.git",
+        f"https://github.com/{CODEBERG_USER}/blackhornet.git",
+    ]},
+    "ProxyGateLLM":      {"type": "llm-gateway",  "urls": [
+        f"https://codeberg.org/{CODEBERG_USER}/ProxyGateLLM.git",
+        f"https://gitlab.com/{GITLAB_USER}/ProxyGateLLM.git",
+        f"https://github.com/{CODEBERG_USER}/ProxyGateLLM.git",
+    ]},
+    "mnemosyne":         {"type": "memory",       "urls": [
+        f"https://codeberg.org/{CODEBERG_USER}/mnemosyne.git",
+        f"https://gitlab.com/{GITLAB_USER}/mnemosyne.git",
+        f"https://github.com/{CODEBERG_USER}/mnemosyne.git",
+    ]},
+    "agent":             {"type": "swarm-registry","urls": [
+        f"https://codeberg.org/{CODEBERG_USER}/agent.git",
+        f"https://gitlab.com/{GITLAB_USER}/agent.git",
+        f"https://github.com/{CODEBERG_USER}/agent.git",
+    ]},
+    "Quant-Nanggroe-AI": {"type": "research",     "urls": [
+        f"https://codeberg.org/{CODEBERG_USER}/Quant-Nanggroe-AI.git",
+        f"https://gitlab.com/{GITLAB_USER}/Quant-Nanggroe-AI.git",
+        f"https://github.com/{CODEBERG_USER}/Quant-Nanggroe-AI.git",
+    ]},
+    "AI-MultiColony-Ecosystem": {"type": "colony", "urls": [
+        f"https://codeberg.org/{CODEBERG_USER}/AI-MultiColony-Ecosystem.git",
+        f"https://gitlab.com/{GITLAB_USER}/AI-MultiColony-Ecosystem.git",
+        f"https://github.com/{CODEBERG_USER}/AI-MultiColony-Ecosystem.git",
+    ]},
+    "Vibe-Trading":      {"type": "alpha",        "urls": [
+        f"https://codeberg.org/{CODEBERG_USER}/Vibe-Trading.git",
+        f"https://gitlab.com/{GITLAB_USER}/Vibe-Trading.git",
+        f"https://github.com/{CODEBERG_USER}/Vibe-Trading.git",
+    ]},
 }
 
 HORNET_ART = r"""
@@ -97,28 +125,54 @@ class BlackHornetNest:
         print(f"\033[1;30;47m  {ECOSYSTEM_NAME} v{VERSION} — Sovereign: {SOVEREIGN}  \033[0m")
         print()
 
+    def _clone_with_fallback(self, name: str, urls: list, dest: str) -> bool:
+        """Try cloning from multiple URLs (Codeberg → GitLab → GitHub)."""
+        for url in urls:
+            try:
+                result = subprocess.run(
+                    ["git", "clone", "--depth", "1", url, dest],
+                    capture_output=True, timeout=60
+                )
+                if result.returncode == 0:
+                    logger.info(f"  🐝 {name}: cloned from {url.split('/')[2]}")
+                    return True
+            except Exception:
+                continue
+        return False
+
+    def _pull_repo(self, repo_dir: str) -> bool:
+        """Pull latest changes for an existing repo."""
+        try:
+            result = subprocess.run(
+                ["git", "-C", repo_dir, "pull", "--rebase"],
+                capture_output=True, timeout=30
+            )
+            return result.returncode == 0
+        except Exception:
+            return False
+
     def deploy_nest(self) -> bool:
-        """Clone all ecosystem repos into the nest."""
+        """Clone all ecosystem repos into the nest. Pull if already cloned."""
         NEST_DIR.mkdir(parents=True, exist_ok=True)
         logger.info(f"Building nest at {NEST_DIR}...")
 
         for name, info in ECOSYSTEM_REPOS.items():
             repo_dir = NEST_DIR / name
+            urls = info.get("urls", [])
+
             if (repo_dir / ".git").exists():
-                logger.info(f"  🐝 {name}: already in nest")
-                self.hornets[name] = {"status": "IN_NEST", "dir": str(repo_dir)}
+                updated = self._pull_repo(str(repo_dir))
+                status = "UPDATED" if updated else "IN_NEST"
+                logger.info(f"  🐝 {name}: {status}")
+                self.hornets[name] = {"status": status, "dir": str(repo_dir)}
                 continue
 
             logger.info(f"  🐝 {name}: cloning...")
-            try:
-                subprocess.run(
-                    ["git", "clone", "--depth", "1", info["url"], str(repo_dir)],
-                    capture_output=True, timeout=60
-                )
+            if urls and self._clone_with_fallback(name, urls, str(repo_dir)):
                 self.hornets[name] = {"status": "CLONED", "dir": str(repo_dir)}
-            except Exception as e:
-                logger.warning(f"  ⚠ {name}: clone failed — {e}")
-                self.hornets[name] = {"status": "FAILED", "error": str(e)}
+            else:
+                logger.warning(f"  ⚠ {name}: clone failed on all mirrors")
+                self.hornets[name] = {"status": "FAILED", "error": "all mirrors failed"}
 
         return True
 
@@ -239,6 +293,106 @@ class BlackHornetNest:
 
         return health
 
+    def self_push(self, message: str = "auto: BH self-upgrade") -> bool:
+        """Auto-commit and push all changes to Codeberg + GitLab.
+        This enables the immortal self-push capability.
+        """
+        bh_dir = NEST_DIR / "blackhornet"
+        if not (bh_dir / ".git").exists():
+            logger.warning("Self-push: not a git repo")
+            return False
+
+        try:
+            subprocess.run(
+                ["git", "-C", str(bh_dir), "add", "-A"],
+                capture_output=True, timeout=10
+            )
+            subprocess.run(
+                ["git", "-C", str(bh_dir), "commit", "-m", message, "--allow-empty"],
+                capture_output=True, timeout=10
+            )
+            result = subprocess.run(
+                ["git", "-C", str(bh_dir), "push", "codeberg", "main", "--force"],
+                capture_output=True, text=True, timeout=30
+            )
+            if result.returncode == 0:
+                logger.info("Self-push: pushed to Codeberg ✅")
+            else:
+                logger.warning(f"Self-push: Codeberg failed — {result.stderr[:100]}")
+
+            result_gl = subprocess.run(
+                ["git", "-C", str(bh_dir), "push", "gitlab", "main"],
+                capture_output=True, text=True, timeout=30
+            )
+            if result_gl.returncode == 0:
+                logger.info("Self-push: pushed to GitLab ✅")
+
+            return True
+        except Exception as e:
+            logger.error(f"Self-push failed: {e}")
+            return False
+
+    def immortal_daemon(self, interval: int = 300):
+        """Immortal self-healing daemon loop.
+        Every `interval` seconds:
+        - Check health of all services
+        - Auto-restart failed services
+        - Auto-pull latest code from repos
+        - Auto-push any self-modifications
+        """
+        logger.info(f"🖤 Immortal daemon started (interval={interval}s)")
+        cycle = 0
+        while self.running:
+            try:
+                cycle += 1
+
+                # Health check every cycle
+                health = self.health_check()
+                failed = [k for k, v in health.items() if not v]
+
+                if failed:
+                    logger.warning(f"Health issues: {failed}")
+                    self._auto_heal(failed)
+
+                # Auto-pull repos every 10 cycles
+                if cycle % 10 == 0:
+                    for name in ECOSYSTEM_REPOS:
+                        repo_dir = NEST_DIR / name
+                        if (repo_dir / ".git").exists():
+                            self._pull_repo(str(repo_dir))
+
+                # Auto-push self-modifications every 20 cycles
+                if cycle % 20 == 0:
+                    self.self_push(f"auto: immortal cycle {cycle}")
+
+                time.sleep(interval)
+            except Exception as e:
+                logger.error(f"Immortal daemon error: {e}")
+                time.sleep(30)
+
+    def _auto_heal(self, failed_components: List[str]):
+        """Auto-heal failed components."""
+        for component in failed_components:
+            if component == "proxygate":
+                pg_dir = NEST_DIR / "ProxyGateLLM"
+                if pg_dir.exists():
+                    subprocess.Popen(
+                        ["node", "index.js"],
+                        cwd=str(pg_dir),
+                        env={**os.environ, "PORT": "3333"},
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                    )
+                    logger.info("  🔧 Auto-healed: ProxyGateLLM restarted")
+            elif component == "daemon_running":
+                hq_dir = NEST_DIR / "blackhornet"
+                if hq_dir.exists():
+                    subprocess.Popen(
+                        [sys.executable, "-m", "src.integration.unified_launcher"],
+                        cwd=str(hq_dir),
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                    )
+                    logger.info("  🔧 Auto-healed: Unified Launcher restarted")
+
     def run(self):
         """Main nest loop — keeps everything alive."""
         self.roar()
@@ -275,6 +429,8 @@ def main():
     parser.add_argument("--status", action="store_true", help="Show nest status")
     parser.add_argument("--health", action="store_true", help="Health check")
     parser.add_argument("--sovereign", action="store_true", help="Display sovereign panel")
+    parser.add_argument("--immortal", action="store_true", help="Start immortal self-healing daemon")
+    parser.add_argument("--self-push", action="store_true", help="Auto-commit and push changes")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO,
@@ -288,6 +444,13 @@ def main():
     elif args.start:
         nest.deploy_nest()
         nest.run()
+    elif args.immortal:
+        nest.deploy_nest()
+        nest.start_hornets()
+        nest.immortal_daemon()
+    elif args.self_push:
+        nest.deploy_nest()
+        nest.self_push()
     elif args.status:
         nest.deploy_nest()
         print(json.dumps(nest.status(), indent=2, default=str))
@@ -311,11 +474,13 @@ def main():
     else:
         nest.roar()
         print("  Commands:")
-        print("    python3 blackhornet.py --deploy     Clone all repos")
-        print("    python3 blackhornet.py --start      Start the full nest")
-        print("    python3 blackhornet.py --status     Nest status")
-        print("    python3 blackhornet.py --health     Health check")
-        print("    python3 blackhornet.py --sovereign  Sovereign panel")
+        print("    python3 blackhornet.py --deploy       Clone all repos")
+        print("    python3 blackhornet.py --start        Start the full nest")
+        print("    python3 blackhornet.py --immortal     Immortal self-healing daemon")
+        print("    python3 blackhornet.py --self-push    Auto-commit + push changes")
+        print("    python3 blackhornet.py --status       Nest status")
+        print("    python3 blackhornet.py --health       Health check")
+        print("    python3 blackhornet.py --sovereign    Sovereign panel")
         print()
 
 

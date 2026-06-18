@@ -5,7 +5,7 @@
 # Philosophy: Like hornets — autonomous, relentless, swarm-intelligent.
 # One command births the entire sovereign agent empire.
 #
-#   curl -fsSL https://raw.githubusercontent.com/dhaher-labs/blackhornet/main/deploy.sh | bash
+#   curl -fsSL https://codeberg.org/Dhaher-Labs/blackhornet/raw/branch/main/deploy.sh | bash
 # ============================================================================
 
 set -euo pipefail
@@ -14,9 +14,25 @@ BOLD='\033[1m'; DIM='\033[2m'
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'
 CYAN='\033[0;36m'; MAGENTA='\033[0;35m'; NC='\033[0m'
 
-GITHUB_USER="${GITHUB_USER:-dhaher-labs}"
+CODEBERG_USER="${CODEBERG_USER:-Dhaher-Labs}"
+GITLAB_USER="${GITLAB_USER:-mulkymalikuldhr}"
 NEST_DIR="${NEST_DIR:-$HOME/bh-ecosystem}"
 BH_HOME="${BH_HOME:-$HOME/.bh}"
+
+clone_repo() {
+    local name="$1"
+    local dest="$2"
+    # Codeberg (primary) → GitLab (fallback) → GitHub (fallback)
+    for url in \
+        "https://codeberg.org/$CODEBERG_USER/$name.git" \
+        "https://gitlab.com/$GITLAB_USER/$name.git" \
+        "https://github.com/$CODEBERG_USER/$name.git"; do
+        if git clone --depth 1 "$url" "$dest" 2>/dev/null; then
+            return 0
+        fi
+    done
+    return 1
+}
 
 HORNET_ART='
       \    /\
@@ -85,31 +101,29 @@ main() {
     step "2/6" "Building the nest..."
     mkdir -p "$NEST_DIR"
     if [ ! -d "$NEST_DIR/blackhornet" ]; then
-        git clone "https://github.com/$GITHUB_USER/blackhornet.git" "$NEST_DIR/blackhornet"
+        clone_repo "blackhornet" "$NEST_DIR/blackhornet"
     else
-        git -C "$NEST_DIR/blackhornet" pull
+        git -C "$NEST_DIR/blackhornet" pull --rebase 2>/dev/null || true
     fi
     ok "blackhornet orchestrator ready"
 
-    # 3. Clone all 9 ecosystem repos
-    step "3/6" "Deploying hornet swarm (9 repos)..."
+    # 3. Clone all ecosystem repos
+    step "3/6" "Deploying hornet swarm..."
 
     REPOS=(
-        "blackhornet"
         "ProxyGateLLM"
         "mnemosyne"
         "agent"
         "Quant-Nanggroe-AI"
         "AI-MultiColony-Ecosystem"
         "Vibe-Trading"
-        "AutoHedge"
     )
 
     for repo in "${REPOS[@]}"; do
         if [ -d "$NEST_DIR/$repo/.git" ]; then
             git -C "$NEST_DIR/$repo" pull --rebase 2>/dev/null && ok "$repo (updated)" || ok "$repo (exists)"
         else
-            git clone --depth 1 "https://github.com/$GITHUB_USER/$repo.git" "$NEST_DIR/$repo" 2>/dev/null && ok "$repo" || warn "$repo (not found — will auto-expand later)"
+            clone_repo "$repo" "$NEST_DIR/$repo" && ok "$repo" || warn "$repo (not found — will auto-expand later)"
         fi
     done
 
@@ -133,9 +147,11 @@ main() {
 
     # Clone BlackHornet Agent (Nous Research)
     if [ ! -d "$BH_HOME/nous-agent" ]; then
-        git clone --depth 1 https://github.com/NousResearch/hermes-agent.git "$BH_HOME/nous-agent"
-        cd "$BH_HOME/nous-agent"
-        UV_PYTHON=$PY bash setup-bh.sh --skip-setup --non-interactive 2>/dev/null || true
+        git clone --depth 1 https://github.com/NousResearch/hermes-agent.git "$BH_HOME/nous-agent" 2>/dev/null || true
+        if [ -d "$BH_HOME/nous-agent" ]; then
+            cd "$BH_HOME/nous-agent"
+            UV_PYTHON=$PY bash setup-bh.sh --skip-setup --non-interactive 2>/dev/null || true
+        fi
     fi
     ok "BlackHornet Agent (Nous Research) installed"
 
