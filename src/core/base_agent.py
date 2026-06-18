@@ -32,11 +32,11 @@ from src.core.llm_provider import LLMProvider, LLMResponse
 from src.core.memory_manager import MemoryManager
 from src.core.tool_registry import ToolRegistry
 from src.exceptions import AgentError, AgentStateError, AgentTimeoutError
-from src.types.agent import AgentCapabilities, AgentConfig, AgentOutput, AgentRole, AgentState, AgentStatus, SubagentSpawn
-from src.types.events import Action, ActionType, Event, EventType, Observation, ObservationType
-from src.types.memory import MemoryType
-from src.types.messages import Message, MessageRole
-from src.types.tools import ToolCall, ToolResult
+from src.colony_types.agent import AgentCapabilities, AgentConfig, AgentOutput, AgentRole, AgentState, AgentStatus, SubagentSpawn
+from src.colony_types.events import Action, ActionType, Event, EventType, Observation, ObservationType
+from src.colony_types.memory import MemoryType
+from src.colony_types.messages import Message, MessageRole
+from src.colony_types.tools import ToolCall, ToolResult
 
 logger = get_logger(__name__)
 
@@ -89,6 +89,20 @@ class BaseAgent(BaseModel):
         super().__init__(**data)
         if self.config.name == "unnamed-agent":
             self.config.name = f"{self.config.role.value}-agent"
+
+    # === Lifecycle Hooks ===
+
+    async def on_start(self) -> None:
+        """Hook called when agent starts running. Override in subclasses."""
+
+    async def on_pause(self) -> None:
+        """Hook called when agent is paused. Override in subclasses."""
+
+    async def on_resume(self) -> None:
+        """Hook called when agent resumes from pause. Override in subclasses."""
+
+    async def on_shutdown(self) -> None:
+        """Hook called when agent terminates. Override in subclasses."""
 
     @property
     def agent_id(self) -> str:
@@ -178,8 +192,6 @@ class BaseAgent(BaseModel):
         if new_state not in allowed:
             raise AgentStateError(
                 f"Invalid state transition from {self.state.value} to {new_state.value}",
-                agent_id=self.agent_id,
-                current_state=self.state.value,
             )
 
         old_state = self.state
@@ -235,6 +247,8 @@ class BaseAgent(BaseModel):
         self.iteration_count = 0
         self.error_count = 0
 
+        await self.on_start()
+
         # Add system prompt if configured
         if self.config.system_prompt and not any(m.role == MessageRole.SYSTEM for m in self.messages):
             self.messages.append(Message(role=MessageRole.SYSTEM, content=self.config.system_prompt))
@@ -266,7 +280,7 @@ class BaseAgent(BaseModel):
         except Exception as e:
             self._transition_to(AgentState.ERROR)
             self.error_count += 1
-            raise AgentError(str(e), agent_id=self.agent_id) from e
+            raise AgentError(str(e)) from e
         finally:
             self.finished_at = time.time()
             self.current_task = None
@@ -319,10 +333,10 @@ class BaseAgent(BaseModel):
                     return f"Agent failed after {self.error_count} errors: {e}"
 
         if self.iteration_count >= max_iter:
+            elapsed_ms = int((time.time() - (self.started_at or time.time())) * 1000)
             raise AgentTimeoutError(
                 f"Agent exceeded max iterations ({max_iter})",
-                agent_id=self.agent_id,
-                timeout_ms=max_iter * 1000,
+                timeout_ms=elapsed_ms,
             )
 
         return last_response
@@ -499,16 +513,19 @@ class BaseAgent(BaseModel):
     async def pause(self) -> None:
         """Pause the agent."""
         if self.state == AgentState.RUNNING:
+            await self.on_pause()
             self._transition_to(AgentState.PAUSED)
 
     async def resume(self) -> None:
         """Resume the agent from pause."""
         if self.state == AgentState.PAUSED:
+            await self.on_resume()
             self._transition_to(AgentState.RUNNING)
 
     async def terminate(self) -> None:
         """Terminate the agent."""
         if self.state != AgentState.TERMINATED:
+            await self.on_shutdown()
             self._transition_to(AgentState.TERMINATED)
 
     def get_status(self) -> AgentStatus:

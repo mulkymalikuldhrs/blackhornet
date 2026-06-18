@@ -9,6 +9,7 @@ usage statistics.
 from __future__ import annotations
 
 import logging
+import threading
 import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
@@ -51,6 +52,7 @@ class ShortTermMemory:
         self._access_count: int = 0
         self._eviction_count: int = 0
         self._expiry_count: int = 0
+        self._lock = threading.RLock()
 
     # ── Public API ─────────────────────────────────────────────────
 
@@ -74,25 +76,27 @@ class ShortTermMemory:
         """
         now = time.time()
 
-        # Evict oldest entry if at capacity (before adding)
-        if len(self._store) >= self.max_entries:
-            _evicted_key, _evicted_entry = self._store.popitem(last=False)
-            self._eviction_count += 1
-            logger.debug("Evicted oldest entry: %s", _evicted_key)
+        with self._lock:
+            # Remove existing entry with same key first to avoid
+            # unnecessary eviction when replacing a known key
+            if key in self._store:
+                del self._store[key]
 
-        entry = STMEntry(
-            key=key,
-            content=content,
-            metadata=metadata or {},
-            created_at=now,
-            ttl_seconds=ttl if ttl is not None else self.default_ttl,
-        )
+            # Evict oldest entry if at capacity
+            if len(self._store) >= self.max_entries:
+                _evicted_key, _evicted_entry = self._store.popitem(last=False)
+                self._eviction_count += 1
+                logger.debug("Evicted oldest entry: %s", _evicted_key)
 
-        # Remove existing entry with same key to maintain freshness
-        if key in self._store:
-            del self._store[key]
+            entry = STMEntry(
+                key=key,
+                content=content,
+                metadata=metadata or {},
+                created_at=now,
+                ttl_seconds=ttl if ttl is not None else self.default_ttl,
+            )
 
-        self._store[key] = entry
+            self._store[key] = entry
         return entry
 
     def get(self, key: str) -> Optional[STMEntry]:
@@ -100,44 +104,48 @@ class ShortTermMemory:
 
         Returns ``None`` and removes the entry if it has expired.
         """
-        entry = self._store.get(key)
-        if entry is None:
-            return None
+        with self._lock:
+            entry = self._store.get(key)
+            if entry is None:
+                return None
 
-        self._access_count += 1
+            self._access_count += 1
 
-        if entry.is_expired:
-            del self._store[key]
-            self._expiry_count += 1
-            logger.debug("Removed expired entry: %s", key)
-            return None
+            if entry.is_expired:
+                del self._store[key]
+                self._expiry_count += 1
+                logger.debug("Removed expired entry: %s", key)
+                return None
 
-        # Move to end to mark as recently used
-        self._store.move_to_end(key)
-        return entry
+            # Move to end to mark as recently used
+            self._store.move_to_end(key)
+            return entry
 
     def remove(self, key: str) -> bool:
         """Remove an entry by key.
 
         Returns ``True`` if the entry existed and was removed.
         """
-        if key in self._store:
-            del self._store[key]
-            return True
-        return False
+        with self._lock:
+            if key in self._store:
+                del self._store[key]
+                return True
+            return False
 
     def clear(self) -> None:
         """Remove all entries and reset statistics."""
-        self._store.clear()
-        self._access_count = 0
-        self._eviction_count = 0
-        self._expiry_count = 0
+        with self._lock:
+            self._store.clear()
+            self._access_count = 0
+            self._eviction_count = 0
+            self._expiry_count = 0
 
     def recent(self, n: int = 10) -> list[STMEntry]:
         """Return the *n* most recent non-expired entries."""
-        self._purge_expired()
-        entries = list(self._store.values())
-        return entries[-n:]
+        with self._lock:
+            self._purge_expired()
+            entries = list(self._store.values())
+            return entries[-n:]
 
     def search(self, query: str) -> list[STMEntry]:
         """Simple substring/prefix search across all non-expired entries.
@@ -145,36 +153,40 @@ class ShortTermMemory:
         Returns entries whose *key* or *content* contains *query*
         (case-insensitive).
         """
-        self._purge_expired()
-        q = query.lower()
-        results: list[STMEntry] = []
-        for entry in self._store.values():
-            if q in entry.key.lower() or q in entry.content.lower():
-                results.append(entry)
-        return results
+        with self._lock:
+            self._purge_expired()
+            q = query.lower()
+            results: list[STMEntry] = []
+            for entry in self._store.values():
+                if q in entry.key.lower() or q in entry.content.lower():
+                    results.append(entry)
+            return results
 
     def all_entries(self) -> list[STMEntry]:
         """Return all non-expired entries."""
-        self._purge_expired()
-        return list(self._store.values())
+        with self._lock:
+            self._purge_expired()
+            return list(self._store.values())
 
     def count(self) -> int:
         """Return the number of non-expired entries."""
-        self._purge_expired()
-        return len(self._store)
+        with self._lock:
+            self._purge_expired()
+            return len(self._store)
 
     def stats(self) -> dict[str, Any]:
         """Return usage statistics for this short-term memory store."""
-        self._purge_expired()
-        return {
-            "max_entries": self.max_entries,
-            "current_entries": len(self._store),
-            "usage_ratio": round(len(self._store) / max(1, self.max_entries), 3),
-            "default_ttl_seconds": self.default_ttl,
-            "access_count": self._access_count,
-            "eviction_count": self._eviction_count,
-            "expiry_count": self._expiry_count,
-        }
+        with self._lock:
+            self._purge_expired()
+            return {
+                "max_entries": self.max_entries,
+                "current_entries": len(self._store),
+                "usage_ratio": round(len(self._store) / max(1, self.max_entries), 3),
+                "default_ttl_seconds": self.default_ttl,
+                "access_count": self._access_count,
+                "eviction_count": self._eviction_count,
+                "expiry_count": self._expiry_count,
+            }
 
     # ── Internal helpers ───────────────────────────────────────────
 

@@ -1,5 +1,28 @@
 # Changelog — BlackHornet
 
+## [5.1.0] — 2026-06-18
+
+### Added — Phase 14: Mesh Healing + MCP Deepening + UI/TUI Hardening + Trading Intelligence
+- **ColonyHealthMonitor** — unified health monitoring with phi-accrual failure detection, circuit breakers, and self-healing orchestration
+- **MCP initialize handshake** — protocol version negotiation, capabilities exchange, client info tracking
+- **6 Colony MCP tools** — colony.status, colony.sync, colony.agents, colony.radar, colony.mesh, colony.nest
+- **SSE Transport** — real-time streaming for MCP (exported from src/mcp)
+- **WebSocketHandler** — bridges EventBus events to WebSocket clients for real-time push updates
+- **TUI auto-refresh** — watch/unwatch commands for periodic data refresh
+- **TradingAnalyst** — IntelligenceBridge-powered trading analysis with market analysis, signal generation, trade explanations, and pattern learning
+- **Queen trade/market commands** — analyze, signal, explain, stats
+- **50 Audit Agents** — comprehensive security, code quality, infrastructure, compliance, and operational audit agents
+- **50 Specialist Agents** — production-ready specialist agents covering backend, frontend, DevOps, security, data, communications, architecture, operations, and governance
+- **AGENT_ROSTER.md** — complete documentation for all 110 agents
+
+### Fixed
+- Pydantic v1/v2 compatibility in src/mcp/protocol.py (model_validator → validator)
+- ColonyHealthMonitor test failures (AsyncMock for async methods, missing _recover_component, get_stats)
+- types namespace collision (src/types/ → src/colony_types/)
+- Missing stubs for agent_sandbox and agent.memory_provider
+
+---
+
 ## [5.0.0] — 2026-06-17
 
 ### Added
@@ -21,7 +44,7 @@
 - Dockerfile: removed dead GitHub URLs, fixed setup script
 - Version numbers: aligned to 4.1.0 across all files
 - Secrets: removed real API keys from config/.env
-- Rebrand: completed 12 remaining hermes references
+- Rebrand: completed 12 remaining BH references
 - Agent count: 22 → 10 (actual BaseAgent subclasses)
 - Package count: 27+ → 25 (actual packages)
 - Memory description: 8 files/2822 lines/SQLite → 17 files/7126 lines/Python-native

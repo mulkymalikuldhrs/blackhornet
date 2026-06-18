@@ -11,8 +11,8 @@ from typing import Any, Optional
 
 from src.config.logging_config import get_logger
 from src.core.base_agent import BaseAgent
-from src.types.agent import AgentCapabilities, AgentConfig, AgentRole, AgentState, SubagentSpawn
-from src.types.colony import ColonyConfig, ColonyTask, ColonyStatusReport, ColonyState, HandType
+from src.colony_types.agent import AgentCapabilities, AgentConfig, AgentRole, AgentState, SubagentSpawn
+from src.colony_types.colony import ColonyConfig, ColonyTask, ColonyStatusReport, ColonyState, HandType
 from src.agents.colony.prompts import (
     COLONY_SYSTEM_PROMPT,
     COLONY_COORDINATION_PROMPT,

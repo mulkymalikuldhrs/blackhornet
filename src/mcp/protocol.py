@@ -10,7 +10,14 @@ import json
 import uuid
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field, ConfigDict, model_validator
+from pydantic import BaseModel, Field
+
+try:
+    from pydantic import ConfigDict, model_validator
+    PYDANTIC_V2 = True
+except ImportError:
+    from pydantic import validator
+    PYDANTIC_V2 = False
 
 
 # ── Standard JSON-RPC 2.0 error codes ───────────────────────────
@@ -150,64 +157,97 @@ class JSONRPCError(BaseModel):
 
 class JSONRPCRequest(BaseModel):
     """JSON-RPC 2.0 request message."""
-    model_config = ConfigDict(frozen=False)
+    if PYDANTIC_V2:
+        model_config = ConfigDict(frozen=False)
 
     jsonrpc: str = "2.0"
     id: str = Field(default_factory=lambda: uuid.uuid4().hex[:12])
     method: str = ""
     params: Dict[str, Any] = Field(default_factory=dict)
 
-    @model_validator(mode="after")
-    def validate_request(self) -> "JSONRPCRequest":
-        if self.jsonrpc != "2.0":
-            raise ValueError(f"Invalid jsonrpc version: {self.jsonrpc}")
-        return self
+    if PYDANTIC_V2:
+        @model_validator(mode="after")
+        def validate_request(self) -> "JSONRPCRequest":
+            if self.jsonrpc != "2.0":
+                raise ValueError(f"Invalid jsonrpc version: {self.jsonrpc}")
+            return self
+    else:
+        @validator("jsonrpc")
+        def validate_jsonrpc(cls, v: str) -> str:
+            if v != "2.0":
+                raise ValueError(f"Invalid jsonrpc version: {v}")
+            return v
 
     def serialize(self) -> bytes:
         """Serialize to JSON bytes."""
-        return self.model_dump_json().encode("utf-8")
+        if PYDANTIC_V2:
+            return self.model_dump_json().encode("utf-8")
+        return self.json().encode("utf-8")
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    if not PYDANTIC_V2:
+        @validator("jsonrpc")
+        def _validate_jsonrpc(cls, v: str) -> str:
+            if v != "2.0":
+                raise ValueError(f"Invalid jsonrpc version: {v}")
+            return v
 
 
 class JSONRPCNotification(BaseModel):
     """JSON-RPC 2.0 notification (no id, no response expected)."""
-    model_config = ConfigDict(frozen=False)
+    if PYDANTIC_V2:
+        model_config = ConfigDict(frozen=False)
 
     jsonrpc: str = "2.0"
     method: str = ""
     params: Dict[str, Any] = Field(default_factory=dict)
 
     def serialize(self) -> bytes:
-        return self.model_dump_json().encode("utf-8")
+        if PYDANTIC_V2:
+            return self.model_dump_json().encode("utf-8")
+        return self.json().encode("utf-8")
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class JSONRPCResponse(BaseModel):
     """JSON-RPC 2.0 response message."""
-    model_config = ConfigDict(frozen=False)
+    if PYDANTIC_V2:
+        model_config = ConfigDict(frozen=False)
 
     jsonrpc: str = "2.0"
     id: str = ""
     result: Optional[Dict[str, Any]] = None
     error: Optional[Dict[str, Any]] = None
 
-    @model_validator(mode="after")
-    def validate_response(self) -> "JSONRPCResponse":
-        # A response must have either result or error, but not both
-        if self.result is not None and self.error is not None:
-            raise ValueError("Response must not have both result and error")
-        return self
+    if PYDANTIC_V2:
+        @model_validator(mode="after")
+        def validate_response(self) -> "JSONRPCResponse":
+            if self.result is not None and self.error is not None:
+                raise ValueError("Response must not have both result and error")
+            return self
 
     def is_success(self) -> bool:
         return self.error is None
 
     def serialize(self) -> bytes:
-        return self.model_dump_json().encode("utf-8")
+        if PYDANTIC_V2:
+            return self.model_dump_json().encode("utf-8")
+        return self.json().encode("utf-8")
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 # ── Batch support ────────────────────────────────────────────────
 
 class JSONRPCBatchRequest(BaseModel):
     """A batch of JSON-RPC 2.0 requests."""
-    model_config = ConfigDict(frozen=False)
+    if PYDANTIC_V2:
+        model_config = ConfigDict(frozen=False)
 
     requests: List[JSONRPCRequest] = Field(default_factory=list)
 
@@ -215,12 +255,18 @@ class JSONRPCBatchRequest(BaseModel):
         self.requests.append(request)
 
     def serialize(self) -> bytes:
-        return json.dumps([r.model_dump() for r in self.requests]).encode("utf-8")
+        if PYDANTIC_V2:
+            return json.dumps([r.model_dump() for r in self.requests]).encode("utf-8")
+        return json.dumps([json.loads(r.json()) for r in self.requests]).encode("utf-8")
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class JSONRPCBatchResponse(BaseModel):
     """A batch of JSON-RPC 2.0 responses."""
-    model_config = ConfigDict(frozen=False)
+    if PYDANTIC_V2:
+        model_config = ConfigDict(frozen=False)
 
     responses: List[JSONRPCResponse] = Field(default_factory=list)
 
@@ -228,7 +274,12 @@ class JSONRPCBatchResponse(BaseModel):
         self.responses.append(response)
 
     def serialize(self) -> bytes:
-        return json.dumps([r.model_dump() for r in self.responses]).encode("utf-8")
+        if PYDANTIC_V2:
+            return json.dumps([r.model_dump() for r in self.responses]).encode("utf-8")
+        return json.dumps([json.loads(r.json()) for r in self.responses]).encode("utf-8")
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 # ── Parsing / factory functions ──────────────────────────────────

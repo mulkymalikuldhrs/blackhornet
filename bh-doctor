@@ -44,7 +44,7 @@ class BHDoctor:
         self._components: Dict[str, Any] = {}
         self._running = False
         self._start_time = time.time()
-        self._pid_dir = BASE_DIR
+        self._pid_dir = BASE_DIR / "data"
         signal.signal(signal.SIGTERM, lambda *_: self.stop())
         signal.signal(signal.SIGINT, lambda *_: self.stop())
 
@@ -56,10 +56,11 @@ class BHDoctor:
 
         logger.info("Starting BH Doctor services...")
         (BASE_DIR / "logs").mkdir(parents=True, exist_ok=True)
+        (BASE_DIR / "data").mkdir(parents=True, exist_ok=True)
+        sys.path.insert(0, str(BASE_DIR / "src"))
 
         # 1. Graph store
         try:
-            sys.path.insert(0, str(BASE_DIR / "src"))
             from graph.graph_store import GraphStore
             gs = GraphStore()
             self._components["graph_store"] = gs
@@ -118,13 +119,31 @@ class BHDoctor:
         try:
             from core.event_bus import EventBus
             eb = EventBus()
+            eb._running = True
             self._components["event_bus"] = eb
             started.append("event_bus")
             results["event_bus"] = "ok"
         except Exception as exc:
             results["event_bus"] = str(exc)
 
-        # 7. Web server
+        # 7. SessionRecorder (wired to EventBus + AutoGraphUpdater)
+        try:
+            from graph.session_recorder import SessionRecorder
+            sr = SessionRecorder(
+                auto_updater=self._components.get("auto_graph_updater"),
+                graph_store=self._components.get("graph_store"),
+                entity_tracker=self._components.get("entity_tracker"),
+                relationship_mapper=self._components.get("relationship_mapper"),
+                event_bus=self._components.get("event_bus"),
+            )
+            sr.start()
+            self._components["session_recorder"] = sr
+            started.append("session_recorder")
+            results["session_recorder"] = "ok"
+        except Exception as exc:
+            results["session_recorder"] = str(exc)
+
+        # 8. Web server
         try:
             from ui.web_server import WebServer
             ws = WebServer(port=8080)
@@ -135,7 +154,7 @@ class BHDoctor:
         except Exception as exc:
             results["web"] = str(exc)
 
-        # 8. Record startup in graph
+        # 9. Record startup in graph
         agu = self._components.get("auto_graph_updater")
         if agu:
             agu.on_episode("bh-doctor", "system_start",
@@ -151,22 +170,24 @@ class BHDoctor:
 
     def stop(self) -> None:
         logger.info("Stopping BH Doctor services...")
-        if "web_server" in self._components:
+        # Stop in reverse initialization order
+        for comp_name in reversed(list(self._components.keys())):
+            comp = self._components[comp_name]
             try:
-                self._components["web_server"].stop()
-            except Exception:
-                pass
-        if "event_bus" in self._components:
-            try:
-                self._components["event_bus"].clear_history()
-            except Exception:
-                pass
-        # Record shutdown in graph
-        agu = self._components.get("auto_graph_updater")
-        if agu:
-            try:
-                agu.on_episode("bh-doctor", "system_stop",
-                              f"BH Doctor v{VERSION} stopped after {int(time.time() - self._start_time)}s uptime")
+                if comp_name == "web_server":
+                    comp.stop()
+                elif comp_name == "session_recorder":
+                    if hasattr(comp, "start"):
+                        pass
+                elif comp_name == "event_bus":
+                    comp._running = False
+                    comp.clear_history()
+                elif comp_name == "auto_graph_updater":
+                    comp.on_episode("bh-doctor", "system_stop",
+                                    f"BH Doctor v{VERSION} stopped")
+                elif comp_name == "graph_store":
+                    if hasattr(comp, "close"):
+                        comp.close()
             except Exception:
                 pass
         self._running = False
@@ -174,7 +195,9 @@ class BHDoctor:
         logger.info("BH Doctor stopped")
 
     def _save_pid(self) -> None:
-        pid_file = self._pid_dir / "doctor.pid"
+        pid_dir = BASE_DIR / "data"
+        pid_dir.mkdir(parents=True, exist_ok=True)
+        pid_file = pid_dir / "doctor.pid"
         pid_file.write_text(str(os.getpid()))
 
     def _remove_pid(self) -> None:
@@ -216,7 +239,27 @@ class BHDoctor:
         else:
             issues.append("Graph store not started")
 
-        # 2. Check memory system
+        # 2. Check entity tracker
+        et = self._components.get("entity_tracker")
+        if not et:
+            issues.append("Entity tracker not started")
+
+        # 3. Check relationship mapper
+        rm = self._components.get("relationship_mapper")
+        if not rm:
+            issues.append("Relationship mapper not started")
+
+        # 4. Check auto graph updater
+        agu = self._components.get("auto_graph_updater")
+        if agu:
+            try:
+                agu.stats()
+            except Exception as e:
+                issues.append(f"Auto graph updater: {e}")
+        else:
+            issues.append("Auto graph updater not started")
+
+        # 5. Check memory system
         ms = self._components.get("memory_system")
         if ms:
             try:
@@ -226,14 +269,35 @@ class BHDoctor:
         else:
             issues.append("Memory system not started")
 
-        # 3. Check event bus
+        # 6. Check event bus
         eb = self._components.get("event_bus")
-        if not eb:
+        if eb:
+            try:
+                if not eb.is_running:
+                    issues.append("Event bus not running")
+            except Exception as e:
+                issues.append(f"Event bus: {e}")
+        else:
             issues.append("Event bus not started")
 
-        # 4. Check PID files
+        # 7. Check session recorder
+        sr = self._components.get("session_recorder")
+        if not sr:
+            issues.append("Session recorder not started")
+
+        # 8. Check web server
+        ws = self._components.get("web_server")
+        if ws:
+            try:
+                if not ws.is_running:
+                    issues.append("Web server not running")
+            except Exception as e:
+                issues.append(f"Web server: {e}")
+
+        # 9. Check PID files
+        pid_dir = BASE_DIR / "data"
         for pid_name in ["launcher.pid", "doctor.pid"]:
-            pid_file = self._pid_dir / pid_name
+            pid_file = pid_dir / pid_name
             if pid_file.exists():
                 try:
                     pid = int(pid_file.read_text().strip())
@@ -242,7 +306,7 @@ class BHDoctor:
                     pid_file.unlink(missing_ok=True)
                     fixes.append(f"Removed stale PID file: {pid_name}")
 
-        # 5. Check log directory
+        # 10. Check log directory
         log_dir = BASE_DIR / "logs"
         if not log_dir.exists():
             log_dir.mkdir(parents=True)
@@ -425,6 +489,9 @@ def main() -> None:
                         time.sleep(1)
                 except KeyboardInterrupt:
                     ws.stop()
+            else:
+                print(f"Web server failed to start on port {port}")
+                sys.exit(1)
         except ImportError as e:
             print(f"Web server not available: {e}")
             print("Try: bh-doctor start")

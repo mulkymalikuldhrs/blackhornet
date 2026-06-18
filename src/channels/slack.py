@@ -12,10 +12,11 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Callable, Coroutine, Dict, List, Optional
 
-from ..types import (
+from src.colony_types import (
     ChannelType,
     ChannelMessage,
     MessageFormat,
+    EmbedField,
     BlockElement,
 )
 

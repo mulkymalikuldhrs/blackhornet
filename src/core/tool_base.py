@@ -12,7 +12,7 @@ import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
-from src.types.tools import ToolCall, ToolDefinition, ToolParameter, ToolResult, ToolType
+from src.colony_types.tools import ToolCall, ToolDefinition, ToolParameter, ToolResult, ToolType
 
 
 class BaseTool(ABC):

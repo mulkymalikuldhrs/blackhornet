@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Set
 
 from src.agents.base import BaseAgent
-from src.types import AgentSpec, AgentType, Task, TaskResult
+from src.colony_types import AgentSpec, AgentType, Task, TaskResult
 
 logger = logging.getLogger(__name__)
 

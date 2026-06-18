@@ -167,10 +167,10 @@ class MemoryCLI:
         print("╔" + "═" * (box_width - 2) + "╗")
         print("║  BlackHornet Memory System Stats" + " " * 15 + "║")
         print("╠" + "═" * (box_width - 2) + "╣")
-        print(f"║  STM:       {stm_stats.get('entry_count', 0):>5} entries, TTL={stm_stats.get('default_ttl', 3600)}s")
+        print(f"║  STM:       {stm_stats.get('current_entries', 0):>5} entries, TTL={stm_stats.get('default_ttl_seconds', 3600)}s")
         print(f"║  LTM:       {ltm_stats.get('total_entries', 0):>5} entries, FTS5 ready")
         print(f"║  Semantic:  {sem_stats.get('total_entries', 0):>5} entries, n-gram ready")
-        print(f"║  Episodic:  {epi_stats.get('total_entries', 0):>5} episodes")
+        print(f"║  Episodic:  {epi_stats.get('total_episodes', 0):>5} episodes")
         print("╚" + "═" * (box_width - 2) + "╝")
 
     def _cmd_consolidate(self, args) -> None:

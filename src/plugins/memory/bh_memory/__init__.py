@@ -23,7 +23,10 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agent.memory_provider import MemoryProvider
+try:
+    from agent.memory_provider import MemoryProvider
+except ImportError:
+    from ._stubs import MemoryProvider
 
 logger = logging.getLogger(__name__)
 

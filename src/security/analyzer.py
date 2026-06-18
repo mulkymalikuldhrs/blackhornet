@@ -16,7 +16,7 @@ import re
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-from ..types import AuditLevel
+from src.colony_types import AuditLevel
 
 logger = logging.getLogger(__name__)
 

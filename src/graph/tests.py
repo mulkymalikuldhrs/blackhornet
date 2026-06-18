@@ -80,6 +80,24 @@ class TestGraphStore(unittest.TestCase):
         stats = self.gs.stats()
         self.assertEqual(stats["nodes"], 2)
 
+    def test_update_node_properties_merge(self):
+        nid = self.gs.add_node("test", "demo", {"color": "red"})
+        self.gs.update_node_properties(nid, {"size": "large"}, merge=True)
+        node = self.gs.get_node(nid)
+        self.assertEqual(node.properties["color"], "red")
+        self.assertEqual(node.properties["size"], "large")
+
+    def test_update_node_properties_replace(self):
+        nid = self.gs.add_node("test2", "demo", {"color": "red"})
+        self.gs.update_node_properties(nid, {"size": "large"}, merge=False)
+        node = self.gs.get_node(nid)
+        self.assertNotIn("color", node.properties)
+        self.assertEqual(node.properties["size"], "large")
+
+    def test_update_node_properties_nonexistent(self):
+        result = self.gs.update_node_properties(99999, {"x": 1})
+        self.assertIsNone(result)
+
 
 class TestEntityTracker(unittest.TestCase):
     """6.2 EntityTracker — track entities."""

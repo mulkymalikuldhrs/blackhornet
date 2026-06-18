@@ -90,7 +90,9 @@ def main():
     print(f"{M}{B}║{N} {hd('🧠 LLM AGENT')}")
     try:
         from openai import OpenAI
-        client = OpenAI(base_url='http://localhost:3333/v1', api_key='proxygate-local')
+        proxygate_url = os.environ.get("PROXYGATE_URL", "http://localhost:3333/v1")
+        proxygate_key = os.environ.get("PROXYGATE_API_KEY", "proxygate-local")
+        client = OpenAI(base_url=proxygate_url, api_key=proxygate_key)
         r = client.chat.completions.create(model='auto', max_tokens=8,
             messages=[{'role':'user','content':'Say ONLINE'}])
         resp = r.choices[0].message.content.strip()

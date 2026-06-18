@@ -17,7 +17,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Callable, Coroutine, Dict, List, Optional, Set
 
-from src.types import (
+from src.colony_types import (
     A2AMessage,
     A2AMessageType,
     A2AHandshake,

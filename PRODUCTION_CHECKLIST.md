@@ -26,7 +26,7 @@
 
 ### [ ] Task 4: Fix Dockerfile
 - [ ] Remove dead GitHub URLs (NousResearch/blackhornet-agent, dhaher-labs/mnemosyne)
-- [ ] Fix Hermes Agent comment
+- [ ] Fix upstream agent comment
 - [ ] Update version label to 4.1.0
 - [ ] Verify: `docker build .` succeeds (if Docker available)
 
@@ -39,14 +39,14 @@
 
 ## HIGH ISSUES (Functional Gaps)
 
-### [ ] Task 6: Complete Rebrand (12 hermes refs)
+### [ ] Task 6: Complete Rebrand (12 BH refs)
 - [ ] README_zh.md: 4 refs (lines 66, 99, 451, 549)
 - [ ] README_id.md: 5 refs (lines 111, 144, 265, 484, 600)
 - [ ] ALL.md: 1 ref (line 405)
 - [ ] scripts/bootstrap.sh: 3 refs (lines 89, 93-95)
 - [ ] Verify: `rg -n -i 'hermes' --glob '!.git' | grep -viE '(nousresearch|hermes-agent|hermes_constants|get_hermes_home|hermes gateway|hermes profile|command -v hermes|com\.hermes\.hive|hermes chat)'` returns 0 hits
 
-### [ ] Task 7: Fix Dead hermes Symlink
+### [ ] Task 7: Fix Dead BH Symlink
 - [ ] Remove/comment out install.sh:245
 - [ ] Verify: no dead symlink creation
 
@@ -166,7 +166,7 @@ After completing all tasks:
 | `python3 -m pytest` passes | [ ] |
 | `ruff check src/` shows 0 errors | [ ] |
 | No real secrets in config/.env | [ ] |
-| No internal hermes references | [ ] |
+| No internal BH references | [ ] |
 | All version numbers say 4.1.0 | [ ] |
 | CI workflow compiles only existing files | [ ] |
 | Dockerfile has no dead URLs | [ ] |

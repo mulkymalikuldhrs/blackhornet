@@ -12,8 +12,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 from src.config.logging_config import get_logger
-from src.types.events import Event, Observation, ObservationType
-from src.types.memory import CondenserType
+from src.colony_types.events import Event, Observation, ObservationType
+from src.colony_types.memory import CondenserType
 
 logger = get_logger(__name__)
 

@@ -22,7 +22,7 @@ from src.agents.voice import VoiceAgent
 from src.agents.security import SecurityAgent
 from src.agents.researcher import ResearcherAgent
 from src.agents.colony import ColonyAgent
-from src.types import AgentInfo, AgentSpec, AgentType, AgentState, AutonomyLevel, EventType
+from src.colony_types import AgentInfo, AgentSpec, AgentType, AgentState, AutonomyLevel, EventType
 
 logger = logging.getLogger(__name__)
 

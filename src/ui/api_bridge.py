@@ -32,14 +32,15 @@ class APIResponse:
 
 class APIBridge:
     def __init__(self, graph_store=None, memory_system=None,
-                 event_bus=None, thinking=None):
+                 event_bus=None, thinking=None, orchestrator=None):
         self._graph = graph_store
         self._memory = memory_system
         self._event_bus = event_bus
         self._thinking = thinking
+        self._orchestrator = orchestrator
 
     def set_services(self, graph_store=None, memory_system=None,
-                     event_bus=None, thinking=None):
+                     event_bus=None, thinking=None, orchestrator=None):
         if graph_store:
             self._graph = graph_store
         if memory_system:
@@ -48,6 +49,8 @@ class APIBridge:
             self._event_bus = event_bus
         if thinking:
             self._thinking = thinking
+        if orchestrator:
+            self._orchestrator = orchestrator
 
     def get_graph(self, center: str = "", max_depth: int = 1) -> APIResponse:
         try:
@@ -143,6 +146,35 @@ class APIBridge:
                             "source": e.source, "timestamp": e.timestamp}
                            for e in history]
             })
+        except Exception as exc:
+            return APIResponse(success=False, error=str(exc), status_code=500)
+
+    def get_agents(self, limit: int = 50) -> APIResponse:
+        """Return all known agents from graph and orchestrator."""
+        agents: List[Dict[str, Any]] = []
+        try:
+            if self._graph:
+                nodes = self._graph.export_json().get("nodes", [])
+                agents = [n for n in nodes if n.get("type") == "agent"]
+            if self._orchestrator and hasattr(self._orchestrator, "get_stats"):
+                stats = self._orchestrator.get_stats()
+                agents.append({"type": "orchestrator_stats", "data": stats})
+            return APIResponse(data={
+                "agents": agents[:limit],
+                "total": len(agents),
+            })
+        except Exception as exc:
+            return APIResponse(success=False, error=str(exc), status_code=500)
+
+    def get_ecosystem_status(self) -> APIResponse:
+        """Return orchestrator ecosystem status (synchronous snapshot)."""
+        try:
+            if not self._orchestrator:
+                return APIResponse(success=False, error="Orchestrator not available",
+                                   status_code=503)
+            stats = self._orchestrator.get_stats() if hasattr(self._orchestrator, "get_stats") else {}
+            cache = self._orchestrator.get_status_cache() if hasattr(self._orchestrator, "get_status_cache") else {}
+            return APIResponse(data={"stats": stats, "cache": cache})
         except Exception as exc:
             return APIResponse(success=False, error=str(exc), status_code=500)
 

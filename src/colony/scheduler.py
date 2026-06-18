@@ -17,7 +17,7 @@ import time
 from datetime import datetime, timezone, timedelta
 from typing import Any, Callable, Coroutine, Dict, List, Optional, Set
 
-from src.types import (
+from src.colony_types import (
     Task,
     TaskResult,
     TaskStatus,

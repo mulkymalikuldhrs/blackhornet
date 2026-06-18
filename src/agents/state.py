@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
-from src.types import AgentState, AgentType, AutonomyLevel, HandType, TaskStatus
+from src.colony_types import AgentState, AgentType, AutonomyLevel, HandType, TaskStatus
 
 
 # ── Pydantic State Models ──

@@ -15,14 +15,14 @@ import logging
 from datetime import datetime, timezone, timedelta
 from typing import Any, Callable, Dict, List, Optional, Set
 
-from ..types import (
+from src.colony_types import (
     AutonomyLevel,
     PermissionCheck,
     PermissionDef,
     ApprovalRequest,
     EscalationRecord,
-    RoleDef,
-    AuditEventType,
+    AuditEntry,
+    AuditEvent,
 )
 from ..config import get_settings
 

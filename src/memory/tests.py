@@ -69,6 +69,51 @@ class TestShortTermMemory(unittest.TestCase):
         self.assertIn("max_entries", stats)
         self.assertIn("default_ttl_seconds", stats)
 
+    def test_update_without_unnecessary_eviction(self):
+        self.stm.add("key_a", "first")
+        self.stm.add("key_b", "second")
+        self.stm.add("key_c", "third")
+        self.stm.add("key_d", "fourth")
+        self.stm.add("key_e", "fifth")
+        self.assertEqual(self.stm.count(), 5)
+        self.assertEqual(self.stm.stats()["eviction_count"], 0)
+        self.stm.add("key_a", "updated_first")
+        self.assertEqual(self.stm.count(), 5)
+        self.assertEqual(self.stm.stats()["eviction_count"], 0)
+        self.assertIsNotNone(self.stm.get("key_a"))
+        self.assertIsNotNone(self.stm.get("key_b"))
+
+    def test_ttl_precision_does_not_expire_prematurely(self):
+        self.stm.add("fresh", "content", ttl=3600)
+        entry = self.stm.get("fresh")
+        self.assertIsNotNone(entry)
+        self.assertFalse(entry.is_expired)
+
+    def test_thread_safety(self):
+        import threading
+        errors = []
+        def writer():
+            for i in range(50):
+                try:
+                    self.stm.add(f"t_key_{i}", f"value_{i}")
+                except Exception as e:
+                    errors.append(e)
+        def reader():
+            for i in range(50):
+                try:
+                    self.stm.get(f"t_key_{i}")
+                    self.stm.count()
+                    self.stm.stats()
+                except Exception as e:
+                    errors.append(e)
+        threads = [threading.Thread(target=writer) for _ in range(4)]
+        threads += [threading.Thread(target=reader) for _ in range(4)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        self.assertEqual(errors, [])
+
 
 class TestLongTermMemory(unittest.TestCase):
     """Sub-agent 2.2: Long-Term Memory."""
@@ -309,6 +354,20 @@ class TestConsolidation(unittest.TestCase):
         self.assertGreaterEqual(count, 1)
         self.assertIsNone(self.ltm.get("old_key"))
 
+    def test_stm_to_ltm_consolidation(self):
+        self.stm.add("stm_test", "important data to consolidate",
+                      ttl=7200,
+                      metadata={"importance": 0.8})
+        now = time.time()
+        self.stm._store["stm_test"].created_at = now - 3600
+        moved = self.cons.consolidate_stm_to_ltm()
+        self.assertGreaterEqual(moved, 1)
+        ltm_entry = self.ltm.get("stm_test")
+        self.assertIsNotNone(ltm_entry)
+        self.assertEqual(ltm_entry.content, "important data to consolidate")
+        self.assertIn("stm", ltm_entry.tags)
+        self.assertIsNone(self.stm.get("stm_test"))
+
 
 class TestForgetting(unittest.TestCase):
     """Sub-agent 2.6: Forgetting Mechanism."""
@@ -348,6 +407,43 @@ class TestForgetting(unittest.TestCase):
     def test_list_archives(self):
         archives = self.forget.list_archives()
         self.assertEqual(archives, [])
+
+    def test_decay_score_decreases_with_age(self):
+        from src.memory.long_term import LTMEntry
+        now = time.time()
+        recent = LTMEntry(
+            key="recent", content="x", created_at=now - 60,
+            accessed_at=now - 60, access_count=5,
+        )
+        old = LTMEntry(
+            key="old", content="y", created_at=now - 86400 * 30,
+            accessed_at=now - 86400 * 30, access_count=5,
+        )
+        recent_score = self.forget.calculate_decay(recent)
+        old_score = self.forget.calculate_decay(old)
+        self.assertGreater(recent_score, old_score)
+
+    def test_unused_entry_decays_to_zero(self):
+        from src.memory.long_term import LTMEntry
+        entry = LTMEntry(
+            key="unused", content="z", created_at=time.time() - 86400 * 90,
+            accessed_at=time.time() - 86400 * 90, access_count=0,
+        )
+        score = self.forget.calculate_decay(entry)
+        self.assertEqual(score, 0.0)
+
+    def test_find_decayed_entries(self):
+        now = time.time()
+        import sqlite3
+        with sqlite3.connect(self.ltm.db_path) as conn:
+            conn.execute(
+                "INSERT INTO entries (key, content, tags, metadata, created_at, accessed_at, access_count, importance) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                ("decayed", "forget me", "[]", "{}",
+                 now - 86400 * 100, now - 86400 * 100, 0, 0.0),
+            )
+        found = self.forget.find_decayed_entries(threshold=0.01)
+        found_keys = [e.key for e in found]
+        self.assertIn("decayed", found_keys)
 
 
 class TestMemoryCLI(unittest.TestCase):

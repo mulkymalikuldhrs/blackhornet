@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Set
 
 from src.agents.base import BaseAgent
-from src.types import (
+from src.colony_types import (
     AgentSpec,
     AgentType,
     AgentState,

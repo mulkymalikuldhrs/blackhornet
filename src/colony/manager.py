@@ -11,7 +11,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Set
 
-from src.types import (
+from src.colony_types import (
     ColonyConfig,
     ColonyHealth,
     ColonyInfo,

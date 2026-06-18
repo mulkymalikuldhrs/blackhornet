@@ -7,6 +7,7 @@
 8.5 APIBridge — REST API for graph/memory/status
 8.6 Dashboard — system monitoring dashboard
 8.7 Integration — wire everything together
+8.8 WebSocketHandler — real-time push via WebSocket bridge
 """
 
 from .event_bus import EventBus, Event
@@ -16,6 +17,7 @@ from .tui_renderer import TUIRenderer
 from .web_server import WebServer
 from .dashboard import Dashboard
 from .integration import UIIntegration
+from .websocket_handler import WebSocketHandler
 
 __all__ = [
     "EventBus", "Event",
@@ -25,4 +27,5 @@ __all__ = [
     "WebServer",
     "Dashboard",
     "UIIntegration",
+    "WebSocketHandler",
 ]

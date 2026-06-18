@@ -20,8 +20,8 @@ from typing import Any, Callable, Coroutine, Optional
 
 from src.config.logging_config import get_logger
 from src.exceptions import EventBusError
-from src.types.events import Action, Event, EventType, Observation
-from src.types.messages import BusMessage, BusMessagePriority, MessageType
+from src.colony_types.events import Action, Event, EventType, Observation
+from src.colony_types.messages import BusMessage, BusMessagePriority, MessageType
 
 logger = get_logger(__name__)
 

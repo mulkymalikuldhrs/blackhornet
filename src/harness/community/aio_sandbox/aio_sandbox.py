@@ -5,7 +5,10 @@ import shlex
 import threading
 import uuid
 
-from agent_sandbox import Sandbox as AioSandboxClient
+try:
+    from agent_sandbox import Sandbox as AioSandboxClient
+except ImportError:
+    from ._stubs import Sandbox as AioSandboxClient
 
 from src.harness.config.paths import VIRTUAL_PATH_PREFIX
 from src.harness.sandbox.sandbox import Sandbox

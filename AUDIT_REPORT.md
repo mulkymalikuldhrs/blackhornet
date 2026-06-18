@@ -46,8 +46,8 @@
 | 7 | 14+ async functions lack error handling | HIGH | Unhandled exceptions crash agent at runtime |
 | 8 | AgentTimeoutError constructor mismatch | HIGH | base_agent passes iteration count as ms; agent_loop passes seconds as ms |
 | 9 | qna_integration imports phantom package | HIGH | qna_integration permanently in degraded state |
-| 10 | 12 internal hermes refs remain | HIGH | Rebrand incomplete across 6 files |
-| 11 | Dead hermes symlink in install.sh + bootstrap.sh | HIGH | Post-install CLI command missing |
+| 10 | 12 internal BH refs remain | HIGH | Rebrand incomplete across 6 files |
+| 11 | Dead BH symlink in install.sh + bootstrap.sh | HIGH | Post-install CLI command missing |
 | 12 | 3 competing MemoryManager abstractions | HIGH | Import ambiguity, maintenance nightmare |
 | 13 | FunctionTool duplicated in tool_registry.py | MEDIUM | 2 near-identical implementations, DRY violation |
 
@@ -135,7 +135,7 @@
 | **CI non-functional** | References 5+ deleted files. Every run fails. | CRITICAL |
 | **Docker broken** | Dead URLs + wrong script. docker build fails. | CRITICAL |
 | **Version chaos** | 3 different versions across files. No authoritative version. | CRITICAL |
-| **Incomplete rebrand** | 12 internal hermes refs remain in 6 files | HIGH |
+| **Incomplete rebrand** | 12 internal BH refs remain in 6 files | HIGH |
 | **3 MemoryManager abstractions** | Same concern, 3 implementations. Maintenance nightmare. | HIGH |
 | **Zero behavioral tests for core** | base_agent, agent_loop, event_bus, llm_provider untested | HIGH |
 | **Overclaiming** | 22 agents (actually 10), 27+ packages (25), SQLite (none) | MEDIUM |
@@ -162,7 +162,7 @@
 3. **Fix CI** — Delete dead file references, update test jobs.
 4. **Fix Dockerfile** — Either remove or update dead URLs.
 5. **Pick ONE version number** — And use it everywhere.
-6. **Complete the rebrand** — 12 hermes refs in 6 files. Finish the job.
+6. **Complete the rebrand** — 12 BH refs in 6 files. Finish the job.
 7. **Consolidate MemoryManager** — 3 implementations is architecture debt.
 8. **Add behavioral tests for core modules** — Import-only tests don't count.
 9. **Stop overclaiming** — Report honest numbers: 10 agents, 25 packages, 7126 memory lines.

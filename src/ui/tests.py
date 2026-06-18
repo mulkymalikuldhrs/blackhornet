@@ -364,5 +364,119 @@ class TestAPIResponse(unittest.TestCase):
         self.assertEqual(d["data"], [1, 2, 3])
 
 
+class TestAPIBridgeEcosystem(unittest.TestCase):
+    """APIBridge ecosystem methods — agents + ecosystem status."""
+
+    def test_get_agents_without_graph(self):
+        from src.ui.api_bridge import APIBridge
+        bridge = APIBridge()
+        resp = bridge.get_agents()
+        self.assertTrue(resp.success)
+        self.assertEqual(resp.data.get("total", 0), 0)
+
+    def test_get_agents_with_graph(self):
+        from src.ui.api_bridge import APIBridge
+        import tempfile, os
+        from src.graph.graph_store import GraphStore
+        tmpdir = tempfile.mkdtemp()
+        try:
+            g = GraphStore(db_path=os.path.join(tmpdir, "test.db"))
+            g.add_node("agent:a1", "agent", {"status": "active", "health": 0.9})
+            g.add_node("agent:a2", "agent", {"status": "idle", "health": 0.5})
+            bridge = APIBridge(graph_store=g)
+            resp = bridge.get_agents()
+            self.assertTrue(resp.success)
+            self.assertEqual(resp.data.get("total", 0), 2)
+        finally:
+            import shutil
+            shutil.rmtree(tmpdir, ignore_errors=True)
+
+    def test_get_ecosystem_status_without_orch(self):
+        from src.ui.api_bridge import APIBridge
+        bridge = APIBridge()
+        resp = bridge.get_ecosystem_status()
+        self.assertFalse(resp.success)
+        self.assertIn("not available", resp.error)
+
+    def test_get_ecosystem_status_with_orch(self):
+        from src.ui.api_bridge import APIBridge
+        mock_orch = type("MockOrch", (), {
+            "get_stats": lambda self: {"running": True, "colony": "test", "sync_count": 5},
+            "get_status_cache": lambda self: {"orchestrator": {"uptime": 100}},
+        })()
+        bridge = APIBridge(orchestrator=mock_orch)
+        resp = bridge.get_ecosystem_status()
+        self.assertTrue(resp.success)
+        self.assertIn("stats", resp.data)
+        self.assertTrue(resp.data["stats"]["running"])
+
+
+class TestTUIRendererEcosystem(unittest.TestCase):
+    """TUIRenderer ecosystem methods — agents + ecosystem panels."""
+
+    def setUp(self):
+        from src.ui.tui_renderer import TUIRenderer
+        self.tui = TUIRenderer()
+
+    def test_render_agents_empty(self):
+        result = self.tui.render_agents({"agents": [], "total": 0})
+        self.assertIn("Agent", result)
+
+    def test_render_agents_with_data(self):
+        data = {
+            "agents": [
+                {"label": "agent:a1", "type": "agent", "properties": {"status": "active"}},
+                {"label": "agent:a2", "type": "agent", "properties": {"status": "idle", "health": 0.8}},
+            ],
+            "total": 2,
+        }
+        result = self.tui.render_agents(data)
+        self.assertIn("2", result)
+        self.assertIn("active", result)
+        self.assertIn("idle", result)
+
+    def test_render_ecosystem_empty(self):
+        result = self.tui.render_ecosystem(None)
+        self.assertIn("unavailable", result)
+
+    def test_render_ecosystem_with_data(self):
+        data = {
+            "stats": {
+                "running": True,
+                "colony": "queen",
+                "uptime": 3600,
+                "sync_count": 10,
+                "components": {"radar": True, "mesh": False},
+                "graph_sync": {"agents_synced": 5},
+            },
+            "cache": {},
+        }
+        result = self.tui.render_ecosystem(data)
+        self.assertIn("YES", result)
+        self.assertIn("queen", result)
+        self.assertIn("radar", result)
+        self.assertIn("agents_synced", result)
+
+    def test_render_help_has_new_commands(self):
+        result = self.tui.render_help()
+        self.assertIn("agents", result)
+        self.assertIn("ecosystem", result)
+
+
+class TestTUIShellEcosystem(unittest.TestCase):
+    """TUIShell new commands — do_agents, do_ecosystem."""
+
+    def setUp(self):
+        from src.ui.tui_renderer import TUIRenderer, TUIShell
+        self.tui = TUIRenderer()
+        self.shell = TUIShell(self.tui)
+
+    def test_agents_command(self):
+        self.shell.onecmd("agents")
+
+    def test_ecosystem_command(self):
+        self.shell.onecmd("ecosystem")
+
+
 if __name__ == "__main__":
     unittest.main()

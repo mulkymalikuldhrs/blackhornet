@@ -20,7 +20,7 @@ import math
 from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional
 
-from src.types import HandType, Task, TaskStatus, AutonomyLevel
+from src.colony_types import HandType, Task, TaskStatus, AutonomyLevel
 
 logger = logging.getLogger(__name__)
 

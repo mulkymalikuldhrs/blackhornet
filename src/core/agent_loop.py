@@ -20,9 +20,9 @@ from src.core.llm_provider import LLMProvider, LLMResponse
 from src.core.memory_manager import MemoryManager
 from src.core.tool_registry import ToolRegistry
 from src.exceptions import AgentError, AgentTimeoutError
-from src.types.events import Action, ActionType, Observation, ObservationType
-from src.types.messages import Message, MessageRole
-from src.types.tools import ToolResult
+from src.colony_types.events import Action, ActionType, Observation, ObservationType
+from src.colony_types.messages import Message, MessageRole
+from src.colony_types.tools import ToolResult
 
 logger = get_logger(__name__)
 
@@ -185,7 +185,6 @@ class AgentLoop:
                 if time.time() - start_time > self.config.timeout:
                     raise AgentTimeoutError(
                         f"Loop timeout after {time.time() - start_time:.1f}s",
-                        agent_id=self.agent_id,
                         timeout_ms=int(self.config.timeout * 1000),
                     )
 
@@ -242,7 +241,7 @@ class AgentLoop:
             self._state = LoopState.ERROR
             self._errors.append(str(e))
             await self._run_hooks("on_error", error=e)
-            raise AgentError(str(e), agent_id=self.agent_id) from e
+            raise AgentError(str(e)) from e
 
         duration = time.time() - start_time
         return LoopResult(
@@ -259,7 +258,7 @@ class AgentLoop:
     async def _get_llm_response(self) -> LLMResponse:
         """Get a response from the LLM."""
         if not self._llm_provider:
-            raise AgentError("LLM provider not set", agent_id=self.agent_id)
+            raise AgentError("LLM provider not set")
 
         llm_messages = [m.to_dict() for m in self._messages]
 

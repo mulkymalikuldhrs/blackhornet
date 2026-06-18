@@ -27,7 +27,7 @@ from abc import abstractmethod
 from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional
 
-from src.types import (
+from src.colony_types import (
     AgentInfo,
     AgentSpec,
     AgentState,

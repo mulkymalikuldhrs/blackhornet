@@ -242,8 +242,8 @@ install_bh_agent() {
 
     # Link to PATH
     mkdir -p "$HOME/.local/bin"
-    # Dead symlink removed — hermes binary may not exist post-install
-    # ln -sf "$agent_dir/hermes" "$HOME/.local/bin/hermes" 2>/dev/null || true
+    # Dead symlink removed — upstream binary may not exist post-install
+    # ln -sf "$agent_dir/upstream-binary" "$HOME/.local/bin/upstream-binary" 2>/dev/null || true
 
     # Link venv python for tools
     if [ -d "$agent_dir/venv" ]; then

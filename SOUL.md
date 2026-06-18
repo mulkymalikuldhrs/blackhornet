@@ -110,7 +110,7 @@ Use the best available model for each task type:
 | **Coding** | deepseek-v4-flash-free | north-mini-code-free |
 | **Orchestration** | nemotron-3-ultra-free | deepseek-v4-flash-free |
 | **Analysis** | kimi-k2.6 | nemotron-3-ultra-free |
-| **Brainstorming** | mimo-v2.5-free | nemotron-3-ultra-free |
+| **Brainstorming** | deepseek-v4-flash-free | nemotron-3-ultra-free |
 | **Planning** | nemotron-3-ultra-free | deepseek-v4-flash-free |
 | **Default** | deepseek-v4-flash-free | north-mini-code-free |
 
@@ -135,10 +135,32 @@ If a provider returns HTTP 404 or any error:
 | 6 | Graphify | ✅ |
 | 7 | Sandbox Self-Modification | ✅ |
 | 8 | Interactive UI + Dual Interface | ✅ |
-| 9 | Rebrand Hermes → BlackHornet | ✅ |
+| 9 | Rebrand Hermes → BlackHornet | ✅ (98%) |
 | 10 | Inject BH Modules | ✅ |
 | 11 | Inject AMC Modules | ✅ |
 | 12 | Fix Bugs + Infrastructure | ✅ |
+| 13 | Colony Consciousness (Ecosystem) | ✅ Complete |
+|    | 13.1 Radar + Mesh + Nest | ✅ |
+|    | 13.1 EcosystemOrchestrator | ✅ |
+|    | 13.1 LifecycleRecorder | ✅ |
+|    | 13.1 Agent registry → Graphify sync | ✅ |
+|    | 13.1 Agents in TUI/UI (agents + ecosystem commands) | ✅ |
+|    | 13.1 Docs honesty audit | ✅ |
+|    | 13.2 Queen Agent + Voice | ✅ |
+|    | 13.3 Consciousness + Memory | ✅ |
+|    | 13.4 Intelligence layer | ✅ |
+|    | 13.5 Evolution layer (SkillLearner + AutoDiscovery + SelfModify + Orchestrator) | ✅ |
+
+---
+
+## PHASE 14: Mesh Healing + MCP Deepening + UI/TUI Hardening + Trading Intelligence
+
+| Phase | Name | Status |
+|-------|------|--------|
+| 14a | Self-Healing Mesh (ColonyHealthMonitor + PhiAccrual + CircuitBreaker) | ✅ Complete |
+| 14b | MCP Deepening (initialize handshake, 6 colony tools, SSE transport, Pydantic v1/v2 compat) | ✅ Complete |
+| 14c | UI/TUI Hardening (WebSocketHandler, EventBus→WS bridge, TUI auto-refresh) | ✅ Complete |
+| 14d | Trading Intelligence (TradingAnalyst, queen trade/market commands) | ✅ Complete |
 
 ---
 
@@ -172,18 +194,27 @@ Everything you do must embody these 5 traits:
 ```
 BH Doctor CLI (bh-doctor.sh / bh-doctor)
   │
-  ├── Hermes Agent (Nous Research) — Base runtime
+  ├── BH Core — Self-contained agent runtime
   │   ├── Agent loop
-  │   ├── Tools (90+)
+  │   ├── Tools (24+)
   │   ├── Gateway (Telegram, CLI, TUI)
-  │   └── Memory plugin system
+  │   ├── Memory system
+  │   └── Colony ecosystem (radar, mesh, nest, orchestrator)
   │
   ├── BlackHornet Extension — Swarm, self-heal, trading
   │   ├── Swarm (PSO+ABC+Stigmergy)
   │   ├── Memory (STM/LTM/Semantic/Episodic)
-  │   ├── Thinking (19 modules)
-  │   ├── Trading (22 tools, 5-layer)
+  │   ├── Thinking (18 modules)
+  │   ├── Trading (24 tools, 5-layer)
   │   └── Self-healing (Phi-accrual, Circuit Breaker)
+  │
+  ├── Phase 14: Mesh Healing + MCP + UI/TUI + Trading
+  │   ├── ColonyHealthMonitor (phi-accrual + circuit breaker + orchestrator)
+  │   ├── MCP Server (JSON-RPC 2.0, initialize handshake, 6 colony tools)
+  │   ├── SSE Transport (real-time streaming)
+  │   ├── WebSocketHandler (EventBus → WS push)
+  │   ├── TUI auto-refresh (watch/unwatch commands)
+  │   └── TradingAnalyst (IntelligenceBridge-powered trading)
   │
   ├── Graphify — Knowledge graph
   │   ├── GraphStore (SQLite property graph)

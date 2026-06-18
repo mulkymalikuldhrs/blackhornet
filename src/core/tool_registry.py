@@ -16,13 +16,16 @@ from typing import Any, Callable, Optional, Type
 
 from src.config.logging_config import get_logger
 from src.core.tool_base import BaseTool
-from src.types.tools import ToolCall, ToolDefinition, ToolParameter, ToolResult, ToolType
+from src.colony_types.tools import ToolCall, ToolDefinition, ToolParameter, ToolResult, ToolType
+
+logger = get_logger(__name__)
 
 
 class FunctionTool(BaseTool):
     """A function wrapped as a BaseTool."""
 
     def __init__(self, func: Callable, definition: ToolDefinition):
+        super().__init__()
         self._func = func
         self._definition = definition
 
@@ -49,9 +52,6 @@ class FunctionTool(BaseTool):
                 success=False,
                 error=str(e),
             )
-
-logger = get_logger(__name__)
-
 
 class ToolRegistry:
     """Registry for managing and discovering tools.

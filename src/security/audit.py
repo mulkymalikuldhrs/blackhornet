@@ -19,7 +19,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
-from ..types import AuditEntry, AuditEvent, AuditEventType, AuditLevel, AuditQuery
+from src.colony_types import AuditEntry, AuditEvent, AuditEventType, AuditLevel, AuditQuery
 
 logger = logging.getLogger(__name__)
 

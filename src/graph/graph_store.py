@@ -114,6 +114,36 @@ class GraphStore:
             return existing["id"]
         return self.add_node(label, node_type, properties)
 
+    def update_node_properties(self, node_id: int,
+                                properties: Dict[str, Any],
+                                merge: bool = True) -> Optional[int]:
+        """Update properties of an existing node.
+
+        Args:
+            node_id: The node ID to update.
+            properties: New properties to set.
+            merge: If True, merge with existing properties; if False, replace entirely.
+
+        Returns:
+            The node_id if node exists, None otherwise.
+        """
+        node = self.get_node(node_id)
+        if not node:
+            return None
+
+        if merge:
+            merged = dict(node.properties)
+            merged.update(properties)
+        else:
+            merged = dict(properties)
+
+        self._get_conn().execute(
+            "UPDATE nodes SET properties = ?, updated_at = ? WHERE id = ?",
+            (json.dumps(merged), time.time(), node_id),
+        )
+        self._get_conn().commit()
+        return node_id
+
     def search_nodes(self, query: str, limit: int = 50) -> List[GraphNode]:
         rows = self._get_conn().execute(
             "SELECT * FROM nodes WHERE label LIKE ? OR node_type LIKE ? OR properties LIKE ? LIMIT ?",

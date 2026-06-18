@@ -14,7 +14,7 @@ from typing import Any, Optional
 
 from src.config.logging_config import get_logger
 from src.exceptions import ChannelError
-from src.types.messages import BusMessage, InboundMessage, MessageType, OutboundMessage
+from src.colony_types.messages import BusMessage, InboundMessage, MessageType, OutboundMessage
 
 logger = get_logger(__name__)
 

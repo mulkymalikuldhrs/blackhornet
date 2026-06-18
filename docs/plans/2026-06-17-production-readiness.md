@@ -233,7 +233,7 @@ git add .github/workflows/ci.yml && git commit -m "fix: repair CI workflow"
 COPY . /blackhornet
 ```
 
-**Step 2:** Fix Hermes comment and version label
+**Step 2:** Fix upstream agent comment and version label
 
 **Step 3:** Commit
 ```bash
@@ -299,22 +299,22 @@ git add -A && git commit -m "release: v4.1.0"
 
 ---
 
-### Task 10: Complete Rebrand (12 hermes refs)
+### Task 10: Complete Rebrand (12 BH refs)
 
 **Files:** `README_zh.md`, `README_id.md`, `ALL.md`, `scripts/bootstrap.sh`
 
-**Step 1-4:** Fix all 12 internal hermes references
+**Step 1-4:** Fix all 12 internal BH references
 
 **Step 5:** Commit
 ```bash
-git add -A && git commit -m "rebrand: complete 12 remaining hermes references"
+git add -A && git commit -m "rebrand: complete 12 remaining BH references"
 ```
 
 ---
 
 ## PHASE 3: CODE QUALITY
 
-### Task 11: Fix Dead hermes Symlink
+### Task 11: Fix Dead BH Symlink
 
 **Files:** `install.sh:245`
 
@@ -427,7 +427,7 @@ After completing all tasks:
 - [ ] `python3 -m pytest` passes (non-numpy tests)
 - [ ] `ruff check src/` shows 0 errors
 - [ ] No real secrets in config/.env
-- [ ] No internal hermes references
+- [ ] No internal BH references
 - [ ] All version numbers say 4.1.0
 - [ ] CI workflow compiles only existing files
 - [ ] Dockerfile has no dead URLs

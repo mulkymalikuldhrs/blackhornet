@@ -194,6 +194,9 @@ class MCPServer:
         self._notification_handlers: Dict[str, List[Callable]] = {}
         self._server_id = uuid.uuid4().hex[:8]
         self._started_at = datetime.now(timezone.utc).isoformat()
+        self._initialized = False
+        self._protocol_version = "2025-03-26"
+        self._client_info: Optional[Dict[str, Any]] = None
 
     # ── Tool registration ────────────────────────────────────────
 
@@ -239,7 +242,10 @@ class MCPServer:
         """Route a single JSON-RPC request to the appropriate handler."""
         method = request.method
 
-        if method == "ping":
+        if method == "initialize":
+            return self._handle_initialize(request)
+
+        elif method == "ping":
             return make_success_response(request.id, {
                 "pong": True,
                 "server_id": self._server_id,
@@ -273,6 +279,34 @@ class MCPServer:
                     handler(notification.params)
             except Exception as exc:
                 logger.error("Notification handler error for %s: %s", notification.method, exc)
+
+    def _handle_initialize(self, request: JSONRPCRequest) -> JSONRPCResponse:
+        """Handle MCP initialize handshake — negotiate protocol version and capabilities."""
+        params = request.params or {}
+        client_info = params.get("clientInfo", {})
+        requested_version = params.get("protocolVersion", self._protocol_version)
+
+        self._client_info = client_info
+        self._initialized = True
+
+        self._audit({
+            "action": "initialize",
+            "client": client_info.get("name", "unknown"),
+            "client_version": client_info.get("version", "unknown"),
+            "protocol_version": requested_version,
+        })
+
+        return make_success_response(request.id, {
+            "protocolVersion": self._protocol_version,
+            "capabilities": {
+                "tools": {"listChanged": True},
+                "logging": {},
+            },
+            "serverInfo": {
+                "name": "bh-ecosystem-mcp",
+                "version": "1.0.0",
+            },
+        })
 
     async def handle_raw(self, data: bytes) -> Optional[bytes]:
         """Parse and handle raw bytes, returning response bytes.

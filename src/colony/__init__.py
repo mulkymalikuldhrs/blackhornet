@@ -1,7 +1,8 @@
 """Colony management for AI-MultiColony.
 
 Provides colony lifecycle, hand-based agent grouping, task scheduling,
-and agent-to-agent communication.
+agent-to-agent communication, cross-instance radar, mesh messaging,
+and self-nest bootstrap.
 """
 
 from .manager import Colony, ColonyManager, SCALE_PRESETS
@@ -20,6 +21,18 @@ from .hands import (
 )
 from .scheduler import TaskScheduler
 from .a2a import A2ACoordinator
+from .radar import ColonyRadar, RadarConfig
+from .mesh_bus import MeshBus
+from .nest import SelfNest, NestConfig
+from .orchestrator import EcosystemOrchestrator, OrchestratorConfig
+from .lifecycle import LifecycleRecorder, LifecycleEventType
+from .graph_sync import GraphifySyncBridge
+from .session_export import SessionExporter
+from .queen import QueenAgent
+from .voice_service import VoiceService
+from .consciousness import ColonyConsciousness
+from .intelligence import IntelligenceBridge
+from .health_monitor import ColonyHealthMonitor
 
 __all__ = [
     # Manager
@@ -42,4 +55,30 @@ __all__ = [
     "TaskScheduler",
     # A2A
     "A2ACoordinator",
+    # Ecosystem
+    "ColonyRadar",
+    "RadarConfig",
+    "MeshBus",
+    "SelfNest",
+    "NestConfig",
+    # Control Center
+    "EcosystemOrchestrator",
+    "OrchestratorConfig",
+    # Lifecycle
+    "LifecycleRecorder",
+    "LifecycleEventType",
+    # Graph sync
+    "GraphifySyncBridge",
+    # Session export
+    "SessionExporter",
+    # Queen
+    "QueenAgent",
+    # Voice
+    "VoiceService",
+    # Consciousness
+    "ColonyConsciousness",
+    # Intelligence
+    "IntelligenceBridge",
+    # Health Monitor
+    "ColonyHealthMonitor",
 ]

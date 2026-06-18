@@ -117,10 +117,11 @@ check_prereqs() {
     fi
 
     if $IS_TERMUX; then
-        AVAIL=$(df -k "$HOME" | tail -1 | awk '{print $4}')
+        AVAIL=$(df -k "$HOME" 2>/dev/null | tail -1 | awk '{print $4}')
     else
-        AVAIL=$(df -k . | tail -1 | awk '{print $4}')
+        AVAIL=$(df -k . 2>/dev/null | tail -1 | awk '{print $4}')
     fi
+    AVAIL=${AVAIL:-0}
     if [ "$AVAIL" -lt 500000 ]; then
         warn "Low disk space (${AVAIL}KB). Need ~500MB+ for full ecosystem."
     fi
@@ -143,11 +144,11 @@ install_dependencies() {
     else
         if command -v apt-get &>/dev/null; then
             apt-get update -qq 2>/dev/null || true
-            apt-get install -y -qq python3 python3-pip python3-venv git curl ca-certificates jq 2>/dev/null || true
+            apt-get install -y -qq python3 python3-pip python3-venv git curl ca-certificates jq ripgrep 2>/dev/null || true
         elif command -v dnf &>/dev/null; then
-            dnf install -y python3 python3-pip git curl jq 2>/dev/null || true
+            dnf install -y python3 python3-pip git curl jq ripgrep 2>/dev/null || true
         elif command -v pacman &>/dev/null; then
-            pacman -S --noconfirm python python-pip git curl jq 2>/dev/null || true
+            pacman -S --noconfirm python python-pip git curl jq ripgrep 2>/dev/null || true
         fi
     fi
 
@@ -328,9 +329,15 @@ configure_llm() {
         has_key=true
     fi
 
+    if [ -n "${OPENAI_API_KEY:-}" ]; then
+        log "OpenAI API key found"
+        set_env "$env_file" "OPENAI_API_KEY" "$OPENAI_API_KEY"
+        has_key=true
+    fi
+
     if ! $has_key; then
         warn "No LLM API keys found in environment."
-        log "Set any of: NVIDIA_API_KEY, OPENROUTER_API_KEY, ANTHROPIC_API_KEY, GROQ_API_KEY, OPENCODE_API_KEY"
+        log "Set any of: NVIDIA_API_KEY, OPENROUTER_API_KEY, ANTHROPIC_API_KEY, GROQ_API_KEY, OPENCODE_API_KEY, OPENAI_API_KEY"
         log "The agent will wait for an API key to be configured."
     fi
 
@@ -343,7 +350,7 @@ set_env() {
     if grep -q "^${key}=" "$file" 2>/dev/null; then
         sed -i "s|^${key}=.*|${key}=${value}|" "$file" 2>/dev/null || true
     else
-        echo "${key}=${value}" >> "$file"
+        printf '%s=%s\n' "$key" "$value" >> "$file"
     fi
 }
 
@@ -459,7 +466,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=$USER
+User=${SUDO_USER:-$USER}
 WorkingDirectory=$INSTALL_DIR/blackhornet
 Environment="PATH=$PATH:$HOME/.local/bin"
 Environment="BH_HOME=$BH_HOME"
@@ -749,7 +756,7 @@ case "${1:-install}" in
         echo ""
 
         for svc in launcher doctor bridge agent; do
-            local pidf="${svc}.pid"
+            pidf="${svc}.pid"
             if [ -f "$pidf" ] && kill -0 "$(cat "$pidf")" 2>/dev/null; then
                 echo -e "  ${GREEN}✓${NC} ${svc}: RUNNING (PID $(cat $pidf))"
             else
@@ -798,7 +805,7 @@ from graph.graph_store import GraphStore
 gs = GraphStore()
 gs.add_node('BH_DOCTOR', 'system', {'status': 'healed'})
 print('  ✓ Graph DB reinitialized')
-" 2>/dev/null
+" 2>/dev/null || true
         fi
 
         echo -e "${GREEN}[BH Doctor]${NC} Diagnosis complete"
@@ -808,7 +815,6 @@ print('  ✓ Graph DB reinitialized')
         echo -e "${CYAN}[BH Doctor]${NC} Exporting session..."
 
         mkdir -p data/session-export
-        local ts
         ts=$(date +%Y%m%d_%H%M%S)
 
         # Export graph
