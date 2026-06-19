@@ -106,7 +106,7 @@ class BlackHornetNest:
     Orchestrates all hornet agents across all repos.
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         self.running = True
         self.start_time = time.time()
         self.hornets: Dict[str, Dict] = {}
@@ -114,12 +114,12 @@ class BlackHornetNest:
         signal.signal(signal.SIGTERM, self._shutdown)
         signal.signal(signal.SIGINT, self._shutdown)
 
-    def _shutdown(self, signum: int, frame: object) -> None:
+    def _shutdown(self, signum, frame):
         logger.info("Nest shutting down...")
         self.running = False
         self.nest_status = "SHUTDOWN"
 
-    def roar(self) -> None:
+    def roar(self):
         """Display the BLACKHORNET banner."""
         print(f"\033[1;30;47m{HORNET_ART}\033[0m")
         print(f"\033[1;30;47m  {ECOSYSTEM_NAME} v{VERSION} — Sovereign: {SOVEREIGN}  \033[0m")
@@ -176,7 +176,7 @@ class BlackHornetNest:
 
         return True
 
-    def start_hornets(self) -> None:
+    def start_hornets(self):
         """Start all hornet services in the nest."""
         logger.info("Starting hornet swarm...")
 
@@ -222,7 +222,27 @@ class BlackHornetNest:
             )
             logger.info("  🧬 Unified Launcher started")
 
-        # 5. MultiColony — wire engine patterns
+        # 5. HyperGate (LLM bridge — routes through ProxyGateLLM)
+        try:
+            sys.path.insert(0, str(Path(__file__).parent / "src"))
+            from hypergate import HyperGate
+            hg = HyperGate()
+            hg.start()
+            logger.info("  🔗 HyperGate started (LLM bridge)")
+        except Exception as e:
+            logger.warning(f"  ⚠ HyperGate: {e}")
+
+        # 6. Mnemosyne Bridge (knowledge memory)
+        try:
+            sys.path.insert(0, str(Path(__file__).parent / "src"))
+            from mnemosyne_bridge import MnemosyneBridge
+            mb = MnemosyneBridge()
+            mb.start()
+            logger.info("  🧠 Mnemosyne Bridge started (knowledge memory)")
+        except Exception as e:
+            logger.warning(f"  ⚠ Mnemosyne Bridge: {e}")
+
+        # 7. MultiColony — wire engine patterns
         mc_dir = NEST_DIR / "AI-MultiColony-Ecosystem"
         if mc_dir.exists():
             hornet_src = Path(__file__).parent / "src"
@@ -261,6 +281,8 @@ class BlackHornetNest:
         import urllib.request
         health = {
             "proxygate": False,
+            "hypergate": False,
+            "mnemosyne": False,
             "trading_pipeline": False,
             "daemon_running": False,
         }
@@ -269,6 +291,22 @@ class BlackHornetNest:
         try:
             r = urllib.request.urlopen("http://localhost:3333/health", timeout=3)
             health["proxygate"] = r.status == 200
+        except Exception:
+            pass
+
+        # Check HyperGate (uses ProxyGateLLM)
+        try:
+            sys.path.insert(0, str(Path(__file__).parent / "src"))
+            from hypergate import HyperGate
+            hg = HyperGate()
+            health["hypergate"] = hg.is_available()
+        except Exception:
+            pass
+
+        # Check Mnemosyne
+        try:
+            r = urllib.request.urlopen("http://localhost:3001", timeout=3)
+            health["mnemosyne"] = r.status == 200
         except Exception:
             pass
 
@@ -288,7 +326,7 @@ class BlackHornetNest:
                 md = MarketDataTool()
                 data = json.loads(md.get_ohlcv('XAUUSD', '1d', 1))
                 health["trading_pipeline"] = len(data.get("data", [])) > 0
-            except Exception:
+            except:
                 pass
 
         return health
@@ -332,7 +370,7 @@ class BlackHornetNest:
             logger.error(f"Self-push failed: {e}")
             return False
 
-    def immortal_daemon(self, interval: int = 300) -> None:
+    def immortal_daemon(self, interval: int = 300):
         """Immortal self-healing daemon loop.
         Every `interval` seconds:
         - Check health of all services
@@ -383,6 +421,16 @@ class BlackHornetNest:
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
                     )
                     logger.info("  🔧 Auto-healed: ProxyGateLLM restarted")
+            elif component == "mnemosyne":
+                mn_dir = NEST_DIR / "mnemosyne"
+                if mn_dir.exists():
+                    subprocess.Popen(
+                        ["npm", "start"],
+                        cwd=str(mn_dir),
+                        env={**os.environ, "PORT": "3001"},
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                    )
+                    logger.info("  🔧 Auto-healed: Mnemosyne restarted")
             elif component == "daemon_running":
                 hq_dir = NEST_DIR / "blackhornet"
                 if hq_dir.exists():
@@ -393,7 +441,7 @@ class BlackHornetNest:
                     )
                     logger.info("  🔧 Auto-healed: Unified Launcher restarted")
 
-    def run(self) -> None:
+    def run(self):
         """Main nest loop — keeps everything alive."""
         self.roar()
         self.deploy_nest()
@@ -421,7 +469,7 @@ class BlackHornetNest:
         logger.info("Nest closed. Hornets continue autonomously.")
 
 
-def main() -> None:
+def main():
     import argparse
     parser = argparse.ArgumentParser(description="🖤 BLACKHORNET — Sovereign Autonomous Ecosystem")
     parser.add_argument("--deploy", action="store_true", help="Deploy nest (clone all repos)")
