@@ -4,7 +4,9 @@ Exports all agent classes, the registry, event bus, circuit breaker,
 graph orchestration, shared state, and Pydantic state models.
 """
 
-from src.agents.base import BaseAgent, EventBus, CircuitBreaker, RetryPolicy
+from src.core.event_bus import EventBus
+from src.core.circuit_breaker import CircuitBreaker
+from src.agents.base import BaseAgent, RetryPolicy
 from src.agents.manus import ManusAgent
 from src.agents.planner import PlannerAgent
 from src.agents.executor import ExecutorAgent

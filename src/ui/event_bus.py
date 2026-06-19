@@ -6,6 +6,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List
 
+from src.core.event_bus import EventBus as CoreEventBus
+
 logger = logging.getLogger(__name__)
 
 
@@ -30,6 +32,7 @@ class EventBus:
         self._handlers: Dict[str, List[EventHandler]] = {}
         self._history: List[Event] = []
         self._max_history = 500
+        self._core = CoreEventBus.get_instance()
 
     def subscribe(self, event_type: str, handler: EventHandler) -> None:
         with self._lock:

@@ -12,7 +12,8 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Set, Type
 
-from src.agents.base import BaseAgent, EventBus
+from src.core.event_bus import EventBus
+from src.agents.base import BaseAgent
 from src.agents.manus import ManusAgent
 from src.agents.planner import PlannerAgent
 from src.agents.executor import ExecutorAgent

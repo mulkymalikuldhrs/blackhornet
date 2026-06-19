@@ -39,137 +39,12 @@ from src.colony_types import (
     TaskResult,
     ToolCall,
     ToolResult,
-    CircuitBreakerState,
 )
+from src.core.circuit_breaker import CircuitBreaker, CircuitState
+from src.core.event_bus import EventBus as CoreEventBus
 from src.exceptions import AgentError, AgentStateError, AgentTimeoutError
 
 logger = logging.getLogger(__name__)
-
-
-# ── EventBus ────────────────────────────────────────────────────────────────
-
-
-class EventBus:
-    """Async event bus for agent communication.
-
-    Supports both sync and async handlers, typed event publishing, event
-    history queries, and cleanup.
-    """
-
-    def __init__(self):
-        self._subscribers: Dict[str, List[Callable]] = {}
-        self._event_log: List[Event] = []
-
-    def subscribe(self, event_type, handler: Callable) -> None:
-        """Subscribe *handler* to events of *event_type*."""
-        key = event_type.value if hasattr(event_type, "value") else event_type
-        if key not in self._subscribers:
-            self._subscribers[key] = []
-        self._subscribers[key].append(handler)
-
-    def unsubscribe(self, event_type, handler: Callable) -> None:
-        """Remove *handler* from *event_type* subscriptions."""
-        key = event_type.value if hasattr(event_type, "value") else event_type
-        if key in self._subscribers:
-            self._subscribers[key] = [
-                h for h in self._subscribers[key] if h != handler
-            ]
-
-    async def publish(self, event: Event) -> None:
-        """Publish *event* to all matching subscribers."""
-        self._event_log.append(event)
-        key = event.event_type.value if hasattr(event.event_type, "value") else event.event_type
-        handlers = self._subscribers.get(key, [])
-        for handler in handlers:
-            try:
-                if asyncio.iscoroutinefunction(handler):
-                    await handler(event)
-                else:
-                    handler(event)
-            except Exception as e:
-                logger.error(f"Event handler error: {e}")
-
-    async def publish_typed(self, event_type: EventType, source: str, data: Dict[str, Any]) -> Event:
-        """Create and publish a typed event, returning the event object."""
-        event = Event(event_type=event_type, source=source, data=data)
-        await self.publish(event)
-        return event
-
-    def get_events(self, event_type: Optional[str] = None, limit: int = 100) -> List[Event]:
-        """Return recent events, optionally filtered by type."""
-        events = self._event_log
-        if event_type:
-            events = [e for e in events if e.event_type == event_type]
-        return events[-limit:]
-
-    def clear(self) -> None:
-        """Clear all subscribers and event history."""
-        self._event_log.clear()
-        self._subscribers.clear()
-
-
-# ── Circuit Breaker ─────────────────────────────────────────────────────────
-
-
-class CircuitBreaker:
-    """Circuit breaker for MCP tool calls.
-
-    States
-    ------
-    * **CLOSED** – normal operation; calls pass through.
-    * **OPEN** – failures exceeded *failure_threshold*; calls are rejected
-      until *timeout* seconds have elapsed.
-    * **HALF_OPEN** – one trial call is allowed; success resets to CLOSED,
-      another failure reopens.
-
-    Parameters
-    ----------
-    failure_threshold:
-        Number of consecutive failures before opening (default 5).
-    timeout:
-        Seconds to wait before transitioning OPEN → HALF_OPEN (default 60).
-    """
-
-    def __init__(self, failure_threshold: int = 5, timeout: int = 60):
-        self.failure_threshold = failure_threshold
-        self.timeout = timeout
-        self._state = CircuitBreakerState.CLOSED
-        self._failure_count = 0
-        self._last_failure_time: Optional[float] = None
-        self._success_count = 0
-
-    @property
-    def state(self) -> CircuitBreakerState:
-        """Current breaker state, automatically transitioning to HALF_OPEN after timeout."""
-        if self._state == CircuitBreakerState.OPEN:
-            if self._last_failure_time and (time.time() - self._last_failure_time) > self.timeout:
-                self._state = CircuitBreakerState.HALF_OPEN
-        return self._state
-
-    def record_success(self) -> None:
-        """Record a successful call; resets from HALF_OPEN to CLOSED."""
-        self._success_count += 1
-        if self._state == CircuitBreakerState.HALF_OPEN:
-            self._state = CircuitBreakerState.CLOSED
-            self._failure_count = 0
-
-    def record_failure(self) -> None:
-        """Record a failed call; opens the breaker when threshold is reached."""
-        self._failure_count += 1
-        self._last_failure_time = time.time()
-        if self._failure_count >= self.failure_threshold:
-            self._state = CircuitBreakerState.OPEN
-
-    def can_execute(self) -> bool:
-        """Whether a call should be allowed through the breaker."""
-        return self.state in (CircuitBreakerState.CLOSED, CircuitBreakerState.HALF_OPEN)
-
-    def reset(self) -> None:
-        """Force-reset the breaker to CLOSED."""
-        self._state = CircuitBreakerState.CLOSED
-        self._failure_count = 0
-        self._success_count = 0
-        self._last_failure_time = None
 
 
 # ── Retry Policy ────────────────────────────────────────────────────────────
@@ -253,7 +128,7 @@ class BaseAgent:
     def __init__(
         self,
         spec: Optional[AgentSpec] = None,
-        event_bus: Optional[EventBus] = None,
+        event_bus: Optional[CoreEventBus] = None,
         tools: Optional[Dict[str, Any]] = None,
     ):
         self.spec = spec or AgentSpec()
@@ -262,7 +137,7 @@ class BaseAgent:
         self.autonomy_level = self.spec.autonomy_level
         self.colony_id = self.spec.colony_id
         self.state = AgentState.REGISTERED
-        self.event_bus = event_bus or EventBus()
+        self.event_bus = event_bus or CoreEventBus.get_instance()
         self.tools: Dict[str, Any] = tools or {}
         self._circuit_breakers: Dict[str, CircuitBreaker] = {}
         self._health_score = 1.0
@@ -604,7 +479,7 @@ class BaseAgent:
         # Recalculate circuit breaker health
         open_count = sum(
             1 for cb in self._circuit_breakers.values()
-            if cb.state == CircuitBreakerState.OPEN
+            if cb.state == CircuitState.OPEN
         )
         total_cbs = max(1, len(self._circuit_breakers))
         self._health_breakdown["circuit_breaker_health"] = 1.0 - (open_count / total_cbs)
@@ -634,7 +509,7 @@ class BaseAgent:
         if self.context_usage >= self.COMPACTION_THRESHOLD:
             issues.append(f"Context usage high: {self.context_usage:.0%}")
         for name, cb in self._circuit_breakers.items():
-            if cb.state == CircuitBreakerState.OPEN:
+            if cb.state == CircuitState.OPEN:
                 issues.append(f"Circuit breaker OPEN for tool: {name}")
         return {
             "agent_id": self.agent_id,

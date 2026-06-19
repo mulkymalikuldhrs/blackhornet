@@ -31,6 +31,8 @@ from .protocol import (
 )
 from .permissions import PermissionEngine
 
+from src.core.circuit_breaker import CircuitBreaker
+
 logger = logging.getLogger(__name__)
 
 
@@ -86,57 +88,6 @@ class RateLimiter:
         timestamps = self._per_agent.get(agent_id, [])
         timestamps = [t for t in timestamps if now - t < 60.0]
         return max(0, self.per_agent_limit - len(timestamps))
-
-
-# ── Circuit breaker (per-tool) ───────────────────────────────────
-
-class CircuitBreaker:
-    """Circuit breaker for individual tools."""
-
-    def __init__(self, failure_threshold: int = 5, timeout: int = 60):
-        self.failure_threshold = failure_threshold
-        self.timeout = timeout
-        self._state = "closed"
-        self._failure_count = 0
-        self._success_count = 0
-        self._last_failure_time: Optional[float] = None
-
-    @property
-    def state(self) -> str:
-        if self._state == "open" and self._last_failure_time:
-            if (time.time() - self._last_failure_time) > self.timeout:
-                self._state = "half_open"
-        return self._state
-
-    def can_execute(self) -> bool:
-        return self.state in ("closed", "half_open")
-
-    def record_success(self) -> None:
-        self._success_count += 1
-        if self._state == "half_open":
-            self._state = "closed"
-            self._failure_count = 0
-
-    def record_failure(self) -> None:
-        self._failure_count += 1
-        self._last_failure_time = time.time()
-        if self._failure_count >= self.failure_threshold:
-            self._state = "open"
-
-    def reset(self) -> None:
-        self._state = "closed"
-        self._failure_count = 0
-        self._success_count = 0
-        self._last_failure_time = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "state": self.state,
-            "failure_count": self._failure_count,
-            "success_count": self._success_count,
-            "failure_threshold": self.failure_threshold,
-            "timeout": self.timeout,
-        }
 
 
 # ── Tool schema record ──────────────────────────────────────────
