@@ -1,0 +1,92 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "label": "agent:bh-doctor",
+      "type": "agent",
+      "properties": {}
+    },
+    {
+      "id": 2,
+      "label": "episode:BH Doctor v5.0.0 started by Mulky Malikul Dhaher",
+      "type": "episode",
+      "properties": {
+        "summary": "BH Doctor v5.0.0 started by Mulky Malikul Dhaher"
+      }
+    },
+    {
+      "id": 3,
+      "label": "episode:BH Doctor v5.0.0 stopped",
+      "type": "episode",
+      "properties": {
+        "summary": "BH Doctor v5.0.0 stopped"
+      }
+    },
+    {
+      "id": 4,
+      "label": "test_key",
+      "type": "memory",
+      "properties": {
+        "value_preview": "test_value"
+      }
+    },
+    {
+      "id": 5,
+      "label": "TestEntity",
+      "type": "test",
+      "properties": {}
+    },
+    {
+      "id": 6,
+      "label": "test",
+      "type": "source",
+      "properties": {}
+    },
+    {
+      "id": 7,
+      "label": "episodic:9a4e2e7ab1fd",
+      "type": "memory",
+      "properties": {
+        "value_preview": "test memory"
+      }
+    },
+    {
+      "id": 8,
+      "label": "hermes",
+      "type": "source",
+      "properties": {}
+    }
+  ],
+  "edges": [
+    {
+      "source": 1,
+      "target": 2,
+      "relation": "system_start",
+      "weight": 14.0
+    },
+    {
+      "source": 1,
+      "target": 3,
+      "relation": "system_stop",
+      "weight": 4.0
+    },
+    {
+      "source": 6,
+      "target": 5,
+      "relation": "referenced",
+      "weight": 2.0
+    },
+    {
+      "source": 6,
+      "target": 4,
+      "relation": "produced",
+      "weight": 1.0
+    },
+    {
+      "source": 8,
+      "target": 7,
+      "relation": "produced",
+      "weight": 1.0
+    }
+  ]
+}
