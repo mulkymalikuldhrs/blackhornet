@@ -10,7 +10,7 @@ User=root
 WorkingDirectory=/root/bh-ecosystem/blackhornet
 Environment="PATH=/usr/local/bin:/usr/bin:/bin:/root/.local/bin"
 Environment="BH_HOME=/root/.bh"
-ExecStartPre=/bin/bash -c 'cd /root/bh-ecosystem/ProxyGateLLM && PORT=3333 nohup node index.js > /tmp/proxygate.log 2>&1 &'
+ExecStartPre=/bin/bash -c 'cd /root/bh-ecosystem/JeumpaLLM && PORT=3333 nohup node index.js > /tmp/jeumpallm.log 2>&1 &'
 ExecStart=/bin/bash /root/bh-ecosystem/blackhornet/bh.sh swarm
 ExecStop=/bin/bash /root/bh-ecosystem/blackhornet/bh.sh stop
 Restart=always

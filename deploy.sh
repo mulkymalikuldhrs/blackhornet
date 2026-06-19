@@ -87,7 +87,7 @@ main() {
     ok "Python: $("$PY" --version)"
 
     # Node.js
-    command -v node &>/dev/null || die "Node.js required (for ProxyGateLLM)"
+    command -v node &>/dev/null || die "Node.js required (for JeumpaLLM)"
     ok "Node: $(node --version)"
 
     # uv
@@ -111,7 +111,7 @@ main() {
     step "3/6" "Deploying hornet swarm..."
 
     REPOS=(
-        "ProxyGateLLM"
+        "JeumpaLLM"
         "mnemosyne"
         "agent"
         "Quant-Nanggroe-AI"
@@ -127,16 +127,16 @@ main() {
         fi
     done
 
-    # 4. Install ProxyGateLLM deps
-    step "4/6" "Starting ProxyGateLLM (LLM gateway)..."
-    cd "$NEST_DIR/ProxyGateLLM"
+    # 4. Install JeumpaLLM deps
+    step "4/6" "Starting JeumpaLLM (LLM gateway)..."
+    cd "$NEST_DIR/JeumpaLLM"
     npm install --omit=dev --silent 2>/dev/null || true
-    PORT=3333 nohup node index.js > /tmp/blackhornet-proxygate.log 2>&1 &
+    PORT=3333 nohup node index.js > /tmp/blackhornet-jeumpallm.log 2>&1 &
     sleep 3
     if curl -s http://localhost:3333/health > /dev/null 2>&1; then
-        ok "ProxyGateLLM ONLINE — 10 providers, 468 models, FREE"
+        ok "JeumpaLLM ONLINE — 10 providers, 468 models, FREE"
     else
-        warn "ProxyGateLLM starting (check /tmp/blackhornet-proxygate.log)"
+        warn "JeumpaLLM starting (check /tmp/blackhornet-jeumpallm.log)"
     fi
 
     # 5. Install blackhornet deps

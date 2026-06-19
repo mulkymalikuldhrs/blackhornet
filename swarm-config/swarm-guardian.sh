@@ -95,15 +95,15 @@ rotate_key() {
   restart_agent "$p"
 }
 
-# ── Ensure ProxyGateLLM is running ──
+# ── Ensure JeumpaLLM is running ──
 check_proxy() {
   if ! curl -s http://localhost:3333/health >/dev/null 2>&1; then
-    log "🔌 ProxyGateLLM DOWN — restarting"
+    log "🔌 JeumpaLLM DOWN — restarting"
     kill $(lsof -ti:3333 2>/dev/null) 2>/dev/null || true
     sleep 1
-    cd "${SWARM_DIR}/shared-workspace/ProxyGateLLM" && \
-      setsid node index.js >> "${LOG_DIR}/proxygate.log" 2>&1 &
-    echo $! > "${LOG_DIR}/proxygate.pid"
+    cd "${SWARM_DIR}/shared-workspace/JeumpaLLM" && \
+      setsid node index.js >> "${LOG_DIR}/jeumpallm.log" 2>&1 &
+    echo $! > "${LOG_DIR}/jeumpallm.pid"
   fi
 }
 

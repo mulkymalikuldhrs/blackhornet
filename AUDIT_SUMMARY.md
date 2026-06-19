@@ -10,10 +10,10 @@
 **Fix:** Changed `except:` to `except Exception:` to only catch standard exceptions while allowing system-level exceptions to propagate.
 
 **Files modified:**
-- `blackhornet.py:272` - Health check for ProxyGateLLM
+- `blackhornet.py:272` - Health check for JeumpaLLM
 - `blackhornet.py:291` - Health check for trading pipeline
 - `sovereign.py:22` - URL check function
-- `sovereign.py:43` - ProxyGateLLM health check
+- `sovereign.py:43` - JeumpaLLM health check
 
 ### 2. Security: Docker Container Running as Root
 **Location:** `Dockerfile`

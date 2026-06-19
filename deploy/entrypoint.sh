@@ -10,18 +10,18 @@ echo "╚═══════════════════════�
 
 BH_HOME="${BH_HOME:-/root/.bh}"
 
-# ── 1. ProxyGateLLM (LLM gateway) ──────────────────────────────
-echo "[1/5] Starting ProxyGateLLM..."
-if [ -d /blackhornet/vendor/ProxyGateLLM ]; then
-    cd /blackhornet/vendor/ProxyGateLLM && PORT=3333 nohup node index.js > /tmp/proxygate.log 2>&1 &
+# ── 1. JeumpaLLM (LLM gateway) ──────────────────────────────
+echo "[1/5] Starting JeumpaLLM..."
+if [ -d /blackhornet/vendor/JeumpaLLM ]; then
+    cd /blackhornet/vendor/JeumpaLLM && PORT=3333 nohup node index.js > /tmp/jeumpallm.log 2>&1 &
     sleep 3
     if curl -s http://localhost:3333/health > /dev/null 2>&1; then
-        echo "  ✅ ProxyGateLLM ONLINE"
+        echo "  ✅ JeumpaLLM ONLINE"
     else
-        echo "  ⚠️  ProxyGateLLM starting (check /tmp/proxygate.log)"
+        echo "  ⚠️  JeumpaLLM starting (check /tmp/jeumpallm.log)"
     fi
 else
-    echo "  ⚠️  ProxyGateLLM not vendored — LLM gateway unavailable"
+    echo "  ⚠️  JeumpaLLM not vendored — LLM gateway unavailable"
 fi
 
 # ── 2. Mnemosyne (Web UI, Next.js) ─────────────────────────────
@@ -50,7 +50,7 @@ echo "  ✅ Swarm engine available via src.swarm"
 echo ""
 echo "╔══════════════════════════════════════════════╗"
 echo "║   BH HIVE — OPERATIONAL                     ║"
-echo "║   ProxyGateLLM :3333 | Web UI :8080         ║"
+echo "║   JeumpaLLM :3333 | Web UI :8080         ║"
 echo "║   Mnemosyne    :3001 | BH Doctor ⚕️          ║"
 echo "║   Daemon 🛡️    | Swarm active               ║"
 echo "╚══════════════════════════════════════════════╝"
@@ -58,8 +58,8 @@ echo "╚═══════════════════════�
 # Keep alive + health monitoring
 while true; do
     sleep 60
-    if [ -d /blackhornet/vendor/ProxyGateLLM ] && ! curl -s http://localhost:3333/health > /dev/null 2>&1; then
-        echo "[WARN] ProxyGateLLM down — restarting..."
-        cd /blackhornet/vendor/ProxyGateLLM && PORT=3333 nohup node index.js > /tmp/proxygate.log 2>&1 &
+    if [ -d /blackhornet/vendor/JeumpaLLM ] && ! curl -s http://localhost:3333/health > /dev/null 2>&1; then
+        echo "[WARN] JeumpaLLM down — restarting..."
+        cd /blackhornet/vendor/JeumpaLLM && PORT=3333 nohup node index.js > /tmp/jeumpallm.log 2>&1 &
     fi
 done

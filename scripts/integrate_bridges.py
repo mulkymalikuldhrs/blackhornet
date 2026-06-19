@@ -84,6 +84,6 @@ with open(BLACKHORNET_PY, 'w') as f:
 
 print(f"\n✅ INTEGRATION COMPLETE: {BLACKHORNET_PY}")
 print("\nNext steps:")
-print("1. Start ProxyGateLLM: cd /sdcard/dhaherlabs/ProxyGateLLM && npm start")
+print("1. Start JeumpaLLM: cd /sdcard/dhaherlabs/JeumpaLLM && npm start")
 print("2. Start Mnemosyne: cd /sdcard/dhaherlabs/repositories/mnemosyne-worktree && npm run dev")
 print("3. Run BlackHornet: python3 blackhornet.py")

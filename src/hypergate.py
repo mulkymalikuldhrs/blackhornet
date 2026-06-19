@@ -2,18 +2,18 @@
 """
 HYPERGATE — Autonomous LLM Gateway Bridge
 ==========================================
-Integrates ProxyGateLLM into HermesQuantOS as the primary LLM access layer.
+Integrates JeumpaLLM into HermesQuantOS as the primary LLM access layer.
 
-ProxyGateLLM provides:
+JeumpaLLM provides:
   - 9+ free LLM providers with auto-failover
   - SHA256 caching (no duplicate API calls)
   - Health-check + automatic provider rotation
   - OpenAI-compatible API
 
 This bridge:
-  - Auto-discovers ProxyGateLLM (local or remote)
-  - Routes all agent LLM calls through ProxyGateLLM
-  - Falls back to direct API if ProxyGateLLM unavailable
+  - Auto-discovers JeumpaLLM (local or remote)
+  - Routes all agent LLM calls through JeumpaLLM
+  - Falls back to direct API if JeumpaLLM unavailable
   - Caches responses locally (secondary cache layer)
   - Reports provider health to swarm
 
@@ -35,12 +35,12 @@ from datetime import datetime, timezone
 logger = logging.getLogger("HyperGate")
 
 # ── Configuration ──────────────────────────────────────────────────────
-PROXYGATE_DIR = Path(os.getenv("PROXYGATE_DIR", 
-    Path(__file__).parent.parent.parent / "ProxyGateLLM"))
-PROXYGATE_PORT = int(os.getenv("PROXYGATE_PORT", "3000"))
-PROXYGATE_HOST = os.getenv("PROXYGATE_HOST", "localhost")
-PROXYGATE_URL = os.getenv("PROXYGATE_URL", 
-    f"http://{PROXYGATE_HOST}:{PROXYGATE_PORT}")
+JEUMPALLM_DIR = Path(os.getenv("JEUMPALLM_DIR", 
+    Path(__file__).parent.parent.parent / "JeumpaLLM"))
+JEUMPALLM_PORT = int(os.getenv("JEUMPALLM_PORT", "3000"))
+JEUMPALLM_HOST = os.getenv("JEUMPALLM_HOST", "localhost")
+JEUMPALLM_URL = os.getenv("JEUMPALLM_URL", 
+    f"http://{JEUMPALLM_HOST}:{JEUMPALLM_PORT}")
 
 # ── Direct API fallbacks ────────────────────────────────────────────────
 DIRECT_PROVIDERS = {
@@ -65,71 +65,71 @@ DIRECT_PROVIDERS = {
 class HyperGate:
     """
     Universal LLM access layer.
-    Primary: ProxyGateLLM (auto-failover, caching)
+    Primary: JeumpaLLM (auto-failover, caching)
     Fallback: Direct API providers
     """
 
     def __init__(self):
-        self.proxygate_available = False
-        self.proxygate_process = None
+        self.jeumpallm_available = False
+        self.jeumpallm_process = None
         self.active_provider = None
         self.cache: Dict[str, Dict] = {}
         self.stats = {
             "requests_total": 0,
             "requests_cached": 0,
-            "requests_proxygate": 0,
+            "requests_jeumpallm": 0,
             "requests_direct": 0,
             "failovers": 0,
         }
-        self._ensure_proxygate()
+        self._ensure_jeumpallm()
 
-    # ── ProxyGateLLM Management ───────────────────────────────────────
+    # ── JeumpaLLM Management ───────────────────────────────────────
 
-    def _ensure_proxygate(self) -> bool:
-        """Start ProxyGateLLM if available, or discover remote instance."""
+    def _ensure_jeumpallm(self) -> bool:
+        """Start JeumpaLLM if available, or discover remote instance."""
         # Check if already running
-        if self._check_proxygate_health():
-            self.proxygate_available = True
-            logger.info(f"ProxyGateLLM found at {PROXYGATE_URL}")
+        if self._check_jeumpallm_health():
+            self.jeumpallm_available = True
+            logger.info(f"JeumpaLLM found at {JEUMPALLM_URL}")
             return True
 
         # Try to start locally
-        if PROXYGATE_DIR.exists():
-            logger.info("Starting ProxyGateLLM locally...")
+        if JEUMPALLM_DIR.exists():
+            logger.info("Starting JeumpaLLM locally...")
             try:
                 # Node.js check
                 node_bin = subprocess.run(
                     ["which", "node"], capture_output=True, text=True
                 ).stdout.strip() or "node"
 
-                self.proxygate_process = subprocess.Popen(
+                self.jeumpallm_process = subprocess.Popen(
                     [node_bin, "index.js"],
-                    cwd=str(PROXYGATE_DIR),
+                    cwd=str(JEUMPALLM_DIR),
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
-                    env={**os.environ, "PORT": str(PROXYGATE_PORT)}
+                    env={**os.environ, "PORT": str(JEUMPALLM_PORT)}
                 )
                 # Wait for startup
                 for _ in range(10):
                     time.sleep(1)
-                    if self._check_proxygate_health():
-                        self.proxygate_available = True
-                        logger.info(f"ProxyGateLLM started on port {PROXYGATE_PORT}")
+                    if self._check_jeumpallm_health():
+                        self.jeumpallm_available = True
+                        logger.info(f"JeumpaLLM started on port {JEUMPALLM_PORT}")
                         return True
 
-                logger.warning("ProxyGateLLM started but not responding")
+                logger.warning("JeumpaLLM started but not responding")
             except Exception as e:
-                logger.warning(f"Could not start ProxyGateLLM: {e}")
+                logger.warning(f"Could not start JeumpaLLM: {e}")
 
-        logger.info("ProxyGateLLM unavailable — using direct API fallback")
+        logger.info("JeumpaLLM unavailable — using direct API fallback")
         return False
 
-    def _check_proxygate_health(self) -> bool:
-        """Check if ProxyGateLLM is healthy."""
+    def _check_jeumpallm_health(self) -> bool:
+        """Check if JeumpaLLM is healthy."""
         try:
             import urllib.request
             req = urllib.request.Request(
-                f"{PROXYGATE_URL}/health",
+                f"{JEUMPALLM_URL}/health",
                 headers={"User-Agent": "HermesQuantOS/4.0"}
             )
             resp = urllib.request.urlopen(req, timeout=3)
@@ -140,15 +140,15 @@ class HyperGate:
     # ── Provider Discovery ────────────────────────────────────────────
 
     def discover_providers(self) -> List[Dict]:
-        """Discover all available LLM providers (ProxyGate + direct)."""
+        """Discover all available LLM providers (Jeumpa LLM + direct)."""
         providers = []
 
-        # ProxyGateLLM provides 9+ providers
-        if self.proxygate_available:
+        # JeumpaLLM provides 9+ providers
+        if self.jeumpallm_available:
             try:
                 import urllib.request
                 req = urllib.request.Request(
-                    f"{PROXYGATE_URL}/providers",
+                    f"{JEUMPALLM_URL}/providers",
                     headers={"User-Agent": "HermesQuantOS/4.0"}
                 )
                 resp = urllib.request.urlopen(req, timeout=5)
@@ -157,7 +157,7 @@ class HyperGate:
                     providers.append({
                         "name": p.get("name", "unknown"),
                         "status": p.get("status", "unknown"),
-                        "source": "proxygate",
+                        "source": "jeumpallm",
                         "free": p.get("free", False),
                     })
             except Exception:
@@ -183,7 +183,7 @@ class HyperGate:
                  temperature: float = 0.7,
                  cache: bool = True) -> Optional[Dict]:
         """
-        Get LLM completion — routes through ProxyGateLLM first,
+        Get LLM completion — routes through JeumpaLLM first,
         falls back to direct API providers.
 
         Returns: {"content": "...", "model": "...", "provider": "..."}
@@ -197,11 +197,11 @@ class HyperGate:
                 self.stats["requests_cached"] += 1
                 return self.cache[cache_key]
 
-        # Try ProxyGateLLM first
-        if self.proxygate_available:
-            result = self._call_proxygate(messages, model, max_tokens, temperature)
+        # Try JeumpaLLM first
+        if self.jeumpallm_available:
+            result = self._call_jeumpallm(messages, model, max_tokens, temperature)
             if result:
-                self.stats["requests_proxygate"] += 1
+                self.stats["requests_jeumpallm"] += 1
                 if cache:
                     self.cache[self._cache_key(messages, model, temperature)] = result
                 return result
@@ -218,11 +218,11 @@ class HyperGate:
         logger.error("All LLM providers failed")
         return None
 
-    # ── ProxyGateLLM Call ─────────────────────────────────────────────
+    # ── JeumpaLLM Call ─────────────────────────────────────────────
 
-    def _call_proxygate(self, messages: List[Dict], model: str,
+    def _call_jeumpallm(self, messages: List[Dict], model: str,
                         max_tokens: int, temperature: float) -> Optional[Dict]:
-        """Call ProxyGateLLM OpenAI-compatible endpoint."""
+        """Call JeumpaLLM OpenAI-compatible endpoint."""
         try:
             import urllib.request
             body = json.dumps({
@@ -232,7 +232,7 @@ class HyperGate:
                 "temperature": temperature,
             }).encode()
             req = urllib.request.Request(
-                f"{PROXYGATE_URL}/v1/chat/completions",
+                f"{JEUMPALLM_URL}/v1/chat/completions",
                 data=body,
                 headers={
                     "Content-Type": "application/json",
@@ -246,11 +246,11 @@ class HyperGate:
             return {
                 "content": choice["content"],
                 "model": data.get("model", "unknown"),
-                "provider": f"proxygate/{data.get('provider', 'auto')}",
+                "provider": f"jeumpallm/{data.get('provider', 'auto')}",
                 "usage": data.get("usage", {}),
             }
         except Exception as e:
-            logger.debug(f"ProxyGateLLM call failed: {e}")
+            logger.debug(f"JeumpaLLM call failed: {e}")
             return None
 
     # ── Direct API Call ────────────────────────────────────────────────
@@ -312,8 +312,8 @@ class HyperGate:
 
     def status(self) -> Dict:
         return {
-            "proxygate_available": self.proxygate_available,
-            "proxygate_url": PROXYGATE_URL if self.proxygate_available else None,
+            "jeumpallm_available": self.jeumpallm_available,
+            "jeumpallm_url": JEUMPALLM_URL if self.jeumpallm_available else None,
             "providers_available": len(self.discover_providers()),
             "cache_entries": len(self.cache),
             "stats": self.stats,
@@ -321,9 +321,9 @@ class HyperGate:
         }
 
     def stop(self):
-        if self.proxygate_process:
-            self.proxygate_process.terminate()
-            logger.info("ProxyGateLLM stopped")
+        if self.jeumpallm_process:
+            self.jeumpallm_process.terminate()
+            logger.info("JeumpaLLM stopped")
 
 
 # ── Standalone ────────────────────────────────────────────────────────
@@ -333,7 +333,7 @@ def main():
     parser = argparse.ArgumentParser(description="HyperGate — LLM Gateway Bridge")
     parser.add_argument("--status", action="store_true", help="Show gateway status")
     parser.add_argument("--providers", action="store_true", help="List available providers")
-    parser.add_argument("--start", action="store_true", help="Start ProxyGateLLM")
+    parser.add_argument("--start", action="store_true", help="Start JeumpaLLM")
     parser.add_argument("--test", action="store_true", help="Test LLM connectivity")
     args = parser.parse_args()
 
@@ -356,8 +356,8 @@ def main():
         else:
             print("❌ All providers failed")
     elif args.start:
-        gate._ensure_proxygate()
-        print(f"ProxyGateLLM: {'ONLINE' if gate.proxygate_available else 'OFFLINE'}")
+        gate._ensure_jeumpallm()
+        print(f"JeumpaLLM: {'ONLINE' if gate.jeumpallm_available else 'OFFLINE'}")
     else:
         print("Usage: hypergate.py [--status|--providers|--test|--start]")
 

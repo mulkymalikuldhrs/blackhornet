@@ -6,7 +6,7 @@
 - **Multi-platform mirror fallback** — Codeberg → GitLab → GitHub for all repo clones
 - **Self-push capability** — auto-commit and push changes to all mirrors (`--self-push`)
 - **Immortal self-healing daemon** — `--immortal` flag for continuous health monitoring, auto-restart, auto-pull, auto-push
-- **Auto-heal** — ProxyGateLLM and Unified Launcher auto-restart on failure
+- **Auto-heal** — JeumpaLLM and Unified Launcher auto-restart on failure
 - **Auto-pull** — repos auto-update every 10 daemon cycles
 
 ### Changed

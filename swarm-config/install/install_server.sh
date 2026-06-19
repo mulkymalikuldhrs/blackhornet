@@ -23,14 +23,14 @@ done
 echo "[3/5] Cloning repositories..."
 mkdir -p ~/.bh/shared-workspace
 cd ~/.bh/shared-workspace
-git clone https://github.com/dhaher-labs/ProxyGateLLM.git 2>/dev/null || (cd ProxyGateLLM && git pull)
+git clone https://github.com/dhaher-labs/JeumpaLLM.git 2>/dev/null || (cd JeumpaLLM && git pull)
 git clone https://github.com/dhaher-labs/mnemosyne.git 2>/dev/null || echo "⚠ mnemosyne not cloned (optional)"
 git clone https://github.com/dhaher-labs/blackhornet.git 2>/dev/null || (cd blackhornet && git pull)
 git clone https://github.com/dhaher-labs/agent.git github-sync 2>/dev/null || (cd github-sync && git pull)
 
-# 4. Install ProxyGateLLM deps
-echo "[4/5] Installing ProxyGateLLM..."
-cd ~/.bh/shared-workspace/ProxyGateLLM && npm install --silent 2>/dev/null || true
+# 4. Install JeumpaLLM deps
+echo "[4/5] Installing JeumpaLLM..."
+cd ~/.bh/shared-workspace/JeumpaLLM && npm install --silent 2>/dev/null || true
 
 # 5. Setup auto-start
 echo "[5/5] Setting up auto-start..."

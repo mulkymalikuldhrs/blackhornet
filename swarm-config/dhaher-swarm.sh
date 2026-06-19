@@ -53,11 +53,11 @@ start() {
   log "${BOLD}⚕️  Starting Dhaher Swarm...${NC}"
   mkdir -p "$LOG_DIR"
   
-  # Start ProxyGateLLM
+  # Start JeumpaLLM
   if ! curl -s http://localhost:3333/health >/dev/null 2>&1; then
-    info "Starting ProxyGateLLM..."
-    cd "${SHARED_WS}/ProxyGateLLM" && setsid node index.js >> "${LOG_DIR}/proxygate.log" 2>&1 &
-    echo $! > "${PID_DIR}/proxygate.pid"
+    info "Starting JeumpaLLM..."
+    cd "${SHARED_WS}/JeumpaLLM" && setsid node index.js >> "${LOG_DIR}/jeumpallm.log" 2>&1 &
+    echo $! > "${PID_DIR}/jeumpallm.pid"
   fi
 
   # Stagger gateways
@@ -78,7 +78,7 @@ stop() {
     [ -f "${PID_DIR}/${p}.pid" ] && kill -9 "$(cat "${PID_DIR}/${p}.pid")" 2>/dev/null || true
     rm -f "${PID_DIR}/${p}.pid"
   done
-  [ -f "${PID_DIR}/proxygate.pid" ] && kill "$(cat "${PID_DIR}/proxygate.pid")" 2>/dev/null || true
+  [ -f "${PID_DIR}/jeumpallm.pid" ] && kill "$(cat "${PID_DIR}/jeumpallm.pid")" 2>/dev/null || true
   [ -f "${PID_DIR}/watchdog.pid" ] && kill "$(cat "${PID_DIR}/watchdog.pid")" 2>/dev/null || true
   log "Swarm stopped"
 }
@@ -107,7 +107,7 @@ status() {
   done
   local proxy="${RED}❌${NC}"
   curl -s http://localhost:3333/health >/dev/null 2>&1 && proxy="${GREEN}✅${NC}"
-  printf "  %b %-15s %s\n" "$proxy" "proxygate" "ProxyGateLLM"
+  printf "  %b %-15s %s\n" "$proxy" "jeumpallm" "JeumpaLLM"
   echo ""
   echo -e "  Alive: ${alive}/7  |  Connected: ${connected}/7  |  Proxy: ${proxy}"
   echo ""
@@ -120,7 +120,7 @@ health() {
   echo "Disk: $(df -h / | awk 'NR==2{printf "%s/%s (%s)", $3,$2,$5}')"
   echo "Load: $(uptime | awk -F'load average:' '{print $2}')"
   echo ""
-  echo "Processes: $(ps aux | grep -E 'hermes gateway|swarm-guardian|ProxyGateLLM' | grep -v grep | wc -l) total"
+  echo "Processes: $(ps aux | grep -E 'hermes gateway|swarm-guardian|JeumpaLLM' | grep -v grep | wc -l) total"
   echo "Watchdog:  $(ps aux | grep 'watchdog.py' | grep -v grep | wc -l) active"
   echo "Guardian:  $(ps aux | grep 'swarm-guardian' | grep bash | grep -v grep | wc -l) active"
 }
@@ -164,7 +164,7 @@ clone() {
   
   # Clone repos
   cd "$target"
-  git clone "https://github.com/dhaher-labs/ProxyGateLLM.git" 2>/dev/null || true
+  git clone "https://github.com/dhaher-labs/JeumpaLLM.git" 2>/dev/null || true
   git clone "https://github.com/dhaher-labs/mnemosyne.git" 2>/dev/null || echo "⚠ mnemosyne not cloned (optional)"
   git clone "https://github.com/dhaher-labs/blackhornet.git" 2>/dev/null || true
   git clone "https://github.com/dhaher-labs/agent.git" 2>/dev/null || true
@@ -187,8 +187,8 @@ for p in autobot clawbot fangbot hackerbot devbot traderbot researchbot; do
   [ -f "$BASE/profiles/$p/SOUL.md" ] && cp "$BASE/profiles/$p/SOUL.md" ~/.bh/profiles/$p/
   [ -f "$BASE/profiles/$p/config.yaml" ] && cp "$BASE/profiles/$p/config.yaml" ~/.bh/profiles/$p/
 done
-# Setup ProxyGateLLM
-cd "$BASE/ProxyGateLLM" && npm install --silent 2>/dev/null || true
+# Setup JeumpaLLM
+cd "$BASE/JeumpaLLM" && npm install --silent 2>/dev/null || true
 echo "✅ Clone complete. Edit .env files with your tokens, then run: ./dhaher-swarm.sh start"
 INSTALLEOF
   chmod +x "$target/install.sh"

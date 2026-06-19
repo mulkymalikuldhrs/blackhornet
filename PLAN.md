@@ -80,12 +80,12 @@
 - **Self-diagnostic**: detect own bugs, propose fixes
 - **Multiple AI models voting**: ensemble of LLMs for critical decisions
 - **Visual interface**: real-time holographic-style dashboard
-- **Redundancy**: if primary model fails, 9 fallbacks (ProxyGateLLM already does this)
+- **Redundancy**: if primary model fails, 9 fallbacks (JeumpaLLM already does this)
 - **Evolve from battle data**: every losing trade teaches the system
 - **"Suit up" mode**: one command activates full autonomous trading
 
 **What's already Stark-grade:**
-- ProxyGateLLM (468 models, auto-failover) ✅
+- JeumpaLLM (468 models, auto-failover) ✅
 - Immortal daemon (auto-heal) ✅
 - Swarm protocol (agent communication) ✅
 - Sovereign panel (dashboard) ✅
@@ -154,7 +154,7 @@
 ✅ Complete:
   - blackhornet umbrella repo
   - Swarm protocol + immortal daemon
-  - ProxyGateLLM integration
+  - JeumpaLLM integration
   - 21 trading agents (functional)
   - Memory bridge + Mnemosyne bridge
 

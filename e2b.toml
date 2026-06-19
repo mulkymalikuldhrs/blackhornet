@@ -9,7 +9,7 @@ base_image = "python:3.11-slim"
 build_directory = "."
 
 # Ports exposed by the sandbox
-# 3333 = ProxyGateLLM (LLM gateway)
+# 3333 = JeumpaLLM (LLM gateway)
 # 8080 = Web UI / Unified Launcher
 # 3001 = Mnemosyne (Next.js dashboard)
 ports = [3333, 8080, 3001]
@@ -33,7 +33,7 @@ PYTHONUNBUFFERED = "1"
 
 # Health check configuration
 [health]
-# Primary health: ProxyGateLLM on port 3333
+# Primary health: JeumpaLLM on port 3333
 command = "curl -sf http://localhost:3333/health || exit 1"
 interval_seconds = 30
 timeout_seconds = 5

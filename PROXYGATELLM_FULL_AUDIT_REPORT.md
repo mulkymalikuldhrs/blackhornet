@@ -7,7 +7,7 @@
 
 ## 📊 EXECUTIVE SUMMARY
 
-**ProxyGateLLM v6.0.0** ditemukan dalam kondisi **PRODUCTION READY** dengan arsitektur enterprise-grade.
+**JeumpaLLM v6.0.0** ditemukan dalam kondisi **PRODUCTION READY** dengan arsitektur enterprise-grade.
 
 ### Key Findings:
 
@@ -29,12 +29,12 @@
 
 ### Locations Found:
 
-1. **Primary:** `/sdcard/dhaherlabs/ProxyGateLLM`
+1. **Primary:** `/sdcard/dhaherlabs/JeumpaLLM`
    - Files: 989
    - node_modules: 34 packages
    - Git: ✅ Tracked
 
-2. **Worktree:** `/sdcard/dhaherlabs/repositories/ProxyGateLLM-worktree`
+2. **Worktree:** `/sdcard/dhaherlabs/repositories/JeumpaLLM-worktree`
    - Files: 1,388
    - node_modules: 71 packages
    - Git: ✅ Worktree of bare repo
@@ -42,7 +42,7 @@
 ### Project Structure:
 
 ```
-ProxyGateLLM/
+JeumpaLLM/
 ├── index.js                 # Main entry point ✅
 ├── engine/                  # Core routing engine
 ├── router/                  # Provider routing logic
@@ -170,7 +170,7 @@ Body: {
 ## ⚠️ CRITICAL ISSUES FOUND
 
 ### 1. ❌ .env File Missing
-**Location:** `/sdcard/dhaherlabs/ProxyGateLLM/.env`
+**Location:** `/sdcard/dhaherlabs/JeumpaLLM/.env`
 **Status:** NOT FOUND
 
 **Impact:**
@@ -180,14 +180,14 @@ Body: {
 
 **Fix Required:**
 ```bash
-cd /sdcard/dhaherlabs/ProxyGateLLM
+cd /sdcard/dhaherlabs/JeumpaLLM
 cp .env.example .env
 # Edit .env with credentials from credentials.md
 ```
 
 ### 2. ❌ Server Not Running
 **Health checks on ports 3000, 8080, 8000:**
-- Responses received but unclear if ProxyGateLLM
+- Responses received but unclear if JeumpaLLM
 
 **Verification needed:**
 ```bash
@@ -198,11 +198,11 @@ curl http://localhost:3333/health
 ### 3. ⚠️ Not Integrated with BlackHornet
 **Current State:**
 - BlackHornet uses direct LLM calls
-- ProxyGateLLM sits idle
+- JeumpaLLM sits idle
 
 **Integration needed:**
 - Point BlackHornet to `http://localhost:3333/v1`
-- Enable automatic failover via ProxyGateLLM
+- Enable automatic failover via JeumpaLLM
 - Use health-aware routing
 
 ---
@@ -241,7 +241,7 @@ curl http://localhost:3333/health
 
 ### Quick Start:
 ```bash
-cd /sdcard/dhaherlabs/ProxyGateLLM
+cd /sdcard/dhaherlabs/JeumpaLLM
 
 # 1. Copy and configure .env
 cp .env.example .env
@@ -270,7 +270,7 @@ curl http://localhost:3333/health
 
 ### 1. BlackHornet Integration
 **Current:** BlackHornet calls LLM providers directly  
-**With ProxyGateLLM:** BlackHornet → ProxyGateLLM → Providers
+**With JeumpaLLM:** BlackHornet → JeumpaLLM → Providers
 
 **Benefits:**
 - ✅ Automatic failover (9 providers)
@@ -283,10 +283,10 @@ curl http://localhost:3333/health
 1. Edit `/root/.hermes/config.yaml`
 2. Set `base_url: http://localhost:3333/v1`
 3. Remove individual provider configs
-4. Let ProxyGateLLM handle routing
+4. Let JeumpaLLM handle routing
 
 ### 2. Mnemosyne Integration
-**Use Case:** ProxyGateLLM as Mnemosyne's LLM gateway
+**Use Case:** JeumpaLLM as Mnemosyne's LLM gateway
 
 **Benefits:**
 - ✅ Multiple LLM options for RAG
@@ -294,7 +294,7 @@ curl http://localhost:3333/health
 - ✅ Cost optimization
 
 ### 3. Telegram Bots Integration
-**Use Case:** All 7 Telegram bots use ProxyGateLLM
+**Use Case:** All 7 Telegram bots use JeumpaLLM
 
 **Benefits:**
 - ✅ Centralized LLM access
@@ -303,9 +303,9 @@ curl http://localhost:3333/health
 
 ---
 
-## 📊 COMPARISON: Direct vs ProxyGateLLM
+## 📊 COMPARISON: Direct vs JeumpaLLM
 
-| Feature | Direct LLM Calls | ProxyGateLLM |
+| Feature | Direct LLM Calls | JeumpaLLM |
 |---------|------------------|--------------|
 | **Failover** | Manual (+ code) | Automatic ✅ |
 | **Health Check** | Manual polling | Built-in ✅ |
@@ -318,7 +318,7 @@ curl http://localhost:3333/health
 | **Logging** | Scattered | Centralized ✅ |
 | **Configuration** | Multiple .env | Single .env ✅ |
 
-**Winner:** ProxyGateLLM in almost every aspect ✅
+**Winner:** JeumpaLLM in almost every aspect ✅
 
 ---
 
@@ -339,7 +339,7 @@ curl http://localhost:3333/health
 ### MEDIUM-TERM (This Month):
 - [ ] **Deploy to production** (Codeberg Pages or VPS)
 - [ ] **Setup SSL certificate** (Let's Encrypt)
-- [ ] **Configure all 7 Telegram bots** to use ProxyGateLLM
+- [ ] **Configure all 7 Telegram bots** to use JeumpaLLM
 - [ ] **Add custom dashboard** for analytics
 
 ---
@@ -371,7 +371,7 @@ NEXUS_ROUTER_API_KEY=sk-nx-...nO3s
 BYTEZ_API_KEY=003414...4a5d
 ```
 
-**Total Providers Available:** 11 (9 in ProxyGateLLM + 2 additional)
+**Total Providers Available:** 11 (9 in JeumpaLLM + 2 additional)
 
 ---
 
@@ -419,7 +419,7 @@ BYTEZ_API_KEY=003414...4a5d
 ⚠️ **Some console.log** (should use proper logger)  
 
 ### Opportunities:
-🚀 **Centralize all LLM access** through ProxyGateLLM  
+🚀 **Centralize all LLM access** through JeumpaLLM  
 🚀 **Enable 9-provider failover** for BlackHornet  
 🚀 **Unified monitoring** across all services  
 🚀 **Cost optimization** (auto-route to cheapest provider)  
@@ -431,7 +431,7 @@ BYTEZ_API_KEY=003414...4a5d
 **PROCEED WITH INTEGRATION. IMMEDIATELY.**
 
 **Rationale:**
-1. ProxyGateLLM is **production-ready** (95% complete)
+1. JeumpaLLM is **production-ready** (95% complete)
 2. Architecture is **superior** to BlackHornet's direct calls
 3. Integration effort is **minimal** (config change only)
 4. Benefits are **massive** (9-provider failover, health-aware routing)

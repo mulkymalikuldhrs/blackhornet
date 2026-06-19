@@ -14,10 +14,10 @@
 |--------|--------|----------|
 | **1. Recover hypergate.py** | ✅ DONE | File exists: 368 lines |
 | **2. Recover mnemosyne_bridge.py** | ✅ DONE | File exists: 362 lines |
-| **3. Clone ProxyGateLLM** | ✅ DONE | Dir exists: `/sdcard/dhaherlabs/ProxyGateLLM` |
+| **3. Clone JeumpaLLM** | ✅ DONE | Dir exists: `/sdcard/dhaherlabs/JeumpaLLM` |
 | **4. Integrate bridges to blackhornet.py** | ✅ DONE | Git diff shows imports + init code |
 | **5. Create integration script** | ✅ DONE | `scripts/integrate_bridges.py` executed |
-| **6. Start ProxyGateLLM server** | ⚠️ FAILED | npm dependencies incomplete |
+| **6. Start JeumpaLLM server** | ⚠️ FAILED | npm dependencies incomplete |
 | **7. Start Mnemosyne server** | ⚠️ PENDING | Blocked by npm install timeout |
 
 ---
@@ -55,13 +55,13 @@ print(f'   ✅ Mnemosyne Bridge active on port {mnemosyne.port}')
 
 ### Repository Cloned:
 
-- `/sdcard/dhaherlabs/ProxyGateLLM` - Cloned from Codeberg
+- `/sdcard/dhaherlabs/JeumpaLLM` - Cloned from Codeberg
 
 ---
 
 ## PENDING ITEMS (NOT YET REALIZED)
 
-### 1. ProxyGateLLM npm dependencies
+### 1. JeumpaLLM npm dependencies
 
 **Problem:** `npm install` timed out after 60s
 
@@ -74,17 +74,17 @@ print(f'   ✅ Mnemosyne Bridge active on port {mnemosyne.port}')
 
 **Manual fix needed:**
 ```bash
-cd /sdcard/dhaherlabs/ProxyGateLLM
+cd /sdcard/dhaherlabs/JeumpaLLM
 npm install --legacy-peer-deps
 # or
 yarn install
 ```
 
-### 2. Start ProxyGateLLM server
+### 2. Start JeumpaLLM server
 
 **Command (after dependencies fixed):**
 ```bash
-cd /sdcard/dhaherlabs/ProxyGateLLM
+cd /sdcard/dhaherlabs/JeumpaLLM
 npm start
 # Should start on port 3000
 ```
@@ -137,8 +137,8 @@ test -f /sdcard/dhaherlabs/blackhornet-worktree/src/hypergate.py && echo "✅ EX
 # 2. Verify mnemosyne_bridge.py exists
 test -f /sdcard/dhaherlabs/blackhornet-worktree/src/mnemosyne_bridge.py && echo "✅ EXISTS" || echo "❌ MISSING"
 
-# 3. Verify ProxyGateLLM cloned
-test -d /sdcard/dhaherlabs/ProxyGateLLM && echo "✅ EXISTS" || echo "❌ MISSING"
+# 3. Verify JeumpaLLM cloned
+test -d /sdcard/dhaherlabs/JeumpaLLM && echo "✅ EXISTS" || echo "❌ MISSING"
 
 # 4. Verify blackhornet.py has bridge imports
 grep -q "from src.hypergate import" /sdcard/dhaherlabs/blackhornet-worktree/blackhornet.py && echo "✅ INTEGRATED" || echo "❌ NOT INTEGRATED"
@@ -152,8 +152,8 @@ python3 -m py_compile /sdcard/dhaherlabs/blackhornet-worktree/src/hypergate.py &
 # 7. Test MnemosyneBridge syntax
 python3 -m py_compile /sdcard/dhaherlabs/blackhornet-worktree/src/mnemosyne_bridge.py && echo "✅ VALID" || echo "❌ INVALID"
 
-# 8. Start ProxyGateLLM (manual - after npm install works)
-cd /sdcard/dhaherlabs/ProxyGateLLM && npm start
+# 8. Start JeumpaLLM (manual - after npm install works)
+cd /sdcard/dhaherlabs/JeumpaLLM && npm start
 
 # 9. Start Mnemosyne (manual)
 cd /sdcard/dhaherlabs/repositories/mnemosyne-worktree && npm run dev
@@ -170,16 +170,16 @@ cd /sdcard/dhaherlabs/blackhornet-worktree && python3 blackhornet.py
 |-----------|-------|--------|----------|-------|
 | Code Recovery | ✅ | ✅ | ✅ | 100% |
 | Bridge Integration | ✅ | ✅ | ✅ (git diff) | 100% |
-| ProxyGateLLM Clone | ✅ | ✅ | ✅ | 100% |
+| JeumpaLLM Clone | ✅ | ✅ | ✅ | 100% |
 | npm Dependencies | ❌ | ⚠️ | ❌ | 0% |
-| ProxyGateLLM Server | ❌ | ⚠️ | ❌ | 0% |
+| JeumpaLLM Server | ❌ | ⚠️ | ❌ | 0% |
 | Mnemosyne Server | ❌ | ❌ | ❌ | 0% |
 | End-to-End Test | ❌ | ❌ | ❌ | 0% |
 
 **OVERALL: 43% REALIZED** (3/7 components fully complete)
 
 **BLOCKERS:**
-1. npm install timeout (ProxyGateLLM dependencies)
+1. npm install timeout (JeumpaLLM dependencies)
 2. User blocked test commands
 3. Servers not started
 
@@ -191,13 +191,13 @@ cd /sdcard/dhaherlabs/blackhornet-worktree && python3 blackhornet.py
 
 1. **Fix npm dependencies:**
    ```bash
-   cd /sdcard/dhaherlabs/ProxyGateLLM
+   cd /sdcard/dhaherlabs/JeumpaLLM
    npm install --legacy-peer-deps
    ```
 
-2. **Start ProxyGateLLM:**
+2. **Start JeumpaLLM:**
    ```bash
-   cd /sdcard/dhaherlabs/ProxyGateLLM && npm start
+   cd /sdcard/dhaherlabs/JeumpaLLM && npm start
    ```
 
 3. **Start Mnemosyne:**
@@ -223,7 +223,7 @@ cd /sdcard/dhaherlabs/blackhornet-worktree && python3 blackhornet.py
 **What's Done:**
 - ✅ Code recovered from git history
 - ✅ Bridges integrated into blackhornet.py
-- ✅ ProxyGateLLM repository cloned
+- ✅ JeumpaLLM repository cloned
 - Integration script created and executed
 
 **What's Pending:**

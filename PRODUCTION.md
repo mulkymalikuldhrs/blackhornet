@@ -17,7 +17,7 @@ This single command:
 2. Installs all dependencies (Python 3.11+, Node.js, Git)
 3. Clones all 7 ecosystem repos
 4. Installs BlackHornet Agent (Nous Research)
-5. Starts ProxyGateLLM (10 free LLM providers, 468 models)
+5. Starts JeumpaLLM (10 free LLM providers, 468 models)
 6. Configures Mnemosyne (knowledge memory + RAG)
 7. Initializes swarm protocol
 8. Starts immortal daemon
@@ -82,7 +82,7 @@ bash install.sh
 │                                                             │
 │  Layer 0: LLM Gateway                                       │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │  ProxyGateLLM v6.0.0                                 │    │
+│  │  JeumpaLLM v6.0.0                                 │    │
 │  │  10 providers · 468 models · Auto-failover · FREE    │    │
 │  │  /v1/chat/completions · /health · /models · /status  │    │
 │  └─────────────────────────────────────────────────────┘    │
@@ -113,7 +113,7 @@ bash install.sh
 │  Layer 5: Ecosystem Repos                                   │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │  blackhornet · QuantNanggroe · MultiColony         │    │
-│  │  VibeTrading · AutoHedge · ProxyGateLLM · Mnemosyne  │    │
+│  │  VibeTrading · AutoHedge · JeumpaLLM · Mnemosyne  │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘

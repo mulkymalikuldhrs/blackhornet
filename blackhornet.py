@@ -11,7 +11,7 @@ Philosophy:
 
 Ecosystem:
   blackhornet/          ← YOU ARE HERE (umbrella + orchestrator)
-  ProxyGateLLM/         ← LLM gateway (10 providers, 468 models)
+  JeumpaLLM/         ← LLM gateway (10 providers, 468 models)
   mnemosyne/            ← Knowledge memory (RAG + graph)
   agent/                ← Swarm shared state registry
   Quant-Nanggroe-AI/    ← Research engine
@@ -62,10 +62,10 @@ ECOSYSTEM_REPOS = {
         f"https://gitlab.com/{GITLAB_USER}/blackhornet.git",
         f"https://github.com/{CODEBERG_USER}/blackhornet.git",
     ]},
-    "ProxyGateLLM":      {"type": "llm-gateway",  "urls": [
-        f"https://codeberg.org/{CODEBERG_USER}/ProxyGateLLM.git",
-        f"https://gitlab.com/{GITLAB_USER}/ProxyGateLLM.git",
-        f"https://github.com/{CODEBERG_USER}/ProxyGateLLM.git",
+    "JeumpaLLM":      {"type": "llm-gateway",  "urls": [
+        f"https://codeberg.org/{CODEBERG_USER}/JeumpaLLM.git",
+        f"https://gitlab.com/{GITLAB_USER}/JeumpaLLM.git",
+        f"https://github.com/{CODEBERG_USER}/JeumpaLLM.git",
     ]},
     "mnemosyne":         {"type": "memory",       "urls": [
         f"https://codeberg.org/{CODEBERG_USER}/mnemosyne.git",
@@ -204,8 +204,8 @@ class BlackHornetNest:
         """Start all hornet services in the nest."""
         logger.info("Starting hornet swarm...")
 
-        # 1. ProxyGateLLM (LLM gateway — must start first)
-        pg_dir = NEST_DIR / "ProxyGateLLM"
+        # 1. JeumpaLLM (LLM gateway — must start first)
+        pg_dir = NEST_DIR / "JeumpaLLM"
         if pg_dir.exists():
             subprocess.Popen(
                 ["node", "index.js"],
@@ -213,7 +213,7 @@ class BlackHornetNest:
                 env={**os.environ, "PORT": "3333"},
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
             )
-            logger.info("  🔗 ProxyGateLLM started")
+            logger.info("  🔗 JeumpaLLM started")
             time.sleep(2)
 
         # 2. Mnemosyne (optional — needs build)
@@ -246,7 +246,7 @@ class BlackHornetNest:
             )
             logger.info("  🧬 Unified Launcher started")
 
-        # 5. HyperGate (LLM bridge — routes through ProxyGateLLM)
+        # 5. HyperGate (LLM bridge — routes through JeumpaLLM)
         try:
             sys.path.insert(0, str(Path(__file__).parent / "src"))
             from hypergate import HyperGate
@@ -322,7 +322,7 @@ class BlackHornetNest:
         """Quick health check of critical services."""
         import urllib.request
         health = {
-            "proxygate": False,
+            "jeumpallm": False,
             "hypergate": False,
             "mnemosyne": False,
             "graphify": False,
@@ -331,10 +331,10 @@ class BlackHornetNest:
             "daemon_running": False,
         }
 
-        # Check ProxyGateLLM
+        # Check JeumpaLLM
         try:
             r = urllib.request.urlopen("http://localhost:3333/health", timeout=3)
-            health["proxygate"] = r.status == 200
+            health["jeumpallm"] = r.status == 200
         except Exception:
             pass
 
@@ -351,7 +351,7 @@ class BlackHornetNest:
         except Exception:
             pass
 
-        # Check HyperGate (uses ProxyGateLLM)
+        # Check HyperGate (uses JeumpaLLM)
         try:
             sys.path.insert(0, str(Path(__file__).parent / "src"))
             from hypergate import HyperGate
@@ -468,8 +468,8 @@ class BlackHornetNest:
     def _auto_heal(self, failed_components: List[str]):
         """Auto-heal failed components."""
         for component in failed_components:
-            if component == "proxygate":
-                pg_dir = NEST_DIR / "ProxyGateLLM"
+            if component == "jeumpallm":
+                pg_dir = NEST_DIR / "JeumpaLLM"
                 if pg_dir.exists():
                     subprocess.Popen(
                         ["node", "index.js"],
@@ -477,7 +477,7 @@ class BlackHornetNest:
                         env={**os.environ, "PORT": "3333"},
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
                     )
-                    logger.info("  🔧 Auto-healed: ProxyGateLLM restarted")
+                    logger.info("  🔧 Auto-healed: JeumpaLLM restarted")
             elif component == "mnemosyne":
                 mn_dir = NEST_DIR / "mnemosyne"
                 if mn_dir.exists():

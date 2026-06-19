@@ -50,7 +50,7 @@ ECOSYSTEM_REPOS=(
     "AI-MultiColony-Ecosystem"
     "Vibe-Trading"
     "AutoHedge"
-    "ProxyGateLLM"
+    "JeumpaLLM"
     "mnemosyne"
 )
 

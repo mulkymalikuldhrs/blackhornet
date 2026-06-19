@@ -25,7 +25,7 @@ done
 echo "[3/4] Cloning repositories..."
 mkdir -p ~/.bh/shared-workspace
 cd ~/.bh/shared-workspace
-for repo in ProxyGateLLM mnemosyne blackhornet; do
+for repo in JeumpaLLM mnemosyne blackhornet; do
   git clone "https://github.com/dhaher-labs/${repo}.git" 2>/dev/null || true
 done
 cd ~/.bh && git clone https://github.com/dhaher-labs/agent.git github-sync 2>/dev/null || true
@@ -42,7 +42,7 @@ BOOTEOF
 chmod +x ~/.termux/boot/dhaher-swarm
 
 # Start proxy
-cd ~/.bh/shared-workspace/ProxyGateLLM && npm install --silent 2>/dev/null || true
+cd ~/.bh/shared-workspace/JeumpaLLM && npm install --silent 2>/dev/null || true
 
 echo ""
 echo "✅ Dhaher Swarm Termux installation complete!"

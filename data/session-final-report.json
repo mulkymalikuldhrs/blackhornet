@@ -19,7 +19,7 @@
     "HermesMemoryBridge",
     "SessionMemory (SQLite)",
     "AuditOrchestrator (100 agents)",
-    "ProxyGateLLM (port 3333, verified)"
+    "JeumpaLLM (port 3333, verified)"
   ],
   "tests": "81/81 E2E passing",
   "repos": "Codeberg + GitLab + bare"

@@ -9,7 +9,7 @@
     "disk_size_mb": 1024,
     "ports": {
       "3333": {
-        "alias": "ProxyGateLLM",
+        "alias": "JeumpaLLM",
         "protocol": "TCP"
       },
       "8080": {

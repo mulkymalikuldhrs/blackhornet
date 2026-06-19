@@ -80,7 +80,7 @@ check "Ecosystem Repos"
 R=$(bash -c "
 source '$BH_DOCTOR' --test-skip >/dev/null 2>/dev/null
 echo \"COUNT=\${#ECOSYSTEM_REPOS[@]}\"
-for r in blackhornet Quant-Nanggroe-AI AI-MultiColony-Ecosystem Vibe-Trading AutoHedge ProxyGateLLM mnemosyne; do
+for r in blackhornet Quant-Nanggroe-AI AI-MultiColony-Ecosystem Vibe-Trading AutoHedge JeumpaLLM mnemosyne; do
     f=0; for e in \"\${ECOSYSTEM_REPOS[@]}\"; do [ \"\$e\" = \"\$r\" ] && f=1; done; echo \"R=\$r \$f\"
 done
 ")
@@ -90,7 +90,7 @@ echo "$R" | grep -q "R=Quant-Nanggroe-AI 1" && pass "  Repo: Quant-Nanggroe-AI" 
 echo "$R" | grep -q "R=AI-MultiColony-Ecosystem 1" && pass "  Repo: AI-MultiColony-Ecosystem" || fail "  missing"
 echo "$R" | grep -q "R=Vibe-Trading 1" && pass "  Repo: Vibe-Trading" || fail "  missing"
 echo "$R" | grep -q "R=AutoHedge 1" && pass "  Repo: AutoHedge" || fail "  missing"
-echo "$R" | grep -q "R=ProxyGateLLM 1" && pass "  Repo: ProxyGateLLM" || fail "  missing"
+echo "$R" | grep -q "R=JeumpaLLM 1" && pass "  Repo: JeumpaLLM" || fail "  missing"
 echo "$R" | grep -q "R=mnemosyne 1" && pass "  Repo: mnemosyne" || fail "  missing"
 
 check "Critical: No 'local' in Case Blocks"

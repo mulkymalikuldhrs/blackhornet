@@ -47,11 +47,11 @@ def main() -> None:
         try:
             r = urllib.request.urlopen('http://localhost:3333/health', timeout=3)
             d = json.loads(r.read())
-            print(f"{M}{B}║{N}   {ok('ProxyGateLLM v' + str(d.get('version','?')) + ' ONLINE')}")
+            print(f"{M}{B}║{N}   {ok('JeumpaLLM v' + str(d.get('version','?')) + ' ONLINE')}")
         except Exception:
-            print(f"{M}{B}║{N}   {ok('ProxyGateLLM ONLINE')}")
+            print(f"{M}{B}║{N}   {ok('JeumpaLLM ONLINE')}")
     else:
-        print(f"{M}{B}║{N}   {no('ProxyGateLLM OFFLINE')}")
+        print(f"{M}{B}║{N}   {no('JeumpaLLM OFFLINE')}")
 
     # BH Doctor / Unified Launcher
     print(f"{M}{B}║{N} {hd('⚕️ BH DOCTOR')}")
@@ -98,9 +98,9 @@ def main() -> None:
     print(f"{M}{B}║{N} {hd('🧠 LLM AGENT')}")
     try:
         from openai import OpenAI
-        proxygate_url = os.environ.get("PROXYGATE_URL", "http://localhost:3333/v1")
-        proxygate_key = os.environ.get("PROXYGATE_API_KEY", "proxygate-local")
-        client = OpenAI(base_url=proxygate_url, api_key=proxygate_key)
+        jeumpallm_url = os.environ.get("JEUMPALLM_URL", "http://localhost:3333/v1")
+        jeumpallm_key = os.environ.get("PROXYGATE_API_KEY", "jeumpallm-local")
+        client = OpenAI(base_url=jeumpallm_url, api_key=jeumpallm_key)
         r = client.chat.completions.create(model='auto', max_tokens=8,
             messages=[{'role':'user','content':'Say ONLINE'}])
         resp = r.choices[0].message.content.strip()
@@ -112,7 +112,7 @@ def main() -> None:
     # Repos
     print(f"{M}{B}║{N} {hd('📦 ECOSYSTEM (7 repos)')}")
     repos = ['blackhornet','Quant-Nanggroe-AI','AI-MultiColony-Ecosystem',
-             'Vibe-Trading','ProxyGateLLM','mnemosyne']
+             'Vibe-Trading','JeumpaLLM','mnemosyne']
     base = Path(__file__).parent
     ws = base.parent
     for repo in repos:
