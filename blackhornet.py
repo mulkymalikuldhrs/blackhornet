@@ -34,6 +34,14 @@ from src.hypergate import HyperGate
 from src.mnemosyne_bridge import MnemosyneBridge
 # ── END BRIDGE INTEGRATION ───────────────────────────────────────
 
+# ── GRAPHIFY + HERMES + AUDIT ───────────────────────────────────
+from src.graph.graphify_pipeline import GraphifyPipeline
+from src.graphify_api import GraphifyAPIServer
+from src.memory.hermes_bridge import HermesMemoryBridge
+from src.memory.session import SessionMemory
+from src.agents.audit_orchestrator import AuditOrchestrator
+# ── END GRAPHIFY ────────────────────────────────────────────────
+
 import subprocess
 from pathlib import Path
 from datetime import datetime, timezone
@@ -119,6 +127,16 @@ class BlackHornetNest:
         self.nest_status = "INITIALIZING"
         signal.signal(signal.SIGTERM, self._shutdown)
         signal.signal(signal.SIGINT, self._shutdown)
+
+        # Graphify + Hermes systems
+        self.graphify_pipeline = GraphifyPipeline()
+        self.graphify_api = GraphifyAPIServer(pipeline=self.graphify_pipeline)
+        self.session_memory = SessionMemory()
+        self.hermes_bridge = HermesMemoryBridge(
+            session_memory=self.session_memory,
+            pipeline=self.graphify_pipeline,
+        )
+        self.audit_orchestrator = AuditOrchestrator(pipeline=self.graphify_pipeline)
 
     def _shutdown(self, signum, frame):
         logger.info("Nest shutting down...")
@@ -249,6 +267,24 @@ class BlackHornetNest:
             logger.warning(f"  ⚠ Mnemosyne Bridge: {e}")
 
         # 7. MultiColony — wire engine patterns
+        # 8. Graphify API — expose graph data externally
+        try:
+            self.graphify_api.start()
+            logger.info("  🕸️ GraphifyAPI started on port 9090")
+        except Exception as e:
+            logger.warning(f"  ⚠ GraphifyAPI: {e}")
+
+        # 9. Hermes Memory Bridge — unified memory
+        try:
+            logger.info("  🧠 HermesMemoryBridge ready (%d records)", len(self.hermes_bridge._records))
+        except Exception as e:
+            logger.warning(f"  ⚠ HermesMemoryBridge: {e}")
+
+        # 10. Audit Orchestrator — 100 agents ready
+        try:
+            logger.info("  🔍 AuditOrchestrator ready (%d agents)", len(self.audit_orchestrator.agents))
+        except Exception as e:
+            logger.warning(f"  ⚠ AuditOrchestrator: {e}")
         mc_dir = NEST_DIR / "AI-MultiColony-Ecosystem"
         if mc_dir.exists():
             hornet_src = Path(__file__).parent / "src"
@@ -289,6 +325,8 @@ class BlackHornetNest:
             "proxygate": False,
             "hypergate": False,
             "mnemosyne": False,
+            "graphify": False,
+            "hermes_bridge": False,
             "trading_pipeline": False,
             "daemon_running": False,
         }
@@ -297,6 +335,19 @@ class BlackHornetNest:
         try:
             r = urllib.request.urlopen("http://localhost:3333/health", timeout=3)
             health["proxygate"] = r.status == 200
+        except Exception:
+            pass
+
+        # Check GraphifyAPI
+        try:
+            health["graphify"] = self.graphify_api.is_running()
+        except Exception:
+            pass
+
+        # Check HermesBridge
+        try:
+            stats = self.hermes_bridge.stats()
+            health["hermes_bridge"] = stats["total_records"] >= 0
         except Exception:
             pass
 

@@ -4,9 +4,13 @@ message history, and compaction triggers.
 
 from __future__ import annotations
 
+import json
 import logging
+import os
+import sqlite3
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -76,17 +80,142 @@ class SessionMemory:
         context_window_tokens: int = 8192,
         compaction_threshold: float = 0.8,
         keep_recent_messages: int = 4,
+        db_path: str = "~/.bh/sessions/sessions.db",
     ) -> None:
         self.context_window_tokens = context_window_tokens
         self.compaction_threshold = compaction_threshold
         self.keep_recent_messages = keep_recent_messages
+
+        self._db_path = os.path.expanduser(db_path)
+        Path(self._db_path).parent.mkdir(parents=True, exist_ok=True)
+        self._conn: Optional[sqlite3.Connection] = None
 
         # Sessions
         self._sessions: Dict[str, Session] = {}
         self._messages: Dict[str, List[Message]] = {}  # session_id -> messages
         self._compaction_summaries: Dict[str, List[str]] = {}  # session_id -> summaries
 
-    # ── Session lifecycle ────────────────────────────────────────
+        self._init_db()
+        self._load_all()
+
+    # ── SQLite persistence ────────────────────────────────────────
+
+    def _get_conn(self) -> sqlite3.Connection:
+        if self._conn is None:
+            self._conn = sqlite3.connect(self._db_path)
+            self._conn.row_factory = sqlite3.Row
+        return self._conn
+
+    def _init_db(self):
+        conn = self._get_conn()
+        conn.executescript("""
+            CREATE TABLE IF NOT EXISTS sessions (
+                session_id  TEXT PRIMARY KEY,
+                agent_id    TEXT NOT NULL DEFAULT '',
+                colony_id   TEXT NOT NULL DEFAULT '',
+                created_at  TEXT NOT NULL,
+                last_active TEXT NOT NULL,
+                status      TEXT NOT NULL DEFAULT 'active',
+                message_count INTEGER NOT NULL DEFAULT 0,
+                total_tokens  INTEGER NOT NULL DEFAULT 0,
+                metadata    TEXT NOT NULL DEFAULT '{}'
+            );
+            CREATE TABLE IF NOT EXISTS messages (
+                message_id  TEXT PRIMARY KEY,
+                session_id  TEXT NOT NULL REFERENCES sessions(session_id),
+                role        TEXT NOT NULL,
+                content     TEXT NOT NULL DEFAULT '',
+                timestamp   TEXT NOT NULL,
+                metadata    TEXT NOT NULL DEFAULT '{}',
+                token_count INTEGER NOT NULL DEFAULT 0
+            );
+            CREATE INDEX IF NOT EXISTS idx_msgs_session ON messages(session_id);
+            CREATE TABLE IF NOT EXISTS compaction_summaries (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id  TEXT NOT NULL REFERENCES sessions(session_id),
+                summary     TEXT NOT NULL,
+                created_at  TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_comp_session ON compaction_summaries(session_id);
+        """)
+        conn.commit()
+
+    def _save_session_to_db(self, session: Session):
+        conn = self._get_conn()
+        conn.execute(
+            """INSERT OR REPLACE INTO sessions
+               (session_id, agent_id, colony_id, created_at, last_active, status, message_count, total_tokens, metadata)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (session.session_id, session.agent_id, session.colony_id,
+             session.created_at, session.last_active, session.status,
+             session.message_count, session.total_tokens,
+             json.dumps(session.metadata)),
+        )
+        conn.commit()
+
+    def _save_messages_to_db(self, session_id: str, messages: List[Message]):
+        conn = self._get_conn()
+        for msg in messages:
+            conn.execute(
+                """INSERT OR REPLACE INTO messages
+                   (message_id, session_id, role, content, timestamp, metadata, token_count)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (msg.message_id, session_id, msg.role, msg.content,
+                 msg.timestamp, json.dumps(msg.metadata), msg.token_count),
+            )
+        conn.commit()
+
+    def _save_summaries_to_db(self, session_id: str, summaries: List[str]):
+        conn = self._get_conn()
+        now = datetime.now(timezone.utc).isoformat()
+        for summary in summaries:
+            conn.execute(
+                "INSERT INTO compaction_summaries (session_id, summary, created_at) VALUES (?, ?, ?)",
+                (session_id, summary, now),
+            )
+        conn.commit()
+
+    def _load_all(self):
+        conn = self._get_conn()
+
+        rows = conn.execute("SELECT * FROM sessions").fetchall()
+        for row in rows:
+            session = Session(
+                session_id=row["session_id"],
+                agent_id=row["agent_id"],
+                colony_id=row["colony_id"],
+                created_at=row["created_at"],
+                last_active=row["last_active"],
+                status=row["status"],
+                message_count=row["message_count"],
+                total_tokens=row["total_tokens"],
+                metadata=json.loads(row["metadata"]),
+            )
+            self._sessions[session.session_id] = session
+
+        msg_rows = conn.execute("SELECT * FROM messages ORDER BY timestamp").fetchall()
+        for row in msg_rows:
+            msg = Message(
+                message_id=row["message_id"],
+                role=row["role"],
+                content=row["content"],
+                timestamp=row["timestamp"],
+                metadata=json.loads(row["metadata"]),
+                token_count=row["token_count"],
+            )
+            self._messages.setdefault(row["session_id"], []).append(msg)
+
+        comp_rows = conn.execute("SELECT * FROM compaction_summaries ORDER BY id").fetchall()
+        for row in comp_rows:
+            self._compaction_summaries.setdefault(row["session_id"], []).append(row["summary"])
+
+        if len(self._sessions) > 0:
+            logger.info("Loaded %d sessions, %d messages from %s", len(self._sessions), len(msg_rows), self._db_path)
+
+    def close(self):
+        if self._conn is not None:
+            self._conn.close()
+            self._conn = None
 
     async def create_session(
         self,
@@ -104,6 +233,8 @@ class SessionMemory:
         self._messages[session.session_id] = []
         self._compaction_summaries[session.session_id] = []
 
+        self._save_session_to_db(session)
+
         logger.info("Created session %s for agent %s", session.session_id, agent_id)
         return session
 
@@ -117,6 +248,7 @@ class SessionMemory:
         if not session:
             return False
         session.status = "closed"
+        self._save_session_to_db(session)
         return True
 
     async def archive_session(self, session_id: str) -> bool:
@@ -125,10 +257,24 @@ class SessionMemory:
         if not session:
             return False
 
-        # Compact all messages
         await self.compact_session(session_id)
 
         session.status = "archived"
+        self._save_session_to_db(session)
+        return True
+
+    async def delete_session(self, session_id: str) -> bool:
+        """Permanently delete a session."""
+        if session_id not in self._sessions:
+            return False
+        del self._sessions[session_id]
+        self._messages.pop(session_id, None)
+        self._compaction_summaries.pop(session_id, None)
+        conn = self._get_conn()
+        conn.execute("DELETE FROM compaction_summaries WHERE session_id = ?", (session_id,))
+        conn.execute("DELETE FROM messages WHERE session_id = ?", (session_id,))
+        conn.execute("DELETE FROM sessions WHERE session_id = ?", (session_id,))
+        conn.commit()
         return True
 
     # ── Message management ───────────────────────────────────────
@@ -166,7 +312,8 @@ class SessionMemory:
 
         self._messages[session_id].append(message)
 
-        # Update session stats
+        self._save_messages_to_db(session_id, [message])
+
         session.message_count += 1
         session.total_tokens += token_count
         session.last_active = datetime.now(timezone.utc).isoformat()
@@ -250,14 +397,15 @@ class SessionMemory:
 
         # Store summary
         self._compaction_summaries[session_id].append(summary)
+        self._save_summaries_to_db(session_id, [summary])
 
-        # Update messages
         self._messages[session_id] = keep_messages
 
-        # Update session stats
         session.total_tokens -= tokens_compacted
         session.message_count = len(keep_messages)
         session.status = "compacted"
+
+        self._save_session_to_db(session)
 
         compaction_ratio = tokens_compacted / max(1, tokens_compacted + session.total_tokens)
 

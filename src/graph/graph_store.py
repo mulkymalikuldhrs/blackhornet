@@ -225,6 +225,30 @@ class GraphStore:
                  for r in conn.execute("SELECT * FROM edges").fetchall()]
         return {"nodes": nodes, "edges": edges}
 
+    def add_node_property(self, node_id: int, key: str, value: Any) -> Optional[int]:
+        """Convenience: set a single property on a node."""
+        return self.update_node_properties(node_id, {key: value})
+
+    def get_nodes(self, node_type: str = "", limit: int = 500) -> List[GraphNode]:
+        conn = self._get_conn()
+        if node_type:
+            rows = conn.execute("SELECT * FROM nodes WHERE node_type = ? LIMIT ?", (node_type, limit)).fetchall()
+        else:
+            rows = conn.execute("SELECT * FROM nodes LIMIT ?", (limit,)).fetchall()
+        return [self._row_to_node(r) for r in rows]
+
+    def list_edges(self, relation: str = "", limit: int = 500) -> List[GraphEdge]:
+        conn = self._get_conn()
+        if relation:
+            rows = conn.execute("SELECT * FROM edges WHERE relation = ? LIMIT ?", (relation, limit)).fetchall()
+        else:
+            rows = conn.execute("SELECT * FROM edges LIMIT ?", (limit,)).fetchall()
+        return [self._row_to_edge(r) for r in rows]
+
+    def search(self, query: str, limit: int = 50) -> List[Dict[str, Any]]:
+        nodes = self.search_nodes(query, limit=limit)
+        return [{"id": n.id, "label": n.label, "type": n.node_type, "properties": n.properties} for n in nodes]
+
     def stats(self) -> Dict[str, Any]:
         conn = self._get_conn()
         nodes = conn.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
