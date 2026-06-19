@@ -28,6 +28,12 @@ import json
 import time
 import signal
 import logging
+
+# ── BRIDGE INTEGRATION: HyperGate & Mnemosyne ────────────────────
+from src.hypergate import HyperGate
+from src.mnemosyne_bridge import MnemosyneBridge
+# ── END BRIDGE INTEGRATION ───────────────────────────────────────
+
 import subprocess
 from pathlib import Path
 from datetime import datetime, timezone
@@ -470,6 +476,17 @@ class BlackHornetNest:
 
 
 def main():
+    # Initialize Bridge Infrastructure
+    print('🖤 HyperGate: Initializing LLM Gateway...')
+    hypergate = HyperGate()
+    hypergate.start()
+    print(f'   ✅ HyperGate active on port {hypergate.port}')
+
+    print('🧠 Mnemosyne Bridge: Initializing Swarm Memory...')
+    mnemosyne = MnemosyneBridge()
+    mnemosyne.start()
+    print(f'   ✅ Mnemosyne Bridge active on port {mnemosyne.port}')
+
     import argparse
     parser = argparse.ArgumentParser(description="🖤 BLACKHORNET — Sovereign Autonomous Ecosystem")
     parser.add_argument("--deploy", action="store_true", help="Deploy nest (clone all repos)")
