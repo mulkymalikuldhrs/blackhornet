@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-06-20T04:28:52.931933",
+  "uptime": "04:28:52 up 1 day, 17:01,  0 users,  load average: 29.19, 29.22, 27.92",
+  "memory": {
+    "total_kb": 3898552,
+    "available_kb": 963908,
+    "used_percent": 75.3
+  },
+  "cpu_count": 8,
+  "processes": 2,
+  "disk": {
+    "total_bytes": 115586596864,
+    "free_bytes": 30268542976,
+    "used_percent": 73.8
+  },
+  "log_files": 2
+}

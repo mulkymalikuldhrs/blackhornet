@@ -1,0 +1,188 @@
+{
+  "status": "running",
+  "balance": 10000.0,
+  "portfolio_value": 10000.0,
+  "total_pnl": 0.0,
+  "total_trades": 0.0,
+  "win_rate": "0.0%",
+  "drawdown": "0.00%",
+  "sharpe_ratio": 0.0,
+  "volatility": 0.0007,
+  "cycle_count": 9,
+  "errors": 0,
+  "current_prices": {},
+  "asset_pnl": {
+    "BTCUSDT": 0,
+    "ETHUSDT": 0,
+    "SOLUSDT": 0,
+    "BNBUSDT": 0
+  },
+  "allocation": [
+    {
+      "symbol": "BTCUSDT",
+      "target": 0.4,
+      "current": 0.0,
+      "value": 0
+    },
+    {
+      "symbol": "ETHUSDT",
+      "target": 0.25,
+      "current": 0.0,
+      "value": 0
+    },
+    {
+      "symbol": "SOLUSDT",
+      "target": 0.2,
+      "current": 0.0,
+      "value": 0
+    },
+    {
+      "symbol": "BNBUSDT",
+      "target": 0.15,
+      "current": 0.0,
+      "value": 0
+    }
+  ],
+  "strategy_performance": [
+    {
+      "strategy": "SMC",
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "total_pnl": 0.0,
+      "avg_win": 0,
+      "avg_loss": 0,
+      "kelly": 0.25
+    },
+    {
+      "strategy": "Momentum",
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "total_pnl": 0.0,
+      "avg_win": 0,
+      "avg_loss": 0,
+      "kelly": 0.25
+    },
+    {
+      "strategy": "MeanReversion",
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "total_pnl": 0.0,
+      "avg_win": 0,
+      "avg_loss": 0,
+      "kelly": 0.25
+    },
+    {
+      "strategy": "Grid",
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "total_pnl": 0.0,
+      "avg_win": 0,
+      "avg_loss": 0,
+      "kelly": 0.25
+    },
+    {
+      "strategy": "TrendStrength",
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "total_pnl": 0.0,
+      "avg_win": 0,
+      "avg_loss": 0,
+      "kelly": 0.25
+    }
+  ],
+  "open_positions": [
+    {
+      "symbol": "BTCUSDT",
+      "entry": 63380.0,
+      "current": 0,
+      "qty": 0.009861154938466394,
+      "pnl": -625.0,
+      "strategy": "Grid"
+    },
+    {
+      "symbol": "SOLUSDT",
+      "entry": 69.94,
+      "current": 0,
+      "qty": 8.936231055190163,
+      "pnl": -625.0,
+      "strategy": "Grid"
+    },
+    {
+      "symbol": "BNBUSDT",
+      "entry": 579.96,
+      "current": 0,
+      "qty": 1.0776605283122973,
+      "pnl": -625.0,
+      "strategy": "Grid"
+    }
+  ],
+  "recent_trades": [],
+  "recent_signals": [
+    {
+      "strategy": "Grid",
+      "signal": "buy",
+      "price": 580.1,
+      "time": "2026-06-20T04:25:04.549692"
+    },
+    {
+      "strategy": "Grid",
+      "signal": "sell",
+      "price": 70.11,
+      "time": "2026-06-20T04:25:04.513270"
+    },
+    {
+      "strategy": "Grid",
+      "signal": "buy",
+      "price": 1707.8,
+      "time": "2026-06-20T04:25:04.477250"
+    },
+    {
+      "strategy": "Grid",
+      "signal": "sell",
+      "price": 63420.0,
+      "time": "2026-06-20T04:25:04.445075"
+    },
+    {
+      "strategy": "Grid",
+      "signal": "sell",
+      "price": 580.06,
+      "time": "2026-06-20T04:21:48.398794"
+    },
+    {
+      "strategy": "MeanReversion",
+      "signal": "buy",
+      "price": 580.06,
+      "time": "2026-06-20T04:21:48.357023"
+    },
+    {
+      "strategy": "Grid",
+      "signal": "buy",
+      "price": 1707.0,
+      "time": "2026-06-20T04:21:48.321133"
+    },
+    {
+      "strategy": "Grid",
+      "signal": "sell",
+      "price": 63407.0,
+      "time": "2026-06-20T04:21:48.282672"
+    },
+    {
+      "strategy": "Grid",
+      "signal": "sell",
+      "price": 580.24,
+      "time": "2026-06-20T04:18:42.691753"
+    },
+    {
+      "strategy": "Grid",
+      "signal": "sell",
+      "price": 1706.1,
+      "time": "2026-06-20T04:18:42.595510"
+    }
+  ],
+  "timestamp": 1781929742.9974904
+}

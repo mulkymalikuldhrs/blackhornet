@@ -1,0 +1,867 @@
+[
+  {
+    "id": "goal-1781923884",
+    "prompt": "Enhance knowledge graph with new entities",
+    "status": "completed",
+    "created": "2026-06-20T02:51:24.976752",
+    "informed_by": [],
+    "started": "2026-06-20T03:59:16.220842",
+    "completed": "2026-06-20T03:59:16.297997",
+    "result": "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes\n  Session graph entries: 1\n  Agent roster: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice"
+  },
+  {
+    "id": "goal-1781927665",
+    "prompt": "Explore new data sources for insights",
+    "status": "completed",
+    "created": "2026-06-20T03:54:25.364387",
+    "informed_by": [],
+    "started": "2026-06-20T03:54:25.383498",
+    "completed": "2026-06-20T03:54:25.420586",
+    "result": "Data Exploration:\n  Data files: 8\n  Examples: colony_state.json, audit-summary.md, bh-goals.json, session-final-graph.json, session-final-report.json, bh-learnings.json, bh-initiatives.json, bh-heartbeat.json\n  Memory items: 1\n  Memory concepts: 0"
+  },
+  {
+    "id": "goal-1781927699",
+    "prompt": "Review and prune stale data",
+    "status": "completed",
+    "created": "2026-06-20T03:54:59.911542",
+    "informed_by": [
+      "Data Exploration:\n  Data files: 8\n  Examples: colony_state.j"
+    ],
+    "started": "2026-06-20T03:59:16.365988",
+    "completed": "2026-06-20T03:59:16.422761",
+    "result": "Stale Data Pruning:\n  Old goals archived: 0\n  Messages cleaned: auto\n  Old reports removed: 0"
+  },
+  {
+    "id": "goal-1781927986",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T03:59:46.014591",
+    "informed_by": [
+      "Data Exploration:\n  Data files: 8\n  Examples: colony_state.j",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "New goal created: Review and prune stale data",
+      "New goal created: Explore new data sources for insights",
+      "Goal 'Review and prune stale data' completed. Result: Stale "
+    ],
+    "started": "2026-06-20T03:59:46.141197",
+    "completed": "2026-06-20T03:59:46.200901",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 2\n  Memory stats: {\"episodic_count\": 11, \"consolidated_count\": 2, \"vocab_size\": 83, \"top_topics\": [\"data\", \"json\", \"new\", \"goal\", \"completed\", \"graph\", \"bh\", \"goals\", \"memory\", \"stale\"]}"
+  },
+  {
+    "id": "goal-1781928016",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:00:16.223996",
+    "informed_by": [
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval",
+      "New goal created: Explore new data sources for insights"
+    ],
+    "started": "2026-06-20T04:00:16.366245",
+    "completed": "2026-06-20T04:00:16.446461",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 3\n  Memory stats: {\"episodic_count\": 13, \"consolidated_count\": 5, \"vocab_size\": 95, \"top_topics\": [\"memory\", \"new\", \"goal\", \"data\", \"json\", \"completed\", \"graph\", \"bh\", \"goals\", \"stale\"]}"
+  },
+  {
+    "id": "goal-1781928045",
+    "prompt": "Explore new data sources for insights",
+    "status": "completed",
+    "created": "2026-06-20T04:00:45.735080",
+    "informed_by": [
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:00:46.032277",
+    "completed": "2026-06-20T04:00:46.072447",
+    "result": "Data Exploration:\n  Data files: 9\n  Examples: colony_state.json, audit-summary.md, bh-goals.json, session-final-graph.json, session-final-report.json, bh-learnings.json, bh-initiatives.json, bh-heartbeat.json\n  Memory items: 15\n  Memory concepts: 5"
+  },
+  {
+    "id": "goal-1781928077",
+    "prompt": "Test and validate agent behaviors",
+    "status": "completed",
+    "created": "2026-06-20T04:01:17.113374",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Data Exploration:\n  Data files: 9\n  Examples: colony_state.j",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:01:17.444446",
+    "completed": "2026-06-20T04:01:17.537389",
+    "result": "Agent Validation:\n  Total agents: 12\n  Valid: 9\n  Failed: 3\n    __pycache__: FAIL (agent.py missing)\n    audit: FAIL (agent.py missing)\n    browser: PASS\n    coder: PASS\n    colony: PASS\n    executor: PASS\n    manus: PASS\n    planner: PASS\n    researcher: PASS\n    security: PASS\n    specialists: FAIL (agent.py missing)\n    voice: PASS"
+  },
+  {
+    "id": "goal-1781928110",
+    "prompt": "Monitor system health and optimize performance",
+    "status": "completed",
+    "created": "2026-06-20T04:01:50.451757",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Data Exploration:\n  Data files: 9\n  Examples: colony_state.j",
+      "Agent Validation:\n  Total agents: 12\n  Valid: 9\n  Failed: 3\n",
+      "New goal created: Test and validate agent behaviors",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:01:50.872915",
+    "completed": "2026-06-20T04:01:50.978552",
+    "result": "System Health Report:\n  Uptime: 04:01:50 up 1 day, 16:34,  0 users,  load average: 26.11, 26.52, 26.98\n  Memory: 75.8% used (923MB avail)\n  CPUs: 8\n  Processes: 2\n  Disk: 73.8% used\n  Log files: 2"
+  },
+  {
+    "id": "goal-1781928136",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:02:16.679654",
+    "informed_by": [
+      "Data Exploration:\n  Data files: 9\n  Examples: colony_state.j",
+      "Agent Validation:\n  Total agents: 12\n  Valid: 9\n  Failed: 3\n",
+      "System Health Report:\n  Uptime: 04:01:50 up 1 day, 16:34,  0",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:02:17.217398",
+    "completed": "2026-06-20T04:02:17.317445",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 3\n  Memory stats: {\"episodic_count\": 21, \"consolidated_count\": 8, \"vocab_size\": 122, \"top_topics\": [\"memory\", \"goal\", \"new\", \"json\", \"data\", \"completed\", \"and\", \"bh\", \"pass\", \"created\"]}"
+  },
+  {
+    "id": "goal-1781928168",
+    "prompt": "Document architecture decisions",
+    "status": "completed",
+    "created": "2026-06-20T04:02:48.712104",
+    "informed_by": [
+      "Agent Validation:\n  Total agents: 12\n  Valid: 9\n  Failed: 3\n",
+      "System Health Report:\n  Uptime: 04:01:50 up 1 day, 16:34,  0",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:02:49.438347",
+    "completed": "2026-06-20T04:02:49.506785",
+    "result": "Architecture Snapshot (2026-06-20T04:02:49.506676):\n  Agents: 12 (__pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice)\n  Goals pending: 0\n  Goals completed: 9\n  Memory items: 23\n  Memory concepts: 8"
+  },
+  {
+    "id": "goal-1781928199",
+    "prompt": "Review and prune stale data",
+    "status": "completed",
+    "created": "2026-06-20T04:03:19.650697",
+    "informed_by": [
+      "System Health Report:\n  Uptime: 04:01:50 up 1 day, 16:34,  0",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Architecture Snapshot (2026-06-20T04:02:49.506676):\n  Agents",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:03:20.368724",
+    "completed": "2026-06-20T04:03:20.545391",
+    "result": "Stale Data Pruning:\n  Old goals archived: 0\n  Messages cleaned: auto\n  Old reports removed: 0"
+  },
+  {
+    "id": "goal-1781928231",
+    "prompt": "Research new AI models and techniques",
+    "status": "completed",
+    "created": "2026-06-20T04:03:51.329097",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Architecture Snapshot (2026-06-20T04:02:49.506676):\n  Agents",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:03:52.210596",
+    "completed": "2026-06-20T04:03:52.374150",
+    "result": "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice\n  Agent files found: 9"
+  },
+  {
+    "id": "goal-1781928259",
+    "prompt": "Review and prune stale data",
+    "status": "completed",
+    "created": "2026-06-20T04:04:19.802313",
+    "informed_by": [
+      "Architecture Snapshot (2026-06-20T04:02:49.506676):\n  Agents",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "New goal created: Document architecture decisions",
+      "New goal created: Research new AI models and techniques",
+      "New goal created: Review and prune stale data"
+    ],
+    "started": "2026-06-20T04:04:20.762709",
+    "completed": "2026-06-20T04:04:20.969964",
+    "result": "Stale Data Pruning:\n  Old goals archived: 0\n  Messages cleaned: auto\n  Old reports removed: 0"
+  },
+  {
+    "id": "goal-1781928292",
+    "prompt": "Improve agent coordination and swarm efficiency",
+    "status": "completed",
+    "created": "2026-06-20T04:04:52.216830",
+    "informed_by": [
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:04:53.289408",
+    "completed": "2026-06-20T04:04:54.288886",
+    "result": "Coordination Analysis:\n  Active agents: 12\n  Unread messages: 142\n  Total message files: 149\n  Agents: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice\n"
+  },
+  {
+    "id": "goal-1781928323",
+    "prompt": "Enhance knowledge graph with new entities",
+    "status": "completed",
+    "created": "2026-06-20T04:05:23.406991",
+    "informed_by": [
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Coordination Analysis:\n  Active agents: 12\n  Unread messages",
+      "New goal created: Document architecture decisions",
+      "New goal created: Improve agent coordination and swarm effic",
+      "New goal created: Review and prune stale data"
+    ],
+    "started": "2026-06-20T04:05:24.483066",
+    "completed": "2026-06-20T04:05:24.541470",
+    "result": "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes\n  Session graph entries: 1\n  Agent roster: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice"
+  },
+  {
+    "id": "goal-1781928353",
+    "prompt": "Enhance knowledge graph with new entities",
+    "status": "completed",
+    "created": "2026-06-20T04:05:53.749764",
+    "informed_by": [
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Coordination Analysis:\n  Active agents: 12\n  Unread messages",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "New goal created: Document architecture decisions",
+      "New goal created: Improve agent coordination and swarm effic",
+      "New goal created: Review and prune stale data"
+    ],
+    "started": "2026-06-20T04:05:55.019540",
+    "completed": "2026-06-20T04:05:55.077077",
+    "result": "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes\n  Session graph entries: 1\n  Agent roster: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice"
+  },
+  {
+    "id": "goal-1781928383",
+    "prompt": "Enhance knowledge graph with new entities",
+    "status": "completed",
+    "created": "2026-06-20T04:06:23.864916",
+    "informed_by": [
+      "Coordination Analysis:\n  Active agents: 12\n  Unread messages",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "New goal created: Document architecture decisions",
+      "New goal created: Improve agent coordination and swarm effic",
+      "New goal created: Review and prune stale data"
+    ],
+    "started": "2026-06-20T04:06:25.151100",
+    "completed": "2026-06-20T04:06:25.222773",
+    "result": "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes\n  Session graph entries: 1\n  Agent roster: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice"
+  },
+  {
+    "id": "goal-1781928416",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:06:56.323212",
+    "informed_by": [
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "New goal created: Document architecture decisions",
+      "New goal created: Improve agent coordination and swarm effic",
+      "New goal created: Review and prune stale data"
+    ],
+    "started": "2026-06-20T04:06:57.681669",
+    "completed": "2026-06-20T04:06:57.802331",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 6\n  Memory stats: {\"episodic_count\": 40, \"consolidated_count\": 14, \"vocab_size\": 140, \"top_topics\": [\"goal\", \"new\", \"memory\", \"completed\", \"graph\", \"and\", \"data\", \"created\", \"result\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781928446",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:07:26.689073",
+    "informed_by": [
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:07:27.539712",
+    "completed": "2026-06-20T04:07:27.630197",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 6\n  Memory stats: {\"episodic_count\": 42, \"consolidated_count\": 20, \"vocab_size\": 140, \"top_topics\": [\"goal\", \"new\", \"memory\", \"completed\", \"and\", \"graph\", \"data\", \"created\", \"result\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781928476",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:07:56.847642",
+    "informed_by": [
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:07:58.052338",
+    "completed": "2026-06-20T04:07:58.133028",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 6\n  Memory stats: {\"episodic_count\": 44, \"consolidated_count\": 26, \"vocab_size\": 140, \"top_topics\": [\"goal\", \"new\", \"memory\", \"and\", \"completed\", \"graph\", \"created\", \"data\", \"result\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781928506",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:08:26.304437",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:08:27.868077",
+    "completed": "2026-06-20T04:08:28.008282",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 6\n  Memory stats: {\"episodic_count\": 46, \"consolidated_count\": 32, \"vocab_size\": 140, \"top_topics\": [\"goal\", \"new\", \"memory\", \"and\", \"completed\", \"graph\", \"created\", \"data\", \"result\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781928539",
+    "prompt": "Review and prune stale data",
+    "status": "completed",
+    "created": "2026-06-20T04:08:59.430596",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:09:01.088374",
+    "completed": "2026-06-20T04:09:01.464347",
+    "result": "Stale Data Pruning:\n  Old goals archived: 0\n  Messages cleaned: auto\n  Old reports removed: 0"
+  },
+  {
+    "id": "goal-1781928573",
+    "prompt": "Enhance knowledge graph with new entities",
+    "status": "completed",
+    "created": "2026-06-20T04:09:33.394273",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:09:35.286705",
+    "completed": "2026-06-20T04:09:35.353175",
+    "result": "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes\n  Session graph entries: 1\n  Agent roster: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice"
+  },
+  {
+    "id": "goal-1781928606",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:10:06.468741",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:10:08.366835",
+    "completed": "2026-06-20T04:10:08.541868",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 6\n  Memory stats: {\"episodic_count\": 52, \"consolidated_count\": 38, \"vocab_size\": 140, \"top_topics\": [\"goal\", \"new\", \"memory\", \"and\", \"completed\", \"graph\", \"created\", \"data\", \"result\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781928640",
+    "prompt": "Monitor system health and optimize performance",
+    "status": "completed",
+    "created": "2026-06-20T04:10:40.672563",
+    "informed_by": [
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:10:42.569530",
+    "completed": "2026-06-20T04:10:42.690303",
+    "result": "System Health Report:\n  Uptime: 04:10:42 up 1 day, 16:43,  0 users,  load average: 24.05, 24.30, 25.63\n  Memory: 69.4% used (1164MB avail)\n  CPUs: 8\n  Processes: 2\n  Disk: 73.8% used\n  Log files: 2"
+  },
+  {
+    "id": "goal-1781928676",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:11:16.458815",
+    "informed_by": [
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "System Health Report:\n  Uptime: 04:10:42 up 1 day, 16:43,  0",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:11:18.626655",
+    "completed": "2026-06-20T04:11:18.788233",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 7\n  Memory stats: {\"episodic_count\": 56, \"consolidated_count\": 45, \"vocab_size\": 140, \"top_topics\": [\"goal\", \"memory\", \"new\", \"and\", \"completed\", \"graph\", \"created\", \"result\", \"data\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781928713",
+    "prompt": "Enhance knowledge graph with new entities",
+    "status": "completed",
+    "created": "2026-06-20T04:11:53.286905",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "System Health Report:\n  Uptime: 04:10:42 up 1 day, 16:43,  0",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:11:55.569182",
+    "completed": "2026-06-20T04:11:55.629256",
+    "result": "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes\n  Session graph entries: 1\n  Agent roster: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice"
+  },
+  {
+    "id": "goal-1781928746",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:12:26.564500",
+    "informed_by": [
+      "System Health Report:\n  Uptime: 04:10:42 up 1 day, 16:43,  0",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:12:28.717422",
+    "completed": "2026-06-20T04:12:28.827515",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 7\n  Memory stats: {\"episodic_count\": 60, \"consolidated_count\": 52, \"vocab_size\": 140, \"top_topics\": [\"memory\", \"goal\", \"new\", \"and\", \"completed\", \"graph\", \"created\", \"result\", \"data\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781928777",
+    "prompt": "Test and validate agent behaviors",
+    "status": "completed",
+    "created": "2026-06-20T04:12:57.883103",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:12:59.116168",
+    "completed": "2026-06-20T04:12:59.183814",
+    "result": "Agent Validation:\n  Total agents: 12\n  Valid: 9\n  Failed: 3\n    __pycache__: FAIL (agent.py missing)\n    audit: FAIL (agent.py missing)\n    browser: PASS\n    coder: PASS\n    colony: PASS\n    executor: PASS\n    manus: PASS\n    planner: PASS\n    researcher: PASS\n    security: PASS\n    specialists: FAIL (agent.py missing)\n    voice: PASS"
+  },
+  {
+    "id": "goal-1781928805",
+    "prompt": "Explore new data sources for insights",
+    "status": "completed",
+    "created": "2026-06-20T04:13:25.335127",
+    "informed_by": [
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Agent Validation:\n  Total agents: 12\n  Valid: 9\n  Failed: 3\n",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:13:26.627046",
+    "completed": "2026-06-20T04:13:26.659470",
+    "result": "Data Exploration:\n  Data files: 11\n  Examples: colony_state.json, audit-summary.md, bh-goals.json, session-final-graph.json, session-final-report.json, bh-learnings.json, bh-initiatives.json, bh-heartbeat.json\n  Memory items: 64\n  Memory concepts: 52"
+  },
+  {
+    "id": "goal-1781928835",
+    "prompt": "Explore new data sources for insights",
+    "status": "completed",
+    "created": "2026-06-20T04:13:55.381938",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Agent Validation:\n  Total agents: 12\n  Valid: 9\n  Failed: 3\n",
+      "Data Exploration:\n  Data files: 11\n  Examples: colony_state.",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:13:56.583053",
+    "completed": "2026-06-20T04:13:56.611008",
+    "result": "Data Exploration:\n  Data files: 11\n  Examples: colony_state.json, audit-summary.md, bh-goals.json, session-final-graph.json, session-final-report.json, bh-learnings.json, bh-initiatives.json, bh-heartbeat.json\n  Memory items: 66\n  Memory concepts: 52"
+  },
+  {
+    "id": "goal-1781928866",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:14:26.504791",
+    "informed_by": [
+      "Agent Validation:\n  Total agents: 12\n  Valid: 9\n  Failed: 3\n",
+      "Data Exploration:\n  Data files: 11\n  Examples: colony_state.",
+      "Data Exploration:\n  Data files: 11\n  Examples: colony_state.",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:14:27.621119",
+    "completed": "2026-06-20T04:14:27.717158",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 8\n  Memory stats: {\"episodic_count\": 68, \"consolidated_count\": 60, \"vocab_size\": 140, \"top_topics\": [\"memory\", \"new\", \"goal\", \"and\", \"completed\", \"graph\", \"created\", \"data\", \"result\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781928902",
+    "prompt": "Improve agent coordination and swarm efficiency",
+    "status": "completed",
+    "created": "2026-06-20T04:15:02.202994",
+    "informed_by": [
+      "Data Exploration:\n  Data files: 11\n  Examples: colony_state.",
+      "Data Exploration:\n  Data files: 11\n  Examples: colony_state.",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:15:04.078484",
+    "completed": "2026-06-20T04:15:05.966249",
+    "result": "Coordination Analysis:\n  Active agents: 12\n  Unread messages: 388\n  Total message files: 416\n  Agents: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice\n"
+  },
+  {
+    "id": "goal-1781928940",
+    "prompt": "Monitor system health and optimize performance",
+    "status": "completed",
+    "created": "2026-06-20T04:15:40.613543",
+    "informed_by": [
+      "Data Exploration:\n  Data files: 11\n  Examples: colony_state.",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Coordination Analysis:\n  Active agents: 12\n  Unread messages",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:15:42.166320",
+    "completed": "2026-06-20T04:15:42.264773",
+    "result": "System Health Report:\n  Uptime: 04:15:42 up 1 day, 16:48,  0 users,  load average: 27.35, 25.35, 25.64\n  Memory: 76.5% used (896MB avail)\n  CPUs: 8\n  Processes: 2\n  Disk: 73.8% used\n  Log files: 2"
+  },
+  {
+    "id": "goal-1781928976",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:16:16.856708",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Coordination Analysis:\n  Active agents: 12\n  Unread messages",
+      "System Health Report:\n  Uptime: 04:15:42 up 1 day, 16:48,  0",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:16:19.225097",
+    "completed": "2026-06-20T04:16:19.369602",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 8\n  Memory stats: {\"episodic_count\": 74, \"consolidated_count\": 68, \"vocab_size\": 140, \"top_topics\": [\"memory\", \"goal\", \"new\", \"and\", \"completed\", \"created\", \"graph\", \"result\", \"data\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781929016",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:16:56.066833",
+    "informed_by": [
+      "Coordination Analysis:\n  Active agents: 12\n  Unread messages",
+      "System Health Report:\n  Uptime: 04:15:42 up 1 day, 16:48,  0",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:16:58.068627",
+    "completed": "2026-06-20T04:16:58.192475",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 8\n  Memory stats: {\"episodic_count\": 76, \"consolidated_count\": 76, \"vocab_size\": 140, \"top_topics\": [\"memory\", \"goal\", \"new\", \"and\", \"completed\", \"created\", \"result\", \"graph\", \"data\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781929053",
+    "prompt": "Enhance knowledge graph with new entities",
+    "status": "completed",
+    "created": "2026-06-20T04:17:33.898603",
+    "informed_by": [
+      "System Health Report:\n  Uptime: 04:15:42 up 1 day, 16:48,  0",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:17:35.972674",
+    "completed": "2026-06-20T04:17:36.034183",
+    "result": "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes\n  Session graph entries: 1\n  Agent roster: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice"
+  },
+  {
+    "id": "goal-1781929091",
+    "prompt": "Research new AI models and techniques",
+    "status": "completed",
+    "created": "2026-06-20T04:18:11.029144",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:18:13.272143",
+    "completed": "2026-06-20T04:18:13.403462",
+    "result": "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice\n  Agent files found: 9"
+  },
+  {
+    "id": "goal-1781929133",
+    "prompt": "Enhance knowledge graph with new entities",
+    "status": "completed",
+    "created": "2026-06-20T04:18:53.179805",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:18:55.441974",
+    "completed": "2026-06-20T04:18:55.502112",
+    "result": "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes\n  Session graph entries: 1\n  Agent roster: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice"
+  },
+  {
+    "id": "goal-1781929176",
+    "prompt": "Optimize memory usage and retrieval",
+    "status": "completed",
+    "created": "2026-06-20T04:19:36.158270",
+    "informed_by": [
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:19:38.607685",
+    "completed": "2026-06-20T04:19:38.771453",
+    "result": "Memory Optimization:\n  Old logs pruned: 0\n  Health reports compressed: 0\n  New memory concepts: 8\n  Memory stats: {\"episodic_count\": 85, \"consolidated_count\": 84, \"vocab_size\": 140, \"top_topics\": [\"memory\", \"new\", \"goal\", \"and\", \"completed\", \"graph\", \"created\", \"result\", \"data\", \"json\"]}"
+  },
+  {
+    "id": "goal-1781929240",
+    "prompt": "Monitor system health and optimize performance",
+    "status": "completed",
+    "created": "2026-06-20T04:20:40.327752",
+    "informed_by": [
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:20:43.788174",
+    "completed": "2026-06-20T04:20:43.881202",
+    "result": "System Health Report:\n  Uptime: 04:20:43 up 1 day, 16:53,  0 users,  load average: 33.90, 28.79, 26.88\n  Memory: 87.0% used (493MB avail)\n  CPUs: 8\n  Processes: 2\n  Disk: 73.8% used\n  Log files: 2"
+  },
+  {
+    "id": "goal-1781929293",
+    "prompt": "Enhance knowledge graph with new entities",
+    "status": "completed",
+    "created": "2026-06-20T04:21:33.757002",
+    "informed_by": [
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "System Health Report:\n  Uptime: 04:20:43 up 1 day, 16:53,  0",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:21:35.654828",
+    "completed": "2026-06-20T04:21:35.703263",
+    "result": "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes\n  Session graph entries: 1\n  Agent roster: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice"
+  },
+  {
+    "id": "goal-1781929331",
+    "prompt": "Research new AI models and techniques",
+    "status": "completed",
+    "created": "2026-06-20T04:22:11.138015",
+    "informed_by": [
+      "Memory Optimization:\n  Old logs pruned: 0\n  Health reports c",
+      "System Health Report:\n  Uptime: 04:20:43 up 1 day, 16:53,  0",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:22:13.094693",
+    "completed": "2026-06-20T04:22:13.226526",
+    "result": "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice\n  Agent files found: 9"
+  },
+  {
+    "id": "goal-1781929368",
+    "prompt": "Document architecture decisions",
+    "status": "completed",
+    "created": "2026-06-20T04:22:48.686251",
+    "informed_by": [
+      "System Health Report:\n  Uptime: 04:20:43 up 1 day, 16:53,  0",
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data",
+      "New goal created: Optimize memory usage and retrieval"
+    ],
+    "started": "2026-06-20T04:22:50.314774",
+    "completed": "2026-06-20T04:22:50.361461",
+    "result": "Architecture Snapshot (2026-06-20T04:22:50.361362):\n  Agents: 12 (__pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice)\n  Goals pending: 0\n  Goals completed: 43\n  Memory items: 94\n  Memory concepts: 84"
+  },
+  {
+    "id": "goal-1781929409",
+    "prompt": "Review and prune stale data",
+    "status": "completed",
+    "created": "2026-06-20T04:23:29.341959",
+    "informed_by": [
+      "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Architecture Snapshot (2026-06-20T04:22:50.361362):\n  Agents",
+      "New goal created: Document architecture decisions",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data"
+    ],
+    "started": "2026-06-20T04:23:31.585039",
+    "completed": "2026-06-20T04:23:31.984146",
+    "result": "Stale Data Pruning:\n  Old goals archived: 0\n  Messages cleaned: auto\n  Old reports removed: 0"
+  },
+  {
+    "id": "goal-1781929451",
+    "prompt": "Research new AI models and techniques",
+    "status": "completed",
+    "created": "2026-06-20T04:24:11.841116",
+    "informed_by": [
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Architecture Snapshot (2026-06-20T04:22:50.361362):\n  Agents",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "New goal created: Document architecture decisions",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data"
+    ],
+    "started": "2026-06-20T04:24:14.421346",
+    "completed": "2026-06-20T04:24:14.540998",
+    "result": "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice\n  Agent files found: 9"
+  },
+  {
+    "id": "goal-1781929495",
+    "prompt": "Explore new data sources for insights",
+    "status": "completed",
+    "created": "2026-06-20T04:24:55.779406",
+    "informed_by": [
+      "Architecture Snapshot (2026-06-20T04:22:50.361362):\n  Agents",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "New goal created: Document architecture decisions",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data"
+    ],
+    "started": "2026-06-20T04:24:58.476508",
+    "completed": "2026-06-20T04:24:58.518497",
+    "result": "Data Exploration:\n  Data files: 13\n  Examples: colony_state.json, audit-summary.md, bh-goals.json, session-final-graph.json, session-final-report.json, bh-learnings.json, bh-initiatives.json, bh-heartbeat.json\n  Memory items: 101\n  Memory concepts: 84"
+  },
+  {
+    "id": "goal-1781929541",
+    "prompt": "Research new AI models and techniques",
+    "status": "completed",
+    "created": "2026-06-20T04:25:41.784882",
+    "informed_by": [
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Data Exploration:\n  Data files: 13\n  Examples: colony_state.",
+      "New goal created: Document architecture decisions",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data"
+    ],
+    "started": "2026-06-20T04:25:44.526978",
+    "completed": "2026-06-20T04:25:44.679268",
+    "result": "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice\n  Agent files found: 9"
+  },
+  {
+    "id": "goal-1781929591",
+    "prompt": "Research new AI models and techniques",
+    "status": "completed",
+    "created": "2026-06-20T04:26:31.785275",
+    "informed_by": [
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Data Exploration:\n  Data files: 13\n  Examples: colony_state.",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "New goal created: Document architecture decisions",
+      "New goal created: Document architecture decisions",
+      "New goal created: Review and prune stale data"
+    ],
+    "started": "2026-06-20T04:26:34.451577",
+    "completed": "2026-06-20T04:26:34.571078",
+    "result": "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice\n  Agent files found: 9"
+  },
+  {
+    "id": "goal-1781929679",
+    "prompt": "Review and prune stale data",
+    "status": "completed",
+    "created": "2026-06-20T04:27:59.480700",
+    "informed_by": [
+      "Data Exploration:\n  Data files: 13\n  Examples: colony_state.",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Goal 'Optimize memory usage and retrieval' completed. Result",
+      "New goal created: Explore new data sources for insights",
+      "New goal created: Research new AI models and techniques"
+    ],
+    "started": "2026-06-20T04:28:02.235478",
+    "completed": "2026-06-20T04:28:02.781713",
+    "result": "Stale Data Pruning:\n  Old goals archived: 0\n  Messages cleaned: auto\n  Old reports removed: 0"
+  },
+  {
+    "id": "goal-1781929730",
+    "prompt": "Monitor system health and optimize performance",
+    "status": "completed",
+    "created": "2026-06-20T04:28:50.154014",
+    "informed_by": [
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "Daemon received message from autonomy: New Goal: Document ar",
+      "Daemon received message from autonomy: New Goal: Document ar",
+      "Daemon received message from autonomy: New Goal: Optimize me"
+    ],
+    "started": "2026-06-20T04:28:52.783798",
+    "completed": "2026-06-20T04:28:52.949104",
+    "result": "System Health Report:\n  Uptime: 04:28:52 up 1 day, 17:01,  0 users,  load average: 29.19, 29.22, 27.92\n  Memory: 75.3% used (941MB avail)\n  CPUs: 8\n  Processes: 2\n  Disk: 73.8% used\n  Log files: 2"
+  },
+  {
+    "id": "goal-1781929793",
+    "prompt": "Enhance knowledge graph with new entities",
+    "status": "completed",
+    "created": "2026-06-20T04:29:53.773812",
+    "informed_by": [
+      "Codebase Analysis:\n  Agent types: 12\n  Agents: __pycache__, ",
+      "Stale Data Pruning:\n  Old goals archived: 0\n  Messages clean",
+      "System Health Report:\n  Uptime: 04:28:52 up 1 day, 17:01,  0",
+      "Daemon received message from autonomy: New Goal: Document ar",
+      "Daemon received message from autonomy: New Goal: Document ar",
+      "Daemon received message from autonomy: New Goal: Optimize me"
+    ],
+    "started": "2026-06-20T04:29:57.642305",
+    "completed": "2026-06-20T04:29:57.700769",
+    "result": "Knowledge Graph Status:\n  Agents: 12\n  Graph DB: 36864 bytes\n  Session graph entries: 1\n  Agent roster: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice"
+  }
+]

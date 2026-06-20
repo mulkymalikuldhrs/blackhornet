@@ -1,0 +1,9 @@
+{
+  "id": "msg-1781929682142-autonomy-colony",
+  "from": "autonomy",
+  "to": "colony",
+  "subject": "New Goal: Review and prune stale data",
+  "body": "Autonomy generated goal goal-1781929679: Review and prune stale data",
+  "timestamp": "2026-06-20T04:28:02.142119",
+  "read": false
+}
