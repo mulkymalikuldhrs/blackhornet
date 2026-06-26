@@ -21,14 +21,22 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('/sdcard/dhaherlabs/blackhornet-worktree/logs/watchdog.log'),
+        logging.FileHandler(str((Path(__file__).resolve().parents[1] / 'logs' / 'watchdog.log'))),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger('bh_watchdog')
 
 # Configuration
-BH_HOME = Path('/sdcard/dhaherlabs/blackhornet-worktree')
+def _find_root() -> Path:
+    cur = Path(__file__).resolve()
+    for _ in range(10):
+        if (cur / "pyproject.toml").exists():
+            return cur
+        cur = cur.parent
+    return cur
+
+BH_HOME = _find_root()
 DATA_DIR = BH_HOME / 'data'
 EXPORTS_DIR = BH_HOME / 'exports'
 SESSION_EXPORT_DIR = DATA_DIR / 'session-export'

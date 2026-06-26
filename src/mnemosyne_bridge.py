@@ -42,7 +42,7 @@ MNEMOSYNE_PORT = int(os.getenv("MNEMOSYNE_PORT", "3001"))
 MNEMOSYNE_HOST = os.getenv("MNEMOSYNE_HOST", "localhost")
 MNEMOSYNE_URL = os.getenv("MNEMOSYNE_URL",
     f"http://{MNEMOSYNE_HOST}:{MNEMOSYNE_PORT}")
-MNEMOSYNE_MCP_PORT = int(os.getenv("MNEMOSYNE_MCP_PORT", "3002"))
+MNEMOSYNE_MCP_PORT = int(os.getenv("SEULANGA_MCP_PORT") or os.getenv("MNEMOSYNE_MCP_PORT") or "3100")
 
 
 class MnemosyneBridge:

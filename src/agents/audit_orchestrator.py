@@ -19,7 +19,7 @@ from src.graph.graphify_pipeline import GraphifyPipeline
 
 logger = logging.getLogger(__name__)
 
-BH_HOME = Path("/sdcard/dhaherlabs/blackhornet-worktree")
+BH_HOME = Path(__file__).resolve().parents[2]
 SRC_DIR = BH_HOME / "src"
 
 

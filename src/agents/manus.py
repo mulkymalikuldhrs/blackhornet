@@ -232,3 +232,20 @@ class ManusAgent(BaseAgent):
     def progress_reports(self) -> List[Dict[str, Any]]:
         """All progress reports emitted so far."""
         return list(self._progress_reports)
+
+
+if __name__ == "__main__":
+    import asyncio
+    from src.colony_types import AgentSpec, AgentType, Task
+
+    async def _run():
+        agent = ManusAgent()
+        await agent.initialize()
+        print(f"ManusAgent initialized, health={agent.health_score}")
+        result = await agent.process_task(Task(
+            description="Demonstration task",
+            payload={"action": "demo", "value": "hello"},
+        ))
+        print(f"Task result: success={result.success}, data={result.data}")
+
+    asyncio.run(_run())

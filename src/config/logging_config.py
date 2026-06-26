@@ -32,7 +32,7 @@ def _get_pii_redaction():
     """Lazily import and cache the PII redaction module."""
     global _pii_redaction_module
     if _pii_redaction_module is None:
-        from ai_multicolony.core import pii_redaction as _mod
+        from src.core import pii_redaction as _mod
         _pii_redaction_module = _mod
     return _pii_redaction_module
 

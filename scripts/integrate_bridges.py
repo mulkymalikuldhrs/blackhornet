@@ -6,7 +6,15 @@ Integrates HyperGate + MnemosyneBridge into blackhornet.py
 
 from pathlib import Path
 
-BH_HOME = Path("/sdcard/dhaherlabs/blackhornet-worktree")
+def _find_root() -> Path:
+    cur = Path(__file__).resolve()
+    for _ in range(10):
+        if (cur / "pyproject.toml").exists():
+            return cur
+        cur = cur.parent
+    return cur
+
+BH_HOME = _find_root()
 BLACKHORNET_PY = BH_HOME / "blackhornet.py"
 
 print("=" * 70)

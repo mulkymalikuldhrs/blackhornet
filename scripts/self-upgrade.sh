@@ -7,7 +7,8 @@
 # ============================================================================
 set -euo pipefail
 
-BH_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BH_HOME="$(cd "$SCRIPT_DIR/.." && pwd)"
 HERMES_DIR="/tmp/hermes-agent"
 LOG_DIR="$BH_HOME/logs"
 SANDBOX_DIR="/tmp/bh-sandbox"

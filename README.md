@@ -140,3 +140,21 @@ python -m unittest discover -s src -p "tests.py"
 ## License
 
 MIT
+
+## Performance
+
+The BlackHornet deployment now supports asynchronous cloning and pulling of ecosystem repositories, reducing blocking I/O.
+
+```mermaid
+flowchart TD
+    A[Start Deploy Nest] --> B{Repo exists?}
+    B -- Yes --> C[Async Pull Repo]
+    B -- No --> D[Async Clone Repo]
+    C --> E[Record status]
+    D --> E
+    E --> F[Next Repo]
+    F --> B
+```
+
+Run `python3 profiling_blackhornet.py` to compare sync vs async execution times.
+

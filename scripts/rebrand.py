@@ -16,7 +16,17 @@ import re
 import shutil
 import sys
 
-BH = "/sdcard/dhaherlabs/blackhornet-worktree"
+from pathlib import Path
+
+def _find_project_root() -> Path:
+    cur = Path(__file__).resolve()
+    for _ in range(10):
+        if (cur / "pyproject.toml").exists():
+            return cur
+        cur = cur.parent
+    return cur
+
+BH = str(_find_project_root())
 
 
 def file_replacements() -> list[tuple[str, str]]:

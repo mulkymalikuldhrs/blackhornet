@@ -9,7 +9,8 @@
 set -e
 
 # Configuration
-BH_HOME="/sdcard/dhaherlabs/blackhornet-worktree"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BH_HOME="$(cd "$SCRIPT_DIR/.." && pwd)"
 LOGS_DIR="$BH_HOME/logs"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 COMMIT_MSG="${1:-[AUTO] BH Doctor auto-push - $TIMESTAMP}"

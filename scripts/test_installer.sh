@@ -1,8 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-BH_DOCTOR="$(cd "$(dirname "$0")/.." && pwd)/bh-doctor.sh"
-[ -f "$BH_DOCTOR" ] || BH_DOCTOR="/sdcard/dhaherlabs/blackhornet-worktree/bh-doctor.sh"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+BH_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+BH_DOCTOR="$BH_ROOT/bh-doctor.sh"
 [ -f "$BH_DOCTOR" ] || { echo "FATAL: Cannot find bh-doctor.sh"; exit 1; }
 PASS=0
 FAIL=0

@@ -28,6 +28,7 @@ import json
 import time
 import signal
 import logging
+import asyncio
 
 # ── BRIDGE INTEGRATION: HyperGate & Mnemosyne ────────────────────
 from src.hypergate import HyperGate
@@ -150,6 +151,9 @@ class BlackHornetNest:
         print()
 
     def _clone_with_fallback(self, name: str, urls: list, dest: str) -> bool:
+        """Synchronously clone a repository from the first reachable URL.
+        Returns True on success, False otherwise."""
+
         """Try cloning from multiple URLs (Codeberg → GitLab → GitHub)."""
         for url in urls:
             try:
@@ -163,6 +167,38 @@ class BlackHornetNest:
             except Exception:
                 continue
         return False
+
+        # ponytail: async clone/pull for performance, minimal change
+    async def _clone_with_fallback_async(self, name: str, urls: list, dest: str) -> bool:
+        """Async version of _clone_with_fallback using asyncio subprocesses."""
+        for url in urls:
+            try:
+                proc = await asyncio.create_subprocess_exec(
+                    "git", "clone", "--depth", "1", url, dest,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                stdout, stderr = await proc.communicate()
+                if proc.returncode == 0:
+                    logger.info(f"  🐝 {name}: cloned async from {url.split('/')[2]}")
+                    return True
+            except Exception:
+                continue
+        return False
+
+    # ponytail: async clone/pull for performance, minimal change
+    async def _pull_repo_async(self, repo_dir: str) -> bool:
+        """Async version of _pull_repo using asyncio subprocesses."""
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                "git", "-C", repo_dir, "pull", "--rebase",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            stdout, stderr = await proc.communicate()
+            return proc.returncode == 0
+        except Exception:
+            return False
 
     def _pull_repo(self, repo_dir: str) -> bool:
         """Pull latest changes for an existing repo."""
@@ -196,6 +232,31 @@ class BlackHornetNest:
                 self.hornets[name] = {"status": "CLONED", "dir": str(repo_dir)}
             else:
                 logger.warning(f"  ⚠ {name}: clone failed on all mirrors")
+                self.hornets[name] = {"status": "FAILED", "error": "all mirrors failed"}
+
+        return True
+
+        async def async_deploy_nest(self) -> bool:
+        """Asynchronously clone or pull all ecosystem repositories using async subprocesses."""
+        NEST_DIR.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Building nest at {NEST_DIR} (async)...")
+
+        for name, info in ECOSYSTEM_REPOS.items():
+            repo_dir = NEST_DIR / name
+            urls = info.get("urls", [])
+
+            if (repo_dir / ".git").exists():
+                updated = await self._pull_repo_async(str(repo_dir))
+                status = "UPDATED" if updated else "IN_NEST"
+                logger.info(f"  🐝 {name}: {status} (async)")
+                self.hornets[name] = {"status": status, "dir": str(repo_dir)}
+                continue
+
+            logger.info(f"  🐝 {name}: cloning (async)...")
+            if urls and await self._clone_with_fallback_async(name, urls, str(repo_dir)):
+                self.hornets[name] = {"status": "CLONED", "dir": str(repo_dir)}
+            else:
+                logger.warning(f"  ⚠ {name}: async clone failed on all mirrors")
                 self.hornets[name] = {"status": "FAILED", "error": "all mirrors failed"}
 
         return True

@@ -11,6 +11,7 @@ import logging
 import os
 import time
 from typing import Any, Dict, List, Optional
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class SessionRecorder:
         self._mapper = relationship_mapper
         self._event_bus = event_bus
         self._session_data: List[Dict[str, Any]] = []
-        self._export_dir: str = "/sdcard/dhaherlabs/blackhornet-worktree/data/session-export"
+        self._export_dir: str = str((Path(__file__).resolve().parents[2] / 'data' / 'session-export'))
 
     def start(self) -> None:
         if self._event_bus is None:

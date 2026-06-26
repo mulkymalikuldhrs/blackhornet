@@ -4,7 +4,8 @@
 
 set -e
 
-BH_DIR="/sdcard/dhaherlabs/blackhornet-worktree"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BH_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DAEMON="$BH_DIR/scripts/bh_daemon.py"
 AUTONOMY="$BH_DIR/scripts/autonomy.py"
 LOG_DIR="$BH_DIR/logs"

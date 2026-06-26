@@ -3,7 +3,8 @@
 # Checks daemon liveness AND memory health
 # If daemon dies, restart it automatically
 
-BH_DIR="/sdcard/dhaherlabs/blackhornet-worktree"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BH_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DAEMON="$BH_DIR/scripts/bh_daemon.py"
 MEMORY_SCRIPT="$BH_DIR/scripts/memory.py"
 PID_FILE="$BH_DIR/data/bh.pid"

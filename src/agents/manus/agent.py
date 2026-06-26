@@ -372,3 +372,25 @@ class ManusAgent(ToolCallAgent):
             Tools needed for ManusAgent's general-purpose operation.
         """
         return ["shell", "file", "search", "code", "browser", "memory"]
+
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Manus Agent")
+    parser.add_argument("--cycle", type=int, default=1, help="Cycle number")
+    args = parser.parse_args()
+
+    import asyncio
+    from src.config.logging_config import get_logger as _get_logger
+
+    _log = _get_logger(__name__)
+    _log.info("ManusAgent cycle=%d starting", args.cycle)
+
+    async def _run():
+        agent = ManusAgent()
+        await agent.initialize()
+        _log.info("ManusAgent initialized, state=%s", agent.state)
+        result = await agent.execute()
+        _log.info("ManusAgent cycle=%d complete: %s", args.cycle, result)
+
+    asyncio.run(_run())

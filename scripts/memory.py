@@ -111,11 +111,10 @@ class VectorMemory:
     def store(self, text: str, metadata: dict | None = None) -> str:
         """Store text with metadata. Returns memory ID."""
         with self._lock:
+            if not self.vocab:
+                self._rebuild_vocab()
             mid = f"mem-{int(time.time() * 1000)}-{len(self.episodic)}"
-            if self.vocab:
-                vector = _compute_tf_vector(text, self.vocab)
-            else:
-                vector = []
+            vector = _compute_tf_vector(text, self.vocab)
             record = {
                 "id": mid,
                 "text": text,
@@ -195,6 +194,24 @@ class VectorMemory:
             if len(cluster) > 1:
                 clusters.append(cluster)
         return clusters
+
+    def repair_vectors(self) -> int:
+        """Recompute all vectors from scratch.
+        
+        Fixes items stored when vocab was empty. Returns count repaired.
+        """
+        with self._lock:
+            # Count items with empty vectors before rebuild
+            was_empty = sum(
+                1 for item in self.episodic
+                if not item.get("vector") or len(item["vector"]) == 0
+            )
+            self._rebuild_vocab()
+            # Rewrite the file with corrected vectors
+            EPISODIC_FILE.write_text(
+                "\n".join(json.dumps(item) for item in self.episodic) + "\n"
+            )
+            return was_empty
 
     def stats(self) -> dict:
         """Return memory size and top topics."""

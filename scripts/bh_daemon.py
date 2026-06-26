@@ -211,12 +211,15 @@ class AGIDaemon:
                 agent["status"] = "running"
 
                 if agent["has_loop"]:
+                    agent_env = os.environ.copy()
+                    agent_env["PYTHONPATH"] = str(BASE_DIR)
                     result = subprocess.run(
                         [sys.executable, str(agent_path), "--cycle", str(self.cycle_count)],
                         capture_output=True,
                         text=True,
                         timeout=30,
                         cwd=str(BASE_DIR),
+                        env=agent_env,
                     )
                     if result.stdout.strip():
                         log.info(f"  {name}: {result.stdout.strip()[:200]}")
