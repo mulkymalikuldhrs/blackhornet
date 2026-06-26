@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 
 from src.agents.base import BaseAgent
 from src.colony_types import AgentSpec, AgentType, Task, TaskResult
+from src.core.reflexion import ReflexionLoop, Memory
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +74,8 @@ class CoderAgent(BaseAgent):
         self._code_cache: Dict[str, str] = {}
         self._artifacts: Dict[str, CodeArtifact] = {}
         self._vcs_log: List[Dict[str, Any]] = []
+        self._reflexion_memory = Memory()
+        self._reflexion = ReflexionLoop(max_attempts=3, memory=self._reflexion_memory)
 
     # ── Abstract hook implementations ──
 
@@ -307,6 +310,121 @@ class CoderAgent(BaseAgent):
             "complexity": complexity,
             "issues": [],
             "suggestions": ["Consider adding docstrings"] if len(lines) > 10 else [],
+        }
+
+    # ── Reflexion self-improvement ──
+
+    async def reflexive_generate(self, spec: str, language: str = "python") -> Dict[str, Any]:
+        """Generate code using Reflexion loop for self-improvement."""
+
+        def actor(task: str) -> str:
+            return self._scaffold_code(language, task)
+
+        def evaluator(task: str, output: str) -> tuple:
+            issues = []
+            if "from __future__ import annotations" not in output:
+                issues.append("Missing future annotations import")
+            if "def " not in output:
+                issues.append("No function definitions found")
+            if "pass" in output:
+                issues.append("Contains unimplemented pass statements")
+            if issues:
+                return (False, "; ".join(issues))
+            return (True, "Code quality check passed")
+
+        result = self._reflexion.run(spec, actor, evaluator)
+        return {
+            "action": "reflexive_generate",
+            "spec": spec,
+            "language": language,
+            "code": result.get("output", ""),
+            "attempts": result.get("attempts", 0),
+            "success": result.get("success", False),
+            "feedback": result.get("feedback", ""),
+            "reflexion_history": self._reflexion_memory.feedback_history,
+        }
+
+    async def reflexive_review(self, code: str, language: str = "python") -> Dict[str, Any]:
+        """Review code with Reflexion - retry review if quality check fails."""
+
+        def actor(task: str) -> str:
+            return self._scaffold_code(language, task)
+
+        def evaluator(task: str, output: str) -> tuple:
+            patterns_found = sum(
+                1 for p in ["password", "secret", "eval(", "exec(", "shell=True"]
+                if p in task
+            )
+            if patterns_found > 0 and all(p not in output for p in ["issue", "warning", "security"]):
+                return (False, "Review did not flag known security patterns")
+            return (True, "Review quality check passed")
+
+        review_task = f"REVIEW:\n```{language}\n{code}\n```"
+        result = self._reflexion.run(review_task, actor, evaluator)
+
+        return {
+            "action": "reflexive_review",
+            "code_length": len(code),
+            "language": language,
+            "attempts": result.get("attempts", 0),
+            "success": result.get("success", False),
+        }
+
+    async def _generate_with_reflexion(self, task: Task) -> Dict[str, Any]:
+        """Generate code using Reflexion loop for self-improvement.
+
+        The ``payload`` may contain:
+        * ``language`` – target programming language (default ``"python"``).
+        * ``spec`` – natural-language specification.
+        * ``file_path`` – target file path for the generated code.
+        * ``max_attempts`` – max reflexion attempts (default 3).
+        """
+        language = task.payload.get("language", "python")
+        spec = task.payload.get("spec", task.description)
+        file_path = task.payload.get("file_path", f"generated_{uuid.uuid4().hex[:6]}.{self._ext(language)}")
+        max_attempts = task.payload.get("max_attempts", 3)
+
+        reflexion_memory = Memory()
+        reflexion_loop = ReflexionLoop(max_attempts=max_attempts, memory=reflexion_memory)
+
+        def actor(task_spec: str) -> str:
+            return self._scaffold_code(language, task_spec)
+
+        def evaluator(task_spec: str, output: str) -> tuple:
+            issues = []
+            if "from __future__ import annotations" not in output:
+                issues.append("Missing future annotations import")
+            if "def " not in output:
+                issues.append("No function definitions found")
+            if "pass" in output and "TODO" not in output:
+                issues.append("Contains unimplemented pass statements")
+            if issues:
+                return (False, "; ".join(issues))
+            return (True, "Code quality check passed")
+
+        result = reflexion_loop.run(spec, actor, evaluator)
+
+        artifact = CodeArtifact(
+            language=language,
+            code=result.get("output", ""),
+            tests=self._scaffold_tests(language, spec, result.get("output", "")),
+            file_path=file_path,
+            review_status="generated" if result.get("success") else "needs_review",
+        )
+        self._artifacts[artifact.artifact_id] = artifact
+        self._code_cache[artifact.artifact_id] = result.get("output", "")
+
+        return {
+            "action": "generate_with_reflexion",
+            "artifact_id": artifact.artifact_id,
+            "language": language,
+            "code": result.get("output", ""),
+            "tests": artifact.tests,
+            "file_path": file_path,
+            "attempts": result.get("attempts", 0),
+            "success": result.get("success", False),
+            "feedback": result.get("feedback", ""),
+            "reflexion_history": reflexion_memory.feedback_history,
         }
 
     # ── VCS integration ──

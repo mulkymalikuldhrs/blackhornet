@@ -21,6 +21,7 @@ from src.agents.coder.prompts import (
     CODER_TEST_GENERATION_PROMPT,
     CODER_REFACTOR_PROMPT,
 )
+from src.core.reflexion import ReflexionLoop, Memory
 
 logger = get_logger(__name__)
 
@@ -73,6 +74,8 @@ class CoderAgent(BaseAgent):
         super().__init__(config=config, **kwargs)
         self._code_changes = []
         self._debug_attempts = 0
+        self._reflexion_memory = Memory()
+        self._reflexion = ReflexionLoop(max_attempts=3, memory=self._reflexion_memory)
 
     # ------------------------------------------------------------------
     # Required tools
@@ -322,3 +325,65 @@ class CoderAgent(BaseAgent):
         """Clear the code change history."""
         self._code_changes.clear()
         self._debug_attempts = 0
+
+    # ------------------------------------------------------------------
+    # Reflexion self-improvement
+    # ------------------------------------------------------------------
+
+    async def reflexive_generate(self, spec: str, language: str = "python") -> Dict[str, Any]:
+        """Generate code using Reflexion loop for self-improvement."""
+
+        async def actor(task: str) -> str:
+            prompt = f"Write {language} code for: {task}\n\nExecute the code and verify it works."
+            return await self.run(prompt)
+
+        def evaluator(task: str, output: str) -> tuple:
+            issues = []
+            if "from __future__ import annotations" not in output:
+                issues.append("Missing future annotations import")
+            if "def " not in output and "function " not in output:
+                issues.append("No function definitions found")
+            if "pass" in output and output.count("pass") > 2:
+                issues.append("Too many pass statements - implement the logic")
+            if issues:
+                return (False, "; ".join(issues))
+            return (True, "Code quality check passed")
+
+        result = await self._reflexion.arun(spec, actor, evaluator)
+        return {
+            "action": "reflexive_generate",
+            "spec": spec,
+            "language": language,
+            "code": result.get("output", ""),
+            "attempts": result.get("attempts", 0),
+            "success": result.get("success", False),
+            "feedback": result.get("feedback", ""),
+            "reflexion_history": self._reflexion_memory.feedback_history,
+        }
+
+    async def reflexive_review(self, code: str, language: str = "python") -> Dict[str, Any]:
+        """Review code with Reflexion - retry review if quality check fails."""
+
+        async def actor(task: str) -> str:
+            prompt = f"REVIEW:\n```{language}\n{task}\n```"
+            return await self.run(prompt)
+
+        def evaluator(task: str, output: str) -> tuple:
+            patterns_found = sum(
+                1 for p in ["password", "secret", "eval(", "exec(", "shell=True"]
+                if p in task
+            )
+            if patterns_found > 0 and all(p not in output for p in ["issue", "warning", "security"]):
+                return (False, "Review did not flag known security patterns")
+            return (True, "Review quality check passed")
+
+        review_task = f"REVIEW:\n```{language}\n{code}\n```"
+        result = await self._reflexion.arun(review_task, actor, evaluator)
+
+        return {
+            "action": "reflexive_review",
+            "code_length": len(code),
+            "language": language,
+            "attempts": result.get("attempts", 0),
+            "success": result.get("success", False),
+        }

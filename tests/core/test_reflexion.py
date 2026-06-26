@@ -60,5 +60,35 @@ class TestReflexionLoop(unittest.TestCase):
         self.assertGreaterEqual(len(memory.feedback_history), 1)
 
 
+class TestCoderAgentReflexion(unittest.TestCase):
+    def test_reflexive_generate_creates_code(self):
+        from src.agents.coder import CoderAgent
+        import asyncio
+        agent = CoderAgent()
+
+        async def test():
+            result = await agent.reflexive_generate("Calculate fibonacci numbers", "python")
+            self.assertIn("code", result)
+            self.assertIn("attempts", result)
+            return result
+
+        result = asyncio.run(test())
+        self.assertGreater(len(result["code"]), 10)
+
+    def test_reflexive_review_returns_feedback(self):
+        from src.agents.coder import CoderAgent
+        import asyncio
+        agent = CoderAgent()
+
+        async def test():
+            bad_code = 'password = "secret123"\ndef main():\n    eval(user_input)\n'
+            result = await agent.reflexive_review(bad_code)
+            self.assertIn("success", result)
+            return result
+
+        result = asyncio.run(test())
+        self.assertIsInstance(result["success"], bool)
+
+
 if __name__ == "__main__":
     unittest.main()

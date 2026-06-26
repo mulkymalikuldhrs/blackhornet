@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Awaitable, Any
+import asyncio
 
 
 @dataclass
@@ -30,6 +31,33 @@ class ReflexionLoop:
 
         for attempt in range(1, self.max_attempts + 1):
             output = actor(task)
+            success, feedback = evaluator(task, output)
+            self.memory.store(task, output, feedback)
+            last_output = output
+            last_feedback = feedback
+
+            if success:
+                return {
+                    "success": True,
+                    "attempts": attempt,
+                    "output": output,
+                    "feedback": feedback,
+                }
+
+        return {
+            "success": False,
+            "attempts": self.max_attempts,
+            "output": last_output,
+            "feedback": last_feedback,
+        }
+
+    async def arun(self, task: str, actor: Callable[[str], Awaitable[str]], evaluator: Callable[[str, str], tuple]) -> dict:
+        """Async version of run that supports async actors."""
+        last_output = None
+        last_feedback = None
+
+        for attempt in range(1, self.max_attempts + 1):
+            output = await actor(task)
             success, feedback = evaluator(task, output)
             self.memory.store(task, output, feedback)
             last_output = output
