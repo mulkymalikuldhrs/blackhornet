@@ -6,7 +6,7 @@
 # Auto-nudges idle agents, rotates keys on rate limits, restarts dead
 # ============================================================
 
-SWARM_DIR="/root/.bh"
+SWARM_DIR="/root/.hermes"
 WS="/root/.openclaw-autoclaw/workspace"
 LOG_DIR="${SWARM_DIR}/supervisor-logs"
 HEALTH_LOG="${LOG_DIR}/health.log"
@@ -70,9 +70,9 @@ restart_agent() {
   rm -f "${SWARM_DIR}/profiles/${p}/gateway.pid" \
         "${SWARM_DIR}/profiles/${p}/gateway.lock" \
         "${SWARM_DIR}/profiles/${p}/gateway_state.json" 2>/dev/null
-  rm -f /root/.local/state/bh/gateway-locks/telegram-bot-token-*.lock 2>/dev/null
+  rm -f /root/.local/state/hermes/gateway-locks/telegram-bot-token-*.lock 2>/dev/null
   # Start
-  BH_HOME="${SWARM_DIR}/profiles/${p}" \
+  HERMES_HOME="${SWARM_DIR}/profiles/${p}" \
     setsid hermes gateway run --accept-hooks --replace \
     >> "${LOG_DIR}/${p}.log" 2>&1 &
   echo $! > "${LOG_DIR}/${p}.pid"
@@ -95,15 +95,15 @@ rotate_key() {
   restart_agent "$p"
 }
 
-# ── Ensure JeumpaLLM is running ──
+# ── Ensure ProxyGateLLM is running ──
 check_proxy() {
   if ! curl -s http://localhost:3333/health >/dev/null 2>&1; then
-    log "🔌 JeumpaLLM DOWN — restarting"
+    log "🔌 ProxyGateLLM DOWN — restarting"
     kill $(lsof -ti:3333 2>/dev/null) 2>/dev/null || true
     sleep 1
-    cd "${SWARM_DIR}/shared-workspace/JeumpaLLM" && \
-      setsid node index.js >> "${LOG_DIR}/jeumpallm.log" 2>&1 &
-    echo $! > "${LOG_DIR}/jeumpallm.pid"
+    cd "${SWARM_DIR}/shared-workspace/ProxyGateLLM" && \
+      setsid node index.js >> "${LOG_DIR}/proxygate.log" 2>&1 &
+    echo $! > "${LOG_DIR}/proxygate.pid"
   fi
 }
 

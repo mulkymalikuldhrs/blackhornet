@@ -1,41 +1,53 @@
-# E2B Sandbox Configuration for BlackHornet
-# https://e2b.dev/docs
+# BLACKHORNET — E2B Sandbox Configuration
+# Sovereign Autonomous Ecosystem
 
-[sandbox]
-# Base image — Python 3.11 slim with system deps
+[build]
+# Use Python 3.11 base
 base_image = "python:3.11-slim"
 
-# Build configuration
-build_directory = "."
+[build.env]
+# Environment variables for the sandbox
+BLACKHORNET_MODE = "e2b"
+PROXYGATE_PORT = "3333"
+LOG_LEVEL = "INFO"
 
-# Ports exposed by the sandbox
-# 3333 = JeumpaLLM (LLM gateway)
-# 8080 = Web UI / Unified Launcher
-# 3001 = Mnemosyne (Next.js dashboard)
-ports = [3333, 8080, 3001]
+[build.commands]
+# Install system dependencies
+apt-get update && apt-get install -y --no-install-recommends curl git nodejs npm && rm -rf /var/lib/apt/lists/*
 
-# CPU and memory (E2B free tier: 0.5 CPU, 512MB)
-cpu_count = 1
-memory_mb = 1024
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export PATH="/root/.local/bin:$PATH"
 
-# Disk size in MB
-disk_size_mb = 1024
+# Clone and setup BlackHornet
+git clone https://codeberg.org/Dhaher-Labs/blackhornet.git /app || git clone https://gitlab.com/mulkymalikuldhr/blackhornet.git /app
+cd /app
+pip install -r requirements.txt openai
 
-# Startup command — runs when sandbox boots
-# Uses the Docker entrypoint which starts all services
-startup_command = "bash /entrypoint.sh"
+# Clone and setup ProxyGateLLM
+git clone https://codeberg.org/Dhaher-Labs/ProxyGateLLM.git /proxygate || git clone https://gitlab.com/mulkymalikuldhr/ProxyGateLLM.git /proxygate
+cd /proxygate && npm install --omit=dev
 
-# Environment variables
-[env]
-BH_HOME = "/root/.bh"
-PYTHONDONTWRITEBYTECODE = "1"
+[run]
+# Startup command
+command = ["/app/deploy/entrypoint.sh"]
+
+[run.env]
+# Runtime environment variables
+PORT = "3333"
 PYTHONUNBUFFERED = "1"
 
-# Health check configuration
-[health]
-# Primary health: JeumpaLLM on port 3333
-command = "curl -sf http://localhost:3333/health || exit 1"
-interval_seconds = 30
-timeout_seconds = 5
-retries = 3
-start_period_seconds = 10
+[run.workdir]
+# Working directory
+path = "/app"
+
+[run.ports]
+# Exposed ports
+3333 = "ProxyGateLLM LLM Gateway"
+3001 = "Mnemosyne Memory (optional)"
+
+[run.permissions]
+# Sandbox permissions
+network = true
+filesystem = true
+process = true

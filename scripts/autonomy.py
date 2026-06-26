@@ -33,9 +33,9 @@ LOGS_DIR = BASE_DIR / "logs"
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(LOGS_DIR, exist_ok=True)
 
-GOALS_FILE = DATA_DIR / "bh-goals.json"
-LEARNINGS_FILE = DATA_DIR / "bh-learnings.json"
-INITIATIVES_FILE = DATA_DIR / "bh-initiatives.json"
+GOALS_FILE = DATA_DIR / "blackhornet-goals.json"
+LEARNINGS_FILE = DATA_DIR / "blackhornet-learnings.json"
+INITIATIVES_FILE = DATA_DIR / "blackhornet-initiatives.json"
 
 logger = logging.getLogger("BH-Autonomy")
 

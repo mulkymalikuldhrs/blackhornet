@@ -292,7 +292,7 @@ class BlackHornetNest:
         hq_dir = NEST_DIR / "blackhornet"
         if hq_dir.exists():
             subprocess.Popen(
-                [sys.executable, "bh-doctor", "start"],
+                [sys.executable, "blackhornet-doctor", "start"],
                 cwd=str(hq_dir),
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
             )

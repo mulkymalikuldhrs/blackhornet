@@ -65,7 +65,7 @@ class EventHub:
         try:
             from src.ui.event_bus import Event
             self._new_bus.publish(
-                Event(type=event_type, data=data, source="bh")
+                Event(type=event_type, data=data, source="blackhornet")
             )
         except Exception as exc:
             logger.debug("EventHub forward to new: %s", exc)

@@ -72,23 +72,23 @@ def content_replacements() -> list[tuple[str, str, str]]:
 
     # ── Variable/attribute names ────────────────────────────────
     r(py, "self.hermes_pid", "self.bh_pid")
-    r(py, "hermes_str", "bh_str")
+    r(py, "hermes_str", "blackhornet_str")
     r(py, "self._hermes_home", "self._bh_home")
     r(py, "= hermes", "= bh")  # variable assignment like hermes = blackhornet()
-    r(py, "hermes.signal_handler", "bh.signal_handler")
-    r(py, "hermes.start()", "bh.start()")
+    r(py, "hermes.signal_handler", "blackhornet.signal_handler")
+    r(py, "hermes.start()", "blackhornet.start()")
 
     # ── Dict keys with just 'hermes' ────────────────────────────
-    r(py, "'hermes':", "'bh':")
-    r(py, '"hermes":', '"bh":')
-    r(py, "item['hermes']", "item['bh']")
-    r(py, 'item["hermes"]', 'item["bh"]')
+    r(py, "'hermes':", "'blackhornet':")
+    r(py, '"hermes":', '"blackhornet":')
+    r(py, "item['hermes']", "item['blackhornet']")
+    r(py, 'item["hermes"]', 'item["blackhornet"]')
     r(py, '"**Hermes**"', '"**BH**"')
 
     # ── Path fallbacks with .hermes ──────────────────────────────
     r(py, '".hermes"', '".bh"')
     r(py, "'.hermes'", "'.bh'")
-    r(py, '"hermes.pid"', '"bh.pid"')
+    r(py, '"hermes.pid"', '"blackhornet.pid"')
     r(py, "'hermes.pid'", "'bh.pid'")
 
     # ── Comments ─────────────────────────────────────────────────
@@ -138,8 +138,8 @@ def content_replacements() -> list[tuple[str, str, str]]:
     r(py, "hermes_quant", "bh_quant")
 
     # Circuit breaker name
-    r(py, '"hermes"]', '"bh"]')
-    r(py, "'hermes']", "'bh']")
+    r(py, '"hermes"]', '"blackhornet"]')
+    r(py, "'hermes']", "'blackhornet']")
 
     # Swarm Protocol description
     r(py, '"Hermes Swarm Protocol"', '"BH Swarm Protocol"')
@@ -168,7 +168,7 @@ def content_replacements() -> list[tuple[str, str, str]]:
     r(py, "'/hermes'", "'/bh'")
     r(py, "route.*hermes", "route.*bh")
     r(py, "ecosystem_hermes_error", "ecosystem_bh_error")
-    r(py, '"hermes":', '"bh":')
+    r(py, '"hermes":', '"blackhornet":')
 
     # ── Graphviz / DOT ──────────────────────────────────────────
     # (no changes needed, already graphviz-compatible)
@@ -181,7 +181,7 @@ def content_replacements() -> list[tuple[str, str, str]]:
     r(sh, "hermes_quant.py", "bh_quant.py")
     r(sh, "hermes_quant", "bh_quant")
     r(sh, "hermes.sh", "bh.sh")
-    r(sh, "hermes.pid", "bh.pid")
+    r(sh, "hermes.pid", "blackhornet.pid")
     r(sh, ".hermes/", ".bh/")
     r(sh, 'say "HERMES', 'say "BH')
     r(sh, "# HERMES", "# BH")
@@ -194,8 +194,8 @@ def content_replacements() -> list[tuple[str, str, str]]:
     # ── Config / env patterns ───────────────────────────────────
     r(cfg, "HERMES_HOME", "BH_HOME")
     r(cfg, "Hermes Hive", "BH Hive")
-    r(cfg, "hermes-hive", "bh-hive")
-    r(cfg, "hermes-ecosystem", "bh-ecosystem")
+    r(cfg, "hermes-hive", "blackhornet-hive")
+    r(cfg, "hermes-ecosystem", "blackhornet-ecosystem")
     r(cfg, "hermes_quant.py", "bh_quant.py")
 
     # ── SQL patterns ────────────────────────────────────────────
@@ -208,7 +208,7 @@ def content_replacements() -> list[tuple[str, str, str]]:
     # ── Dockerfile ──────────────────────────────────────────────
     r("Dockerfile", "Hermes Hive", "BH Hive")
     r("Dockerfile", "/hermes", "/blackhornet")
-    r("Dockerfile", "setup-hermes.sh", "setup-bh.sh")
+    r("Dockerfile", "setup-hermes.sh", "setup-blackhornet.sh")
     r("Dockerfile", "HERMES_HOME", "BH_HOME")
 
     # ── CI / GitHub ─────────────────────────────────────────────

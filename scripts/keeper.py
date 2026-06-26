@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent.resolve()
 BH_SCRIPT = BASE_DIR / "src" / "bh_quant.py"
 WATCHDOG_SCRIPT = BASE_DIR / "src" / "watchdog.py"
-PID_FILE = BASE_DIR / "bh.pid"
+PID_FILE = BASE_DIR / "blackhornet.pid"
 WATCHDOG_PID_FILE = BASE_DIR / "watchdog.pid"
 LOG_DIR = BASE_DIR / "logs"
 CONFIG_ENV = BASE_DIR / "config" / ".env"

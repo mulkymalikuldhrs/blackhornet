@@ -93,7 +93,7 @@ class NestConfig(BaseModel):
     dependencies: list[str] = Field(default_factory=lambda: ["python3", "pip3", "git"])
     required_packages: list[str] = Field(default_factory=list)
     env_file: str = "config/.env"
-    entry_point: str = "bh-doctor"
+    entry_point: str = "blackhornet-doctor"
 
     heartbeat_port: int = 0
     api_port: int = 0

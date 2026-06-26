@@ -30,10 +30,10 @@ from scripts.message_bus import MessageBus
 from scripts.autonomy import AutonomyLayer
 SRC_DIR = BASE_DIR / "src"
 DATA_DIR = BASE_DIR / "data"
-PID_FILE = DATA_DIR / "bh.pid"
-LOG_FILE = BASE_DIR / "logs" / "bh-daemon.log"
-HEALTH_FILE = DATA_DIR / "bh-health.json"
-HEARTBEAT_FILE = DATA_DIR / "bh-heartbeat.json"
+PID_FILE = DATA_DIR / "blackhornet.pid"
+LOG_FILE = BASE_DIR / "logs" / "blackhornet-daemon.log"
+HEALTH_FILE = DATA_DIR / "blackhornet-health.json"
+HEARTBEAT_FILE = DATA_DIR / "blackhornet-heartbeat.json"
 
 os.makedirs(BASE_DIR / "logs", exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)

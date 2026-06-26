@@ -32,7 +32,7 @@ def cmd_colony(args):
         print(f"Colonies: {', '.join(info['colonies'])} | Region: {info['region']}")
 
 def main():
-    parser = argparse.ArgumentParser(prog="bh-cli")
+    parser = argparse.ArgumentParser(prog="blackhornet-cli")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
     sub = parser.add_subparsers(dest="command")
     for name, func, help_text in [

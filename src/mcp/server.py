@@ -254,7 +254,7 @@ class MCPServer:
                 "logging": {},
             },
             "serverInfo": {
-                "name": "bh-ecosystem-mcp",
+                "name": "blackhornet-ecosystem-mcp",
                 "version": "1.0.0",
             },
         })

@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# DHAHER SWARM — Unified Control Script (based on blackhornet bh.sh)
+# DHAHER SWARM — Unified Control Script (based on blackhornet hermes.sh)
 # ============================================================================
 # Usage: ./dhaher-swarm.sh [start|stop|restart|status|logs|health|install|clone]
 #
@@ -15,7 +15,7 @@
 set -euo pipefail
 
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SWARM_DIR="/root/.bh"
+SWARM_DIR="/root/.hermes"
 PROFILES_DIR="${SWARM_DIR}/profiles"
 SHARED_WS="${SWARM_DIR}/shared-workspace"
 LOG_DIR="${SWARM_DIR}/supervisor-logs"
@@ -43,8 +43,8 @@ TOKENS[researchbot]="8848363753:AAGy4CkkJgF4On5IPHDUiiS5atJgkI8LvtM"
 start_gateway() {
   local p="$1"
   rm -f "${PROFILES_DIR}/${p}/gateway.pid" "${PROFILES_DIR}/${p}/gateway.lock" "${PROFILES_DIR}/${p}/gateway_state.json" 2>/dev/null
-  rm -f /root/.local/state/bh/gateway-locks/telegram-bot-token-*.lock 2>/dev/null
-  BH_HOME="${PROFILES_DIR}/${p}" setsid hermes gateway run --accept-hooks --replace >> "${LOG_DIR}/${p}.log" 2>&1 &
+  rm -f /root/.local/state/hermes/gateway-locks/telegram-bot-token-*.lock 2>/dev/null
+  HERMES_HOME="${PROFILES_DIR}/${p}" setsid hermes gateway run --accept-hooks --replace >> "${LOG_DIR}/${p}.log" 2>&1 &
   echo $! > "${PID_DIR}/${p}.pid"
 }
 
@@ -53,11 +53,11 @@ start() {
   log "${BOLD}⚕️  Starting Dhaher Swarm...${NC}"
   mkdir -p "$LOG_DIR"
   
-  # Start JeumpaLLM
+  # Start ProxyGateLLM
   if ! curl -s http://localhost:3333/health >/dev/null 2>&1; then
-    info "Starting JeumpaLLM..."
-    cd "${SHARED_WS}/JeumpaLLM" && setsid node index.js >> "${LOG_DIR}/jeumpallm.log" 2>&1 &
-    echo $! > "${PID_DIR}/jeumpallm.pid"
+    info "Starting ProxyGateLLM..."
+    cd "${SHARED_WS}/ProxyGateLLM" && setsid node index.js >> "${LOG_DIR}/proxygate.log" 2>&1 &
+    echo $! > "${PID_DIR}/proxygate.pid"
   fi
 
   # Stagger gateways
@@ -78,7 +78,7 @@ stop() {
     [ -f "${PID_DIR}/${p}.pid" ] && kill -9 "$(cat "${PID_DIR}/${p}.pid")" 2>/dev/null || true
     rm -f "${PID_DIR}/${p}.pid"
   done
-  [ -f "${PID_DIR}/jeumpallm.pid" ] && kill "$(cat "${PID_DIR}/jeumpallm.pid")" 2>/dev/null || true
+  [ -f "${PID_DIR}/proxygate.pid" ] && kill "$(cat "${PID_DIR}/proxygate.pid")" 2>/dev/null || true
   [ -f "${PID_DIR}/watchdog.pid" ] && kill "$(cat "${PID_DIR}/watchdog.pid")" 2>/dev/null || true
   log "Swarm stopped"
 }
@@ -107,7 +107,7 @@ status() {
   done
   local proxy="${RED}❌${NC}"
   curl -s http://localhost:3333/health >/dev/null 2>&1 && proxy="${GREEN}✅${NC}"
-  printf "  %b %-15s %s\n" "$proxy" "jeumpallm" "JeumpaLLM"
+  printf "  %b %-15s %s\n" "$proxy" "proxygate" "ProxyGateLLM"
   echo ""
   echo -e "  Alive: ${alive}/7  |  Connected: ${connected}/7  |  Proxy: ${proxy}"
   echo ""
@@ -120,7 +120,7 @@ health() {
   echo "Disk: $(df -h / | awk 'NR==2{printf "%s/%s (%s)", $3,$2,$5}')"
   echo "Load: $(uptime | awk -F'load average:' '{print $2}')"
   echo ""
-  echo "Processes: $(ps aux | grep -E 'hermes gateway|swarm-guardian|JeumpaLLM' | grep -v grep | wc -l) total"
+  echo "Processes: $(ps aux | grep -E 'hermes gateway|swarm-guardian|ProxyGateLLM' | grep -v grep | wc -l) total"
   echo "Watchdog:  $(ps aux | grep 'watchdog.py' | grep -v grep | wc -l) active"
   echo "Guardian:  $(ps aux | grep 'swarm-guardian' | grep bash | grep -v grep | wc -l) active"
 }
@@ -164,8 +164,8 @@ clone() {
   
   # Clone repos
   cd "$target"
-  git clone "https://github.com/dhaher-labs/JeumpaLLM.git" 2>/dev/null || true
-  git clone "https://github.com/dhaher-labs/mnemosyne.git" 2>/dev/null || echo "⚠ mnemosyne not cloned (optional)"
+  git clone "https://github.com/dhaher-labs/ProxyGateLLM.git" 2>/dev/null || true
+  git clone "https://github.com/dhaher-labs/mnemosyne.git" 2>/dev/null || true
   git clone "https://github.com/dhaher-labs/blackhornet.git" 2>/dev/null || true
   git clone "https://github.com/dhaher-labs/agent.git" 2>/dev/null || true
   
@@ -175,20 +175,20 @@ clone() {
 set -e
 echo "🧬 Dhaher Swarm — Self-Cloning Installer"
 echo "========================================="
-# Install BlackHornet Agent
+# Install Hermes Agent
 if ! command -v hermes &>/dev/null; then
-  echo "Installing BlackHornet Agent..."
+  echo "Installing Hermes Agent..."
   curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
 fi
 # Setup profiles
 BASE=$(dirname "$0")
 for p in autobot clawbot fangbot hackerbot devbot traderbot researchbot; do
   hermes profile create "$p" --clone-from default --no-alias 2>/dev/null || true
-  [ -f "$BASE/profiles/$p/SOUL.md" ] && cp "$BASE/profiles/$p/SOUL.md" ~/.bh/profiles/$p/
-  [ -f "$BASE/profiles/$p/config.yaml" ] && cp "$BASE/profiles/$p/config.yaml" ~/.bh/profiles/$p/
+  [ -f "$BASE/profiles/$p/SOUL.md" ] && cp "$BASE/profiles/$p/SOUL.md" ~/.hermes/profiles/$p/
+  [ -f "$BASE/profiles/$p/config.yaml" ] && cp "$BASE/profiles/$p/config.yaml" ~/.hermes/profiles/$p/
 done
-# Setup JeumpaLLM
-cd "$BASE/JeumpaLLM" && npm install --silent 2>/dev/null || true
+# Setup ProxyGateLLM
+cd "$BASE/ProxyGateLLM" && npm install --silent 2>/dev/null || true
 echo "✅ Clone complete. Edit .env files with your tokens, then run: ./dhaher-swarm.sh start"
 INSTALLEOF
   chmod +x "$target/install.sh"

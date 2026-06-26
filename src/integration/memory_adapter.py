@@ -33,7 +33,7 @@ class MemoryAdapter:
 
     def store(self, key: str, content: str,
               tags: Optional[List[str]] = None,
-              source: str = "bh") -> bool:
+              source: str = "blackhornet") -> bool:
         ok = True
         if self._memory:
             self._memory.add(key, content, tags=tags or [])

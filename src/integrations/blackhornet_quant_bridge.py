@@ -23,22 +23,22 @@ from ..core.circuit_breaker import CircuitBreaker
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Lazy import helper — BlackHornetQuant lives in packages/bh-quant/
+# Lazy import helper — BlackHornetQuant lives in packages/blackhornet-quant/
 # ---------------------------------------------------------------------------
 
-_BH_SRC = Path(__file__).resolve().parents[3] / "packages" / "bh-quant" / "src"
+_BLACKHORNET_SRC = Path(__file__).resolve().parents[3] / "packages" / "blackhornet-quant" / "src"
 
 
-def _ensure_bh_on_path() -> None:
+def _ensure_blackhornet_on_path() -> None:
     """Add BlackHornetQuant src to sys.path if not already present."""
-    bh_str = str(_BH_SRC)
-    if bh_str not in sys.path and _BH_SRC.exists():
-        sys.path.insert(0, bh_str)
+    blackhornet_str = str(_BLACKHORNET_SRC)
+    if blackhornet_str not in sys.path and _BLACKHORNET_SRC.exists():
+        sys.path.insert(0, blackhornet_str)
 
 
-def _import_bh_module(module_name: str):
+def _import_blackhornet_module(module_name: str):
     """Lazy-import a module from the BlackHornetQuant package."""
-    _ensure_bh_on_path()
+    _ensure_blackhornet_on_path()
     return importlib.import_module(module_name)
 
 
@@ -63,7 +63,7 @@ class BlackHornetQuantBridge:
     """Bridge to the BlackHornetQuant trading engine.
 
     Provides high-level methods that wrap the individual tools from
-    packages/bh-quant/src/tools/ and return structured results.
+    packages/blackhornet-quant/src/tools/ and return structured results.
 
     All tool calls are guarded by a :class:`CircuitBreaker`.  When the
     circuit is OPEN, each method returns an unavailable/fallback response
@@ -92,7 +92,7 @@ class BlackHornetQuantBridge:
 
         # Circuit breaker guarding all BlackHornetQuant tool calls
         self._circuit_breaker = CircuitBreaker(
-            name="bh",
+            name="blackhornet",
             failure_threshold=circuit_breaker_failure_threshold,
             timeout_seconds=circuit_breaker_timeout_seconds,
         )
