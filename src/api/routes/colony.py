@@ -43,7 +43,7 @@ class ColonyRoutes:
             )
 
         if self._colony_manager and hasattr(self._colony_manager, "create_colony"):
-            from ...types import ColonyConfig, ColonyScale, RoutingStrategy
+            from ...bh_types import ColonyConfig, ColonyScale, RoutingStrategy
             try:
                 scale = ColonyScale(request.scale)
             except ValueError:
@@ -122,7 +122,7 @@ class ColonyRoutes:
             request = ColonyScaleRequest(scale=data.get("scale", "medium"))
 
         if self._colony_manager and hasattr(self._colony_manager, "scale_colony"):
-            from ...types import ColonyScale
+            from ...bh_types import ColonyScale
             try:
                 scale = ColonyScale(request.scale)
             except ValueError:

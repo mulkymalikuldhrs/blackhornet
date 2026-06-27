@@ -74,7 +74,7 @@ class ToolRoutes:
             )
 
         if self._mcp_server and hasattr(self._mcp_server, "handle_request"):
-            from ...types import MCPRequest
+            from ...bh_types import MCPRequest
             rpc_req = MCPRequest(
                 method="tools/call",
                 params={

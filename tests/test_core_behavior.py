@@ -41,7 +41,7 @@ class TestToolRegistry(unittest.TestCase):
 
     def test_register_and_lookup(self):
         from src.core.tool_registry import ToolRegistry, FunctionTool
-        from src.types.tools import ToolDefinition, ToolType
+        from src.bh_types.tools import ToolDefinition, ToolType
 
         registry = ToolRegistry()
 

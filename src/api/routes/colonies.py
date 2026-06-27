@@ -11,7 +11,7 @@ class ColonyRoutes:
 
     async def create_colony(self, request: ColonyCreateRequest) -> ColonyCreateResponse:
         if self._colony_manager:
-            from ...types import ColonyConfig
+            from ...bh_types import ColonyConfig
             config = ColonyConfig(name=request.name, goal=request.goal, max_agents=request.max_agents)
             colony = await self._colony_manager.create_colony(config)
             return ColonyCreateResponse(colony_id=colony.colony_id, name=request.name)

@@ -42,7 +42,7 @@ class TaskRoutes:
                 timeout_ms=data.get("timeout_ms", 300_000),
             )
 
-        from ...types import Task, TaskPriority
+        from ...bh_types import Task, TaskPriority
 
         try:
             priority = TaskPriority(request.priority)

@@ -45,7 +45,7 @@ class AgentRoutes:
             )
 
         if self._registry and hasattr(self._registry, "create_agent"):
-            from ...types import AgentType
+            from ...bh_types import AgentType
             try:
                 agent_type = AgentType(request.agent_type)
             except ValueError:
@@ -117,7 +117,7 @@ class AgentRoutes:
         if self._registry and hasattr(self._registry, "get_agent"):
             agent = self._registry.get_agent(agent_id)
             if agent and hasattr(agent, "submit_task"):
-                from ...types import Task, TaskPriority
+                from ...bh_types import Task, TaskPriority
                 task = Task(
                     description=request.description,
                     payload=request.payload,

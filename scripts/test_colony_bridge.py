@@ -149,7 +149,7 @@ def test_hand_types():
         BrowserHand, VoiceHand, ComputeHand, IntegrationHand,
         HAND_DESCRIPTIONS, HAND_DEFAULTS,
     )
-    from src.types import HandType
+    from src.bh_types import HandType
 
     code_hand = CodeHand()
     assert code_hand.hand_type == HandType.CODE
@@ -189,7 +189,7 @@ def test_hand_types():
 def test_a2a_coordinator():
     """Test 8: A2A coordinator registration and messaging"""
     from src.colony import A2ACoordinator
-    from src.types import HandType
+    from src.bh_types import HandType
 
     coordinator = A2ACoordinator()
     assert coordinator.agent_count == 0
@@ -242,7 +242,7 @@ def test_a2a_coordinator():
 def test_task_scheduler():
     """Test 9: Task scheduler with priority queue and routing"""
     from src.colony import TaskScheduler
-    from src.types import Task, TaskPriority, TaskStatus, TaskDeadline, RoutingStrategy
+    from src.bh_types import Task, TaskPriority, TaskStatus, TaskDeadline, RoutingStrategy
 
     scheduler = TaskScheduler(max_concurrent=10)
 
@@ -296,7 +296,7 @@ def test_task_scheduler():
 def test_hand_routing():
     """Test 10: HandManager task routing by capability"""
     from src.colony import HandManager, CodeHand, SecurityHand
-    from src.types import HandType, Task, TaskPriority
+    from src.bh_types import HandType, Task, TaskPriority
     from datetime import datetime, timezone
 
     manager = HandManager()
@@ -342,7 +342,7 @@ def test_hand_routing():
 def test_colony_integration():
     """Test 11: Full colony lifecycle integration"""
     from src.colony import ColonyManager
-    from src.types import ColonyConfig, ColonyScale, ColonyStatus
+    from src.bh_types import ColonyConfig, ColonyScale, ColonyStatus
 
     import asyncio
     loop = asyncio.new_event_loop()
@@ -422,7 +422,7 @@ def test_event_bus():
     asyncio.set_event_loop(loop)
 
     async def test_pub_sub():
-        from src.types.events import Event, EventType
+        from src.bh_types.events import Event, EventType
         event = Event(event_type=EventType.CUSTOM, source="test", data={"msg": "hello"})
         await bus.publish_event(event)
         await bus.publish_event(event)

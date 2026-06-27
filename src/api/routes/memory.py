@@ -44,7 +44,7 @@ class MemoryRoutes:
             )
 
         if self._memory_manager and hasattr(self._memory_manager, "store"):
-            from ...types import MemoryTier
+            from ...bh_types import MemoryTier
             try:
                 tier = MemoryTier(request.tier)
             except ValueError:

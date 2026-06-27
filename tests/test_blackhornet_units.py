@@ -30,7 +30,7 @@ class TestBaseAgent(unittest.TestCase):
 
     def test_import_agent_state_enum(self):
         try:
-            from src.types.agent import AgentState
+            from src.bh_types.agent import AgentState
             self.assertIn("IDLE", AgentState.__members__)
             self.assertIn("RUNNING", AgentState.__members__)
             self.assertIn("ERROR", AgentState.__members__)
@@ -39,7 +39,7 @@ class TestBaseAgent(unittest.TestCase):
 
     def test_agent_config_import(self):
         try:
-            from src.types.agent import AgentConfig
+            from src.bh_types.agent import AgentConfig
             self.assertTrue(True)
         except ImportError as e:
             self.skipTest(f"AgentConfig import failed: {e}")
@@ -81,14 +81,14 @@ class TestEventBus(unittest.TestCase):
 
     def test_event_type_enum(self):
         try:
-            from src.types.events import EventType
+            from src.bh_types.events import EventType
             self.assertTrue(hasattr(EventType, "TASK"))
         except ImportError as e:
             self.skipTest(str(e))
 
     def test_message_priority_enum(self):
         try:
-            from src.types.messages import BusMessagePriority
+            from src.bh_types.messages import BusMessagePriority
             self.assertIn("HIGH", BusMessagePriority.__members__)
             self.assertIn("LOW", BusMessagePriority.__members__)
         except ImportError as e:
@@ -156,14 +156,14 @@ class TestToolRegistry(unittest.TestCase):
 
     def test_tool_type_enum(self):
         try:
-            from src.types.tools import ToolType
+            from src.bh_types.tools import ToolType
             self.assertTrue(hasattr(ToolType, "FUNCTION"))
         except ImportError as e:
             self.skipTest(str(e))
 
     def test_tool_result_dataclass(self):
         try:
-            from src.types.tools import ToolResult
+            from src.bh_types.tools import ToolResult
             r = ToolResult(tool_name="test", success=True)
             self.assertEqual(r.tool_name, "test")
             self.assertTrue(r.success)
@@ -279,7 +279,7 @@ class TestMemoryManager(unittest.TestCase):
 
     def test_memory_type_enum(self):
         try:
-            from src.types.memory import MemoryType
+            from src.bh_types.memory import MemoryType
             self.assertIn("WORKING", MemoryType.__members__)
             self.assertIn("LONG_TERM", MemoryType.__members__)
         except ImportError:

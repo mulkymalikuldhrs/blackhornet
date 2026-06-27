@@ -25,7 +25,7 @@ A self-improving, immortal, autonomous AGI colony system implementing PSO ring t
 src/
 ├── __init__.py           # Top-level package exports
 ├── colony_types/         # Pydantic v2 type system
-├── types/                # Unified type system (Pydantic v2)
+├── bh_types/              # Unified type system (Pydantic v2) [renamed from types/]
 ├── core/                 # Core framework (agents, LLM, event bus, tools)
 ├── agents/               # Agent implementations (manus, coder, researcher)
 ├── agent_tools/          # MCP-based tool implementations
@@ -71,6 +71,28 @@ Part of [Dhaher Labs](https://dhaher-labs.codeberg.page) ecosystem.
 ## 📄 License
 
 MIT License
+
+---
+
+## Audit Report
+
+**Score: 62/100** | Last audit: 2026-06-27
+
+| Category | Score |
+|----------|-------|
+| Architecture & Scope | 85 |
+| Code Volume & Activity | 90 |
+| Documentation | 80 |
+| Test Coverage | 50 |
+| Production Readiness | 40 |
+| **Overall** | **62/100** |
+
+### Known Gaps
+1. ~~Circular import (`src/types` shadowing stdlib)~~ ✅ Fixed
+2. **Bare repo behind** — worktree 29 commits ahead of bare; needs `git push bare main`
+3. **Tests not runnable** — individual modules work but full suite blocked
+4. **Credential exposure risk** — `.env` files in worktree (gitignored but present)
+5. **Philosophical doc bloat** — 30+ doc files, some AI-hallucinated; needs pruning
 
 ---
 

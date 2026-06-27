@@ -16,7 +16,7 @@ from typing import Any, Optional
 from src.config.logging_config import get_logger
 from src.core.tool_base import BaseTool
 from src.exceptions import ToolExecutionError, ToolTimeoutError
-from src.types.tools import ToolCall, ToolDefinition, ToolParameter, ToolResult, ToolType
+from src.bh_types.tools import ToolCall, ToolDefinition, ToolParameter, ToolResult, ToolType
 
 logger = get_logger(__name__)
 
