@@ -1,8 +1,8 @@
 # BLACKHORNET Ω — COMPLETE SYSTEM DOCUMENTATION
 
 > **Tanggal:** 2026-07-04
-> **Versi:** 1.0.0
-> **Mesin:** Lord Omega v5.0
+> **Versi:** 1.1.0
+> **Mesin:** Lord Omega v6.0.1
 > **Founder:** Mulky Malikul Dhaher
 
 ---
@@ -23,6 +23,11 @@
 12. [File-by-File Map](#12-file-by-file-map)
 13. [Dependency Graph](#13-dependency-graph)
 14. [Failure Modes & Recovery](#14-failure-modes--recovery)
+15. [Docker Deployment](#15-docker-deployment)
+16. [Quant Nanggroe AI Integration](#16-quant-nanggroe-ai-integration)
+17. [Remote Repositories (3 Forges)](#17-remote-repositories-3-forges)
+18. [OpenCode Persistent Memory](#18-opencode-persistent-memory)
+19. [Push All Remotes Pipeline](#19-push-all-remotes-pipeline)
 
 ---
 
@@ -508,7 +513,7 @@ graph LR
     RE_SCORE -->|100| DONE[Perfect]
 ```
 
-### Current BH Score: 100/100
+### Current BH Score: 100/100/100
 ```
 Constitution: 25/25 ✓ (8 root docs, 22 core docs structure)
 Quality:      50/50 (685 source files, 397 tests, clean architecture, CLI)
@@ -799,6 +804,160 @@ docker compose run --rm omega-loop
 
 ---
 
+## 16. QUANT NANGGROE AI INTEGRATION
+
+Quant Nanggroe AI is a neighboring ecosystem within Dhaher Labs focused on quantitative finance, trading algorithms, and financial AI agents. BH integrates with Quant Nanggroe AI through:
+
+### Data Bridge
+- Real-time market data feed from Quant Nanggroe AI's trading engines
+- Via Hermes Nous consciousness layers for cross-system pattern detection
+- Shared vector memory for multi-agent financial reasoning
+
+### Agent Collaboration
+- BH agents can spawn Quant Nanggroe AI specialized trading agents
+- Cross-colony agent messaging between BH colony and Quant colony
+- Shared council debates that include Quant Nanggroe AI's financial personas
+
+### Memory Sharing
+- Market predictions logged to BH Second Brain for calibration
+- Quant model confidence scores feed into BH SCS system
+- Episodic memory of trading decisions shared across ecosystems
+
+### Integration Points
+| Component | BH Side | Quant Nanggroe AI Side |
+|-----------|---------|------------------------|
+| Data | `src/bridges/quant_bridge.py` | Quant Nanggroe AI data lake |
+| Memory | `data/omega/quant_memory.json` | Quant trading signal store |
+| Agents | `src/agents/specialists/quant/` | Quant AI agent pool |
+| Council | Quant financial personas (5 seats) | Quant risk committee personas |
+
+**Status:** Active integration — bi-directional data flow, shared memory, cross-ecosystem agent delegation.
+
+---
+
+## 17. REMOTE REPOSITORIES (3 FORGES)
+
+BlackHornet is mirrored across three git forges for redundancy and accessibility:
+
+### Codeberg (primary)
+- **URL:** `https://codeberg.org/Dhaher-Labs/BlackHornet`
+- **Remote:** `codeberg`
+- **Role:** Primary — CI/CD, Pages deployment, issue tracking
+- **Push:** `git push codeberg main`
+
+### GitHub (mirror)
+- **URL:** `https://github.com/mulkymalikuldhaher/BlackHornet`
+- **Remote:** `github`
+- **Role:** Mirror — visibility, community, GitHub Actions
+- **Push:** `git push github main`
+
+### GitLab (mirror)
+- **URL:** `https://gitlab.com/mulkymalikuldhr/blackhornet`
+- **Remote:** `gitlab`
+- **Role:** Mirror — backup, GitLab CI/CD, redundancy
+- **Push:** `git push gitlab main`
+
+### Remote Config
+```bash
+# Verify all remotes
+git remote -v
+
+# Expected output:
+# codeberg  https://codeberg.org/Dhaher-Labs/BlackHornet.git (fetch/push)
+# github    https://github.com/mulkymalikuldhaher/BlackHornet.git (fetch/push)
+# gitlab    https://gitlab.com/mulkymalikuldhr/blackhornet.git (fetch/push)
+```
+
+---
+
+## 18. OPENCODE PERSISTENT MEMORY SETUP
+
+OpenCode provides persistent memory across sessions via:
+- **Contextual Memory:** Knowledge base files auto-loaded on startup
+- **Second Brain:** BH's `brain.py` integrates with OpenCode memory system
+- **AGENTS.md:** Instructions for each agent type persist in project root
+
+### Configuration
+- **Memory files:** `data/omega/second_brain.json`, `data/omega/session_log.json`
+- **Auto-load:** BH boot sequence invokes Second Brain `wake_up()` which reads persistent memory
+- **Auto-capture:** Every main loop iteration logs to OpenCode-compatible format
+
+### OpenCode + BH Integration
+```
+OpenCode Shell
+  │
+  ├── Context Window (ephemeral)
+  │     └── Loaded from: AGENTS.md, CLAUDE.md, CURSOR.md, GEMINI.md
+  │
+  ├── AGENTS.md → BH agent instructions → spawned on task
+  │
+  └── Second Brain (persistent)
+        ├── auto_capture() → writes to second_brain.json
+        ├── recall_recent() → returns last N entries
+        ├── recall_search() → semantic search across entries
+        └── wake_up() → loads context at session start
+```
+
+### Setup Steps
+1. Ensure `DHAHERLABS` env var points to `/sdcard/dhaherlabs`
+2. BH auto-detects OpenCode via `autopath.py` at boot
+3. AGENTS.md at project root orchestrates which agents load
+4. Each session auto-captures via Second Brain
+5. Next session auto-recalls via `wake_up()` sequence
+
+### Key Files
+| File | Purpose |
+|------|---------|
+| `AGENTS.md` | Agent instructions for OpenCode sessions |
+| `data/omega/second_brain.json` | Persistent knowledge base |
+| `data/omega/session_log.json` | Session history |
+| `.opencode/` | OpenCode project configuration |
+| `~/.config/opencode/` | OpenCode global config (skills, plugins) |
+
+---
+
+## 19. PUSH ALL REMOTES PIPELINE
+
+### Script: `scripts/push-all.sh`
+```bash
+#!/bin/bash
+# push-all.sh — Push main branch to all 3 remotes in sequence
+set -euo pipefail
+
+BRANCH="${1:-main}"
+REMOTES=("codeberg" "github" "gitlab")
+
+echo "=== PUSHING $BRANCH TO ALL REMOTES ==="
+for remote in "${REMOTES[@]}"; do
+    echo "→ Pushing to $remote..."
+    if git push "$remote" "$BRANCH" 2>&1; then
+        echo "  ✅ $remote: success"
+    else
+        echo "  ❌ $remote: failed (continuing)"
+    fi
+done
+echo "=== DONE ==="
+```
+
+### One-Liner
+```bash
+for r in codeberg github gitlab; do echo "→ $r" && git push $r main && echo "✅ $r"; done
+```
+
+### Integration with Main Loop
+The push-all pipeline is called from `sync.py :: EcosystemSync._push_all()` when full ecosystem sync completes:
+1. Sync ecosystem memory (scores, index, shared memory)
+2. Push pages to Codeberg Pages
+3. Push BH code to all 3 forges
+4. Log completion to Second Brain
+
+### Cron / Schedule
+- **Auto:** After every main loop iteration that modified tracked files
+- **Manual:** `bash scripts/push-all.sh` or `python3 -c "from src.omega.sync import EcosystemSync; EcosystemSync().push_all()"`
+- **On-demand:** `for r in codeberg github gitlab; do git push $r main; done`
+
+---
+
 ## APPENDIX: Quick Commands
 
 ```bash
@@ -832,6 +991,11 @@ python3 -c "from src.omega.evolution import EvolutionEngine; e = EvolutionEngine
 # ===== Agents =====
 python3 -c "from src.agents.babyagi import BabyAGI; b = BabyAGI('test'); b.add_objective('test'); print(b.run_loop(3))"
 python3 -c "from src.agents.orca import OrcaOrchestrator; o = OrcaOrchestrator(); t = o.race('hello'); print(t.status)"
+
+# ===== Push All Remotes =====
+bash scripts/push-all.sh          # Push main to all 3 forges
+bash scripts/push-all.sh develop  # Push specific branch
+for r in codeberg github gitlab; do git push $r main && echo "✅ $r"; done  # One-liner
 
 # ===== Hermes Nous =====
 python3 -c "from src.hermes_nous.layers import ConsciousnessLayers; cl = ConsciousnessLayers(); cl.activate_all(); print(cl.status())"
