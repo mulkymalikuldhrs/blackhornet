@@ -286,3 +286,22 @@ class TestOmegaEngine:
         stats = engine.stats()
         assert "booted" in stats
         assert "running" in stats
+
+    def test_main_loop_contains_agent_cycle(self):
+        from src.omega import OmegaEngine
+        engine = OmegaEngine()
+        engine.boot()
+        report = engine.main_loop()
+        assert "agent_cycle" in report
+        ac = report["agent_cycle"]
+        assert "objective" in ac
+        assert "tasks_planned" in ac
+        assert "execution_results" in ac
+
+    def test_run_agent_cycle(self):
+        from src.omega import OmegaEngine
+        engine = OmegaEngine()
+        result = engine._run_agent_cycle("Test objective")
+        assert result["objective"] == "Test objective"
+        assert result["tasks_planned"] >= 3
+        assert len(result["execution_results"]) >= 1

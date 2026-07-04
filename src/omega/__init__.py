@@ -55,6 +55,26 @@ class OmegaEngine:
         logger.info("omega_boot_complete scs=%s", boot_report.get("scs", {}).get("score"))
         return boot_report
 
+    def _run_agent_cycle(self, objective: str) -> dict:
+        """Plan with BabyAGI, execute with ORCA fan-out."""
+        from src.agents.babyagi import BabyAGI
+        from src.agents.orca import OrcaOrchestrator
+
+        baby = BabyAGI(objective)
+        baby.add_objective(objective)
+        planned = baby.run_loop(max_steps=5)
+        task_descriptions = [t.description for t in planned]
+
+        orca = OrcaOrchestrator()
+        fan_results = orca.fan_out(objective, count=min(len(task_descriptions), 3))
+
+        return {
+            "objective": objective,
+            "tasks_planned": len(planned),
+            "tasks": task_descriptions[:3],
+            "execution_results": fan_results,
+        }
+
     def main_loop(self) -> dict:
         """Autonomous loop iteration: SCAN → SCORE → PRIORITIZE → PLAN → ACT → VERIFY → LOG → SAVE → SYNC."""
         from src.omega.brain import SecondBrain
@@ -79,8 +99,13 @@ class OmegaEngine:
                 personas=["CTO", "Quality Dictator", "Skeptic"],
             )
             loop_report["council"] = council_result
+
+            priority_q = loop_report.get("priority", [])
+            target = priority_q[0]["name"] if priority_q else "blackhornet"
+            loop_report["agent_cycle"] = self._run_agent_cycle(f"Advance {target} — close score gaps")
+
             sync.run()
-            brain.auto_capture("session", f"Loop #{self._loop_count} completed")
+            brain.auto_capture("session", f"Loop #{self._loop_count} completed — agents focused on {target}")
         except Exception as e:
             logger.error("omega_loop_error loop=%d err=%s", self._loop_count, e)
 

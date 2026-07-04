@@ -1,46 +1,38 @@
-# BH Hive — Docker Production Image
-FROM python:3.11-slim AS builder
+# BH Omega — Docker Production Image
+# Multi-stage: builder → runtime
+FROM python:3.12-slim AS builder
 
-LABEL org.opencontainers.image.title="BH Hive"
-LABEL org.opencontainers.image.description="Autonomous Multi-Agent Trading Ecosystem — swarm intelligence, self-healing, immortal"
+LABEL org.opencontainers.image.title="BlackHornet Omega"
+LABEL org.opencontainers.image.description="BlackHornet Ω — Autonomous AGI Engine (OmegaEngine CLI)"
 LABEL org.opencontainers.image.authors="Mulky Malikul Dhaher"
 LABEL org.opencontainers.image.version="5.0.0"
+LABEL org.opencontainers.image.licenses="MIT"
 
-# System deps
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl git ca-certificates nodejs npm \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /build
+COPY pyproject.toml ./
+COPY src/ ./src/
+COPY deploy/entrypoint-omega.sh /entrypoint.sh
 
-WORKDIR /blackhornet
+RUN pip install --no-cache-dir -e . && \
+    chmod +x /entrypoint.sh
 
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin:$PATH"
+FROM python:3.12-slim AS runtime
 
-# Copy BlackHornet source
-COPY . /blackhornet
+RUN groupadd -r bh && useradd -r -g bh -d /bh -s /sbin/nologin bh
 
-# Ensure bh-doctor scripts are executable
-RUN chmod +x /blackhornet/bh-doctor.sh /blackhornet/bh-doctor 2>/dev/null || true
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+COPY --from=builder /entrypoint.sh /entrypoint.sh
 
-# Install Python deps
-RUN pip install -e .
+RUN mkdir -p /bh/data /bh/logs && chown -R bh:bh /bh
 
-# Setup
-RUN mkdir -p /root/.bh logs data
-ENV BH_HOME=/root/.bh
+ENV DHAHERLABS=/bh/data
+ENV PYTHONUNBUFFERED=1
 
-# Create non-root user for security
-RUN groupadd -r blackhornet && useradd -r -g blackhornet -d /blackhornet -s /sbin/nologin blackhornet
-RUN chown -R blackhornet:blackhornet /blackhornet /root/.bh
+EXPOSE 8080
 
-# Entrypoint — start everything
-COPY deploy/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-USER blackhornet
-
-# Expose ports
-EXPOSE 3333 3001
+USER bh
+WORKDIR /bh
 
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["bh-omega", "start", "--loop", "1"]

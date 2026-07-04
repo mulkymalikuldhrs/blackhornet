@@ -40,6 +40,7 @@ Repository = "https://github.com/blackhornet/colony"
 
 [project.scripts]
 bh-colony = "src.integration.unified_launcher:main"
+bh-omega = "src.omega.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["src*"]
