@@ -21,6 +21,7 @@ from src.agents.coder.prompts import (
     CODER_TEST_GENERATION_PROMPT,
     CODER_REFACTOR_PROMPT,
 )
+from src.colony_types import Task
 from src.core.reflexion import ReflexionLoop, Memory
 
 logger = get_logger(__name__)
@@ -386,4 +387,39 @@ class CoderAgent(BaseAgent):
             "language": language,
             "attempts": result.get("attempts", 0),
             "success": result.get("success", False),
+        }
+
+    async def _generate_with_reflexion(self, task: Task) -> Dict[str, Any]:
+        """Generate code using Reflexion loop via task payload."""
+        language = task.payload.get("language", "python")
+        spec = task.payload.get("spec", task.description)
+        max_attempts = task.payload.get("max_attempts", 3)
+
+        reflexion_memory = Memory()
+        reflexion_loop = ReflexionLoop(max_attempts=max_attempts, memory=reflexion_memory)
+
+        async def actor(task_spec: str) -> str:
+            prompt = f"Write {language} code for: {task_spec}"
+            return await self.run(prompt)
+
+        def evaluator(task_spec: str, output: str) -> tuple:
+            issues = []
+            if "def " not in output and "function " not in output:
+                issues.append("No function definitions found")
+            if "pass" in output and output.count("pass") > 2:
+                issues.append("Too many pass statements")
+            if issues:
+                return (False, "; ".join(issues))
+            return (True, "Code quality check passed")
+
+        result = await reflexion_loop.arun(spec, actor, evaluator)
+
+        return {
+            "action": "generate_with_reflexion",
+            "language": language,
+            "code": result.get("output", ""),
+            "attempts": result.get("attempts", 0),
+            "success": result.get("success", False),
+            "feedback": result.get("feedback", ""),
+            "reflexion_history": reflexion_memory.feedback_history,
         }

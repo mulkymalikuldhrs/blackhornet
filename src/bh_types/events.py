@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 class EventType(str, Enum):
     """Top-level event types in the system."""
 
+    TASK = "task"
     ACTION = "action"
     OBSERVATION = "observation"
     SYSTEM = "system"

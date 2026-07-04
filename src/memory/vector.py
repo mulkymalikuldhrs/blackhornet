@@ -7,6 +7,7 @@ persistent storage and efficient similarity search.
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 import numpy as np
@@ -95,6 +96,13 @@ class VectorStore:
                 documents=[text],
                 metadatas=[metadata or {}],
             )
+        if not hasattr(self, "_fallback_docs"):
+            self._fallback_docs = {}
+        self._fallback_docs[doc_id] = {
+            "text": text,
+            "embedding": embedding,
+            "metadata": metadata or {},
+        }
         logger.debug("Added doc %s to vector store", doc_id)
 
     def search(
@@ -124,16 +132,51 @@ class VectorStore:
                     else {},
                 })
             return output
-        # Fallback: return empty
-        return []
+        # Fallback: in-memory search via cosine similarity
+        query_vec = np.array(embedding)
+        scored = []
+        for doc_id, doc in getattr(self, "_fallback_docs", {}).items():
+            doc_vec = np.array(doc.get("embedding", query_vec))
+            sim = float(np.dot(query_vec, doc_vec) / (np.linalg.norm(query_vec) * np.linalg.norm(doc_vec) + 1e-10))
+            scored.append((sim, doc_id, doc))
+        scored.sort(key=lambda x: -x[0])
+        return [
+            {
+                "id": doc_id,
+                "text": doc.get("text", ""),
+                "score": sim,
+                "metadata": doc.get("metadata", {}),
+            }
+            for sim, doc_id, doc in scored[:top_k]
+        ]
 
     def delete(self, doc_id: str) -> None:
         """Delete a document from the vector store."""
         if self._collection is not None:
             self._collection.delete(ids=[doc_id])
+        if hasattr(self, "_fallback_docs"):
+            self._fallback_docs.pop(doc_id, None)
 
     def count(self) -> int:
         """Return the number of documents in the store."""
         if self._collection is not None:
             return self._collection.count()
-        return 0
+        return len(getattr(self, "_fallback_docs", {}))
+
+@dataclass
+class VectorDocument:
+    id: str
+    content: str
+    metadata: dict
+    embedding: list | None = None
+
+@dataclass
+class QueryResult:
+    document: VectorDocument
+    score: float
+
+@dataclass
+class CollectionInfo:
+    name: str
+    count: int
+    dims: int

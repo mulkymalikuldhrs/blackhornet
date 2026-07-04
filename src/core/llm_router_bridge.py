@@ -24,12 +24,13 @@ logger = logging.getLogger(__name__)
 @dataclass
 class RouterResponse:
     content: str
-    provider: str
     model: str
-    usage: Dict[str, int]
-    latency_ms: float
+    provider: str = ""
+    usage: Dict[str, int] = field(default_factory=dict)
+    latency_ms: float = 0.0
     error: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+    success: bool = True
 
 
 class LLMRouterBridge:

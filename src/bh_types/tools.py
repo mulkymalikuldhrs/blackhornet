@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 
 
 class ToolType(str, Enum):
+    FUNCTION = "function"
     """Types of tools available in the system."""
 
     SHELL = "shell"

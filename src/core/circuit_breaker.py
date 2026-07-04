@@ -65,7 +65,13 @@ class CircuitBreaker:
         failure_threshold: int = 5,
         timeout_seconds: float = 60.0,
         half_open_max_calls: int = 1,
+        max_failures: Optional[int] = None,
+        reset_timeout: Optional[float] = None,
     ) -> None:
+        if max_failures is not None:
+            failure_threshold = max_failures
+        if reset_timeout is not None:
+            timeout_seconds = reset_timeout
         self.name = name
         self.failure_threshold = failure_threshold
         self.timeout_seconds = timeout_seconds

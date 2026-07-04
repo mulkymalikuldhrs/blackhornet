@@ -21,6 +21,7 @@ class MemoryType(str, Enum):
     SEMANTIC = "semantic"
     PROCEDURAL = "procedural"
     WORKING = "working"
+    LONG_TERM = "long_term"
     CONVERSATION = "conversation"
     TOOL_HISTORY = "tool_history"
     PLAN = "plan"
