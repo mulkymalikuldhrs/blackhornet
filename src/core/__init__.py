@@ -19,6 +19,13 @@ from src.core.persistence import PersistenceBackend, FileBackend, MemoryBackend,
 from src.core.qna_integration import QNAIntegrationBridge, QNAQuery, QNAResponse, QueryDomain
 from src.core.self_healing import SelfHealingOrchestrator, RecoveryManager, PhiAccrualFailureDetector, ComponentHealth, FailureLevel
 
+# Self-evolving modules (v2.0 — research-backed)
+from src.core.skill_crystallizer import SkillCrystallizer, Skill, ExecutionTrajectory, TrajectoryStep
+from src.core.agent_contracts import AgentContractManager, AgentContract, SuccessCriteria, ContractStatus, ContractViolation
+
+# Integration bridge
+from src.core.evolution_bridge import EvolutionBridge
+
 __all__ = [
     "BaseAgent", "AgentLoop", "ToolRegistry", "tool", "BaseTool",
     "EventBus", "LLMProvider", "LLMResponse", "LLMUsage",
@@ -35,4 +42,8 @@ __all__ = [
     "QNAIntegrationBridge", "QNAQuery", "QNAResponse", "QueryDomain",
     "SelfHealingOrchestrator", "RecoveryManager", "PhiAccrualFailureDetector",
     "ComponentHealth", "FailureLevel",
+    # Self-evolving modules (v2.0)
+    "SkillCrystallizer", "Skill", "ExecutionTrajectory", "TrajectoryStep",
+    "AgentContractManager", "AgentContract", "SuccessCriteria", "ContractStatus", "ContractViolation",
+    "EvolutionBridge",
 ]

@@ -28,6 +28,8 @@ from src.config.logging_config import get_logger
 from src.colony_types._pydantic_compat import model_dump
 from src.colony.graph_sync import GraphifySyncBridge
 from src.colony.session_export import SessionExporter
+from src.core.evolution_bridge import EvolutionBridge
+from src.swarm.swarm_skills import SwarmSkillsManager
 
 logger = get_logger(__name__)
 
@@ -78,6 +80,8 @@ class EcosystemOrchestrator:
         self._lifecycle_recorder = None
         self._session_exporter: Optional[SessionExporter] = None
         self._mcp_server: Any = None
+        self._evolution_bridge: Optional[EvolutionBridge] = None
+        self._swarm_skills: Optional[SwarmSkillsManager] = None
 
         self._graph_sync: Optional[GraphifySyncBridge] = None
 
@@ -113,6 +117,13 @@ class EcosystemOrchestrator:
         self._lifecycle_recorder = lifecycle_recorder
         self._session_exporter = session_exporter
         self._mcp_server = mcp_server
+
+        # Wire self-evolving subsystems (v2.0 — research-backed)
+        self._swarm_skills = SwarmSkillsManager()
+        self._evolution_bridge = EvolutionBridge(
+            agent_id=self._config.colony_id,
+            swarm_skills=self._swarm_skills,
+        )
 
         if graph_store:
             self._graph_sync = GraphifySyncBridge(graph_store)
@@ -208,6 +219,7 @@ class EcosystemOrchestrator:
             "session": {},
             "memory": {},
             "lifecycle": {},
+            "evolution": {},
         }
 
         if self._radar:
@@ -272,6 +284,12 @@ class EcosystemOrchestrator:
             except Exception as e:
                 status["lifecycle"] = {"error": str(e)}
 
+        if self._evolution_bridge:
+            try:
+                status["evolution"] = self._evolution_bridge.get_stats()
+            except Exception as e:
+                status["evolution"] = {"error": str(e)}
+
         async with self._lock:
             self._status_cache = status
 
@@ -287,6 +305,12 @@ class EcosystemOrchestrator:
                     self._mesh_bus.update_peers(self._radar.get_peers())
 
                 await self._sync_agent_graph()
+
+                # Evolution cycle — self-evolve every sync
+                if self._evolution_bridge:
+                    evo_actions = await self._evolution_bridge.evolve()
+                    if evo_actions:
+                        logger.info("Evolution actions: %s", evo_actions)
 
                 logger.debug(
                     "orchestrator_sync #%d peers=%d agents=%d",

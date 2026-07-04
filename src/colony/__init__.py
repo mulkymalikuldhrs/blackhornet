@@ -34,6 +34,9 @@ from .consciousness import ColonyConsciousness
 from .intelligence import IntelligenceBridge
 from .health_monitor import ColonyHealthMonitor
 
+# Swarm skills — multi-agent coordination engineering (arXiv:2605.10052)
+from src.swarm.swarm_skills import SwarmSkillsManager, SwarmSkill, AgentRole, WorkflowStep
+
 __all__ = [
     # Manager
     "Colony",
@@ -81,4 +84,9 @@ __all__ = [
     "IntelligenceBridge",
     # Health Monitor
     "ColonyHealthMonitor",
+    # Swarm Skills (v2.0)
+    "SwarmSkillsManager",
+    "SwarmSkill",
+    "AgentRole",
+    "WorkflowStep",
 ]

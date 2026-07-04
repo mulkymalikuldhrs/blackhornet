@@ -40,6 +40,9 @@ from .knowledge import KnowledgeBase, Fact, Document, Chunk
 from .knowledge_graph import TemporalKnowledgeGraph, Triple, Entity, EvolutionEntry
 from .session import SessionMemory, Session, Message, CompactionResult
 
+# Self-consolidation (arXiv:2602.01966)
+from src.memory.self_consolidation import SelfConsolidation, ConsolidatedMemory, ReflectedInsight, Experience
+
 __all__ = [
     # Short-term
     "ShortTermMemory",
@@ -106,4 +109,9 @@ __all__ = [
     "Session",
     "Message",
     "CompactionResult",
+    # Self-consolidation (v2.0)
+    "SelfConsolidation",
+    "ConsolidatedMemory",
+    "ReflectedInsight",
+    "Experience",
 ]
