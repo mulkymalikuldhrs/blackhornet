@@ -25,6 +25,9 @@ from typing import Any, Optional
 
 from src.config.logging_config import get_logger
 
+# Jeumpa Brain — zero-cost no-auth LLM fallback
+from src.colony.jeumpa_brain import JeumpaBrain, JeumpaResult
+
 logger = get_logger(__name__)
 
 
@@ -58,6 +61,7 @@ class IntelligenceBridge:
         memory_system: Any = None,
         lifecycle_recorder: Any = None,
         cache_ttl: int = 300,
+        jeumpa_brain: Any = None,
     ) -> None:
         self._router = llm_router
         self._fallback = fallback_chain
@@ -65,11 +69,15 @@ class IntelligenceBridge:
         self._memory = memory_system
         self._lifecycle = lifecycle_recorder
 
+        # Jeumpa Brain — zero-cost no-auth LLM fallback
+        self._jeumpa = jeumpa_brain or JeumpaBrain(cache_ttl=cache_ttl)
+
         self._cache_ttl = cache_ttl
         self._cache: dict[str, tuple[float, IntelligenceResult]] = {}
         self._ask_count = 0
         self._think_count = 0
         self._web_search_count = 0
+        self._jeumpa_count = 0
 
     async def ask(
         self,
@@ -128,6 +136,31 @@ class IntelligenceBridge:
                 return ir
             except Exception as e:
                 logger.debug("intel_router_error err=%s", e)
+
+        # Final fallback: Jeumpa Brain free providers (no API key needed)
+        if self._jeumpa:
+            try:
+                self._jeumpa_count += 1
+                jr = await self._jeumpa.chat(
+                    message=query,
+                    task=complexity or "default",
+                    use_cache=use_cache,
+                )
+                if jr.success:
+                    ir = IntelligenceResult(
+                        success=True,
+                        answer=jr.content,
+                        provider=f"jeumpa/{jr.provider}",
+                        model=jr.model,
+                        latency_ms=jr.latency_ms,
+                        attempts=len(jr.fallbacks_used) + 1,
+                    )
+                    self._set_cache(cache_key, ir)
+                    await self._log_lifecycle("ask", query, ir)
+                    return ir
+                logger.debug("intel_jeumpa_failed err=%s", jr.error)
+            except Exception as e:
+                logger.debug("intel_jeumpa_error err=%s", e)
 
         ir = IntelligenceResult(
             success=False,
@@ -273,15 +306,21 @@ class IntelligenceBridge:
         return providers
 
     def get_stats(self) -> dict[str, Any]:
+        jeumpa_stats = {}
+        if self._jeumpa:
+            jeumpa_stats = self._jeumpa.get_stats()
         return {
             "ask_count": self._ask_count,
             "think_count": self._think_count,
             "web_search_count": self._web_search_count,
+            "jeumpa_count": self._jeumpa_count,
             "cache_size": len(self._cache),
             "router_wired": self._router is not None,
             "fallback_wired": self._fallback is not None,
             "provider_hub_wired": self._provider_hub is not None,
             "memory_wired": self._memory is not None,
+            "jeumpa_wired": self._jeumpa is not None,
+            "jeumpa_providers": jeumpa_stats.get("providers", []),
         }
 
     def clear_cache(self) -> None:

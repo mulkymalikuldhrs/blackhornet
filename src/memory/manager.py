@@ -14,6 +14,11 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
+from src.config.logging_config import get_logger
+
+# Smallville 3-factor memory stream
+from src.memory.smallville_stream import SmallvilleStream
+
 logger = logging.getLogger(__name__)
 
 
@@ -26,6 +31,7 @@ class MemoryTier:
     T2_VECTOR = "t2_vector"         # Vector / embedding store
     T3_TEMPORAL = "t3_temporal"     # Temporal knowledge graph
     T4_TREE = "t4_tree"             # Hierarchical tree store
+    T5_SMALLVILLE = "t5_smallville" # Smallville 3-factor memory stream
 
 
 # ── Pydantic models ──────────────────────────────────────────────
@@ -121,6 +127,9 @@ class MemoryManager:
         # T4 – tree nodes
         self._tree_nodes: Dict[str, TreeNodeModel] = {}
 
+        # T5 – Smallville memory stream (3-factor retrieval)
+        self._smallville = SmallvilleStream(memory_limit=500)
+
         # Sessions
         self._sessions: Dict[str, Dict[str, Any]] = {}
 
@@ -142,8 +151,14 @@ class MemoryManager:
         value: Any,
         tier: str = MemoryTier.T1_LETTA,
         metadata: Optional[Dict] = None,
+        importance: Optional[float] = None,
+        agent_id: str = "",
     ) -> str:
         """Store data in the specified memory tier.
+
+        For T5 (Smallville), value is the memory content string,
+        importance is optional (0-10, auto-estimated if None),
+        and agent_id associates the memory with a citizen/agent.
 
         Returns the ID of the created record.
         """
@@ -200,6 +215,15 @@ class MemoryManager:
             )
             self._tree_nodes[node.node_id] = node
 
+        elif tier == MemoryTier.T5_SMALLVILLE:
+            memory = self._smallville.insert(
+                content=str(value),
+                importance=importance,
+                agent_id=agent_id,
+                keywords=key.split() if isinstance(key, str) else [key],
+            )
+            store_id = memory.id
+
         return store_id
 
     # ── Retrieve ─────────────────────────────────────────────────
@@ -240,6 +264,19 @@ class MemoryManager:
             for node in self._tree_nodes.values():
                 if node.path.strip("/") == key or node.node_id == key:
                     return node.content
+
+        # T5 – Smallville
+        if tier in (None, MemoryTier.T5_SMALLVILLE):
+            results = self._smallville.retrieve(query=key, limit=1)
+            if results:
+                return {
+                    "id": results[0].memory.id,
+                    "content": results[0].memory.content,
+                    "importance": results[0].memory.importance,
+                    "score": results[0].score.total,
+                    "agent_id": results[0].memory.agent_id,
+                    "type": results[0].memory.memory_type,
+                }
 
         return None
 
@@ -298,6 +335,29 @@ class MemoryManager:
                         "path": node.path,
                         "relevance": 0.75,
                     })
+
+        # T5 – Smallville (3-factor retrieval)
+        if tier in (None, MemoryTier.T5_SMALLVILLE):
+            try:
+                sm_results = self._smallville.retrieve(query=query, limit=limit)
+                for rm in sm_results:
+                    results.append({
+                        "tier": "smallville",
+                        "id": rm.memory.id,
+                        "content": rm.memory.content[:300],
+                        "importance": rm.memory.importance,
+                        "type": rm.memory.memory_type,
+                        "relevance": round(rm.score.total, 3),
+                        "score_components": {
+                            "recency": round(rm.score.recency, 3),
+                            "relevance": round(rm.score.relevance, 3),
+                            "importance": round(rm.score.importance, 3),
+                        },
+                        "agent_id": rm.memory.agent_id,
+                        "created_at": rm.memory.created_at,
+                    })
+            except Exception as e:
+                logger.debug("smallville_search_error err=%s", e)
 
         # Sort by relevance
         results.sort(key=lambda r: r.get("relevance", 0), reverse=True)
@@ -422,6 +482,86 @@ class MemoryManager:
     def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         return self._sessions.get(session_id)
 
+    # ── Smallville (T5) Convenience Methods ──────────────────────
+
+    @property
+    def smallville(self) -> SmallvilleStream:
+        """Access the Smallville memory stream directly."""
+        return self._smallville
+
+    def recent_stm(self, limit: int = 5) -> list[str]:
+        """Get recent Smallville memories as text strings.
+
+        Used by IntelligenceBridge.think() for context injection.
+        """
+        recent = self._smallville.get_recent(limit=limit)
+        return [m.content[:200] for m in recent]
+
+    async def smallville_retrieve(
+        self,
+        query: str,
+        limit: int = 10,
+        agent_id: Optional[str] = None,
+    ) -> list[dict[str, Any]]:
+        """Retrieve from Smallville with 3-factor scoring.
+
+        Returns list of dicts with memory content and scores.
+        """
+        results = self._smallville.retrieve(
+            query=query, limit=limit, agent_id=agent_id,
+        )
+        return [
+            {
+                "id": rm.memory.id,
+                "content": rm.memory.content[:500],
+                "importance": rm.memory.importance,
+                "type": rm.memory.memory_type,
+                "score": round(rm.score.total, 4),
+                "recency": round(rm.score.recency, 4),
+                "relevance": round(rm.score.relevance, 4),
+                "importance_score": round(rm.score.importance, 4),
+                "agent_id": rm.memory.agent_id,
+                "created_at": rm.memory.created_at,
+            }
+            for rm in results
+        ]
+
+    async def smallville_store(
+        self,
+        content: str,
+        importance: Optional[float] = None,
+        agent_id: str = "",
+        memory_type: str = "observation",
+    ) -> str:
+        """Store a memory in Smallville with importance estimation.
+
+        Returns the memory ID.
+        """
+        memory = self._smallville.insert(
+            content=content,
+            importance=importance,
+            agent_id=agent_id,
+            memory_type=memory_type,
+        )
+        return memory.id
+
+    async def smallville_reflect(self, agent_context: str = "") -> list[dict[str, Any]]:
+        """Trigger reflection synthesis.
+
+        Returns list of reflection dicts.
+        """
+        reflections = await self._smallville.reflect(agent_context=agent_context)
+        return [
+            {
+                "id": r.id,
+                "content": r.content,
+                "importance": r.importance,
+                "type": r.memory_type,
+                "source_ids": r.source_ids,
+            }
+            for r in reflections
+        ]
+
     # ── Cross-store sync ─────────────────────────────────────────
 
     async def sync_to_vector(self) -> int:
@@ -465,6 +605,7 @@ class MemoryManager:
 
     def get_stats(self) -> Dict[str, Any]:
         """Return comprehensive memory statistics."""
+        sv_stats = self._smallville.get_stats()
         return {
             "context_usage": round(self.context_usage_ratio, 3),
             "context_capacity": self.context_capacity,
@@ -476,4 +617,8 @@ class MemoryManager:
             "sessions": len(self._sessions),
             "compaction_count": self._compaction_count,
             "compaction_threshold": self.compaction_threshold,
+            "smallville_memories": sv_stats.get("total_memories", 0),
+            "smallville_reflections": sv_stats.get("total_reflections", 0),
+            "smallville_should_reflect": sv_stats.get("should_reflect", False),
+            "smallville_avg_importance": sv_stats.get("avg_importance", 0.0),
         }

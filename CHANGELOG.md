@@ -1,6 +1,24 @@
 # Changelog — BlackHornet
 
-## [6.0.0] — 2026-06-18
+## [6.1.0] — 2026-07-08
+
+### Added — Jeumpa Brain (Zero-Cost LLM) + Smallville Memory Stream
+
+- **JeumpaBrain** — `src/colony/jeumpa_brain.py` (515 lines). Port of AO's JeumpaBrain with 5 no-auth free LLM providers (pollinations, ovhcloud_anon, keylessai, api_airforce, llm7). Zero API keys needed. Task-aware routing (coding, reasoning, chat, creative, etc.) with automatic fallback chain. Provider health tracking, cooldowns, rate-limit handling, and response caching.
+
+- **Smallville Memory Stream** — `src/memory/smallville_stream.py` (550 lines). Port of AO's memory-stream.ts implementing the Generative Agents 3-factor memory retrieval: `score = α × recency + β × relevance + γ × importance`. Includes pseudo-embedding (TF-IDF style, 128-dim), reflection synthesis with importance threshold crossing, and automatic importance estimation from text heuristics.
+
+- **IntelligenceBridge integration** — `src/colony/intelligence.py` modified to automatically fall back to JeumpaBrain free providers when primary LLM router and fallback chain fail. Jeumpa stats exposed in `get_stats()`. T5_SMALLVILLE tier added to MemoryManager. `recent_stm()`, `smallville_retrieve()`, `smallville_store()`, `smallville_reflect()` methods added.
+
+### Changed
+- `src/memory/manager.py` — Added T5_SMALLVILLE tier, `recent_stm()` for IntelligenceBridge compatibility, Smallville stats exposed in `get_stats()`
+- `src/colony/intelligence.py` — JeumpaBrain wired as final fallback layer, jeumpa_count and jeumpa_providers in stats
+- `config/blackhornet.yaml` — Reference to JeumpaBrain as zero-cost fallback tier (no config changes needed)
+
+### Architecture
+- BH now has a 3-tier LLM fallback: Primary Router → Fallback Chain → JeumpaBrain Free Providers
+- Memory expanded from 4 tiers to 5: T0 Context → T1 Letta → T2 Vector → T3 Temporal → T4 Tree → T5 Smallville
+- All new code is zero-dependency (uses existing aiohttp)
 
 ### Added — Sovereign Immortal Empire
 - **Multi-platform mirror fallback** — Codeberg → GitLab → GitHub for all repo clones
