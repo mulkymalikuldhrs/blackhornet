@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlackHornet Ω — Living World</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="game-container">
+  <div id="sidebar">
+    <div id="logo">BLACKHORNET Ω</div>
+    <div id="resources">
+      <div class="res"><span class="icon">🪵</span><span id="wood">100</span></div>
+      <div class="res"><span class="icon">🥖</span><span id="food">100</span></div>
+      <div class="res"><span class="icon">🪙</span><span id="gold">50</span></div>
+    </div>
+    <div id="info-panel">
+      <div id="selection-info">Click a unit or building</div>
+      <div id="actions"></div>
+    </div>
+    <div id="minimap-container">
+      <canvas id="minimap" width="160" height="160"></canvas>
+    </div>
+    <div id="stats">
+      <div>SCS: <span id="scs">94%</span></div>
+      <div>BH Score: <span id="bh-score">100/100</span></div>
+      <div>Projects: <span id="project-count">31</span></div>
+    </div>
+    <div id="chat-box">
+      <div id="chat-log"></div>
+      <input type="text" id="chat-input" placeholder="Command..." />
+    </div>
+  </div>
+  <div id="map-wrapper">
+    <canvas id="game-canvas"></canvas>
+  </div>
+</div>
+<script src="/game.js"></script>
+</body>
+</html>

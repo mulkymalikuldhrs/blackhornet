@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🖤 BLACKHORNET — Sovereign Control Center</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js"></script>
+<style>
+:root{--bg:#06080c;--panel:#0d1117;--panel2:#161b22;--border:rgba(212,168,67,.18);--gold:#d4a843;--gold-dim:#8a6d2f;--cyan:#3fb9d6;--green:#3fb950;--red:#ff7b72;--txt:#c9d1d9;--dim:#8b949e;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--txt);overflow:hidden;}
+.app{display:grid;grid-template-rows:48px 1fr 28px;grid-template-columns:200px 1fr 320px;grid-template-areas:"head head head""side main right""foot foot foot";height:100vh;gap:1px;background:var(--border);}
+header{grid-area:head;background:var(--panel2);display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border);}
+header h1{font-size:15px;font-weight:700;color:var(--gold);letter-spacing:1px;}
+header .stat{font-size:11px;color:var(--dim);}header .stat b{color:var(--gold);}
+aside{grid-area:side;background:var(--panel);padding:8px;overflow-y:auto;}
+.nav-btn{display:block;width:100%;text-align:left;background:transparent;border:1px solid transparent;color:var(--dim);padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:2px;}
+.nav-btn:hover{border-color:var(--border);color:var(--txt);}
+.nav-btn.active{background:var(--panel2);color:var(--gold);border-color:var(--border);font-weight:600;}
+main{grid-area:main;background:var(--panel);position:relative;overflow:hidden;}
+#cy{width:100%;height:100%;}
+.right{grid-area:right;background:var(--panel);border-left:1px solid var(--border);padding:10px;overflow-y:auto;font-size:12px;}
+.pane{display:none;height:100%;padding:14px;overflow-y:auto;}
+.pane.active{display:block;}
+.pane h2{font-size:14px;color:var(--gold);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:6px;}
+.card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;}
+.card .k{color:var(--dim);font-size:11px;} .card .v{color:var(--txt);font-size:14px;font-weight:600;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:2px 8px;margin:2px;font-size:11px;color:var(--cyan);}
+table{width:100%;border-collapse:collapse;}td{padding:6px 8px;border-bottom:1px solid var(--border);font-size:12px;}td:first-child{color:var(--dim);}
+.ok{color:var(--green);} .bad{color:var(--red);} .warn{color:var(--gold);}
+footer{grid-area:foot;background:var(--panel2);display:flex;align-items:center;gap:16px;padding:0 14px;font-size:11px;color:var(--dim);}
+footer .dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px;}
+#log{padding:4px 0;}
+#log div{font-family:monospace;color:var(--dim);}
+.search{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--txt);padding:6px 10px;border-radius:6px;font-size:12px;margin-bottom:8px;}
+.bar{height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-top:4px;}
+.bar>i{display:block;height:100%;background:var(--gold);}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>🖤 BLACKHORNET</h1>
+  <div class="stat">SWARM: <b id="h-agents">0</b> · COLONIES: <b id="h-col">0</b> · TOOLS: <b id="h-tools">0</b> · NODES: <b id="h-nodes">0</b></div>
+  <div class="stat" id="h-clock"></div>
+</header>
+<aside>
+  <button class="nav-btn active" data-pane="graph">◆ Knowledge Graph</button>
+  <button class="nav-btn" data-pane="agents">🐝 Agents</button>
+  <button class="nav-btn" data-pane="colonies">🏛 Colonies</button>
+  <button class="nav-btn" data-pane="tasks">⚡ Tasks</button>
+  <button class="nav-btn" data-pane="tools">🛠 Tools</button>
+  <button class="nav-btn" data-pane="ecosystem">🌐 Ecosystem</button>
+  <button class="nav-btn" data-pane="quant">📈 Trading</button>
+  <button class="nav-btn" data-pane="memory">🧠 Memory</button>
+  <button class="nav-btn" data-pane="events">📡 Events</button>
+  <button class="nav-btn" data-pane="status">✓ Status</button>
+</aside>
+<main>
+  <div id="cy" style="display:block"></div>
+  <div class="pane" id="pane-graph"><input class="search" id="gsearch" placeholder="Search nodes…"><div id="gstats" class="grid2"></div></div>
+  <div class="pane" id="pane-agents"><h2>🐝 Agent Swarm</h2><div id="agents-list"></div></div>
+  <div class="pane" id="pane-colonies"><h2>🏛 Colonies</h2><div id="colonies-list"></div></div>
+  <div class="pane" id="pane-tasks"><h2>⚡ Tasks & Goals</h2><div id="tasks-list"></div></div>
+  <div class="pane" id="pane-tools"><h2>🛠 Tool Registry</h2><div id="tools-list"></div></div>
+  <div class="pane" id="pane-ecosystem"><h2>🌐 Ecosystem Status</h2><div id="eco-list"></div></div>
+  <div class="pane" id="pane-quant"><h2>📈 BHQuant Trading</h2><div id="quant-list"></div></div>
+  <div class="pane" id="pane-memory"><h2>🧠 Memory</h2><input class="search" id="msearch" placeholder="Search memory…"><div id="memory-list"></div></div>
+  <div class="pane" id="pane-events"><h2>📡 Event Bus</h2><div id="events-list"></div></div>
+  <div class="pane" id="pane-status"><h2>✓ Service Status</h2><div id="status-list"></div></div>
+</main>
+<div class="right">
+  <h2 style="color:var(--gold);font-size:13px;margin-bottom:8px;">Node Inspector</h2>
+  <div id="inspect"><span style="color:var(--dim)">Tap a graph node…</span></div>
+  <h2 style="color:var(--gold);font-size:13px;margin:14px 0 8px;">Live Log</h2>
+  <div id="log"></div>
+</div>
+<footer><span><span class="dot"></span>BLACKHORNET OPERATIONAL</span><span id="f-uptime">uptime —</span><span id="f-port">UI :8080</span></footer>
+</div>
+<script>
+const API='/api/v1/';
+function get(p){return fetch(API+p).then(r=>r.json()).catch(()=>({success:false,error:'net'}));}
+function log(m){const d=document.getElementById('log');const e=document.createElement('div');e.textContent='› '+m;d.prepend(e);if(d.children.length>40)d.lastChild.remove();}
+// ── Graph ──
+const cy=cytoscape({container:document.getElementById('cy'),
+ style:[{selector:'node',style:{'background-color':'#3fb9d6',label:'data(label)','text-valign':'bottom','text-halign':'center',color:'#c9d1d9','font-size':'10px',width:18,height:18}},
+ {selector:'edge',style:{width:1,'line-color':'#30363d','target-arrow-color':'#30363d','target-arrow-shape':'triangle','curve-style':'bezier',label:'data(label)',color:'#8b949e','font-size':'8px'}},
+ {selector:'node[type="agent"]',style:{'background-color':'#d4a843'}},
+ {selector:'node[type="colony"]',style:{'background-color':'#3fb950'}},
+ {selector:'node[type="task"],node[type="goal"]',style:{'background-color':'#f0883e'}},
+ {selector:'node[type="memory"]',style:{'background-color':'#79c0ff'}},
+ {selector:':selected',style:{'border-width':3,'border-color':'#d4a843'}}],
+ layout:{name:'cose',animate:true,nodeRepulsion:8000,idealEdgeLength:90},wheelSensitivity:0.3});
+async function loadGraph(){const r=await get('graph');if(!r.success)return;const g=r.data;const els=[];
+ (g.nodes||[]).forEach(n=>els.push({data:{id:n.id,label:n.label,type:n.type}}));
+ (g.edges||[]).forEach(e=>els.push({data:{source:e.source,target:e.target,label:e.relation||''}}));
+ cy.elements().remove();cy.add(els);cy.layout({name:'cose',animate:true}).run();
+ document.getElementById('h-nodes').textContent=(g.nodes||[]).length;
+ const st=document.getElementById('gstats');st.innerHTML=`<div class="card"><div class="k">Nodes</div><div class="v">${(g.nodes||[]).length}</div></div><div class="card"><div class="k">Edges</div><div class="v">${(g.edges||[]).length}</div></div>`+(g.stats?Object.entries(g.stats).slice(0,4).map(([k,v])=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`).join(''):'');
+}
+cy.on('tap','node',e=>{const n=e.target;document.getElementById('inspect').innerHTML=`<div class="card"><div class="k">Label</div><div class="v">${n.data('label')}</div></div><div class="card"><div class="k">Type</div><div class="v">${n.data('type')}</div></div><div class="card"><div class="k">ID</div><div class="v" style="font-size:11px">${n.data('id')}</div></div>`;});
+cy.on('tap',e=>{if(e.target===cy)document.getElementById('inspect').innerHTML='<span style="color:#8b949e">Tap a graph node…</span>';});
+document.getElementById('gsearch').oninput=e=>{const q=e.target.value.toLowerCase();cy.nodes().forEach(n=>n.style('opacity',(n.data('label')||'').toLowerCase().includes(q)?1:0.15));};
+// ── Panes ──
+document.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));const pane=document.getElementById('pane-'+b.dataset.pane);pane.classList.add('active');document.getElementById('cy').style.display=(b.dataset.pane==='graph')?'block':'none';loadPane(b.dataset.pane);});
+async function loadPane(p){const map={agents:['agents','agents-list','agent'],colonies:['colonies','colonies-list','colony'],tasks:['tasks','tasks-list','task'],tools:['tools','tools-list','tool'],ecosystem:['ecosystem','eco-list','eco'],quant:['quant','quant-list','quant'],memory:['memory','memory-list','mem'],events:['events','events-list','evt'],status:['status','status-list','st']};
+ if(!map[p])return;const [ep,elid]=map[p];const r=await get(ep);if(!r.success){document.getElementById(elid).innerHTML=`<div class="bad">${r.error||'unavailable'}</div>`;return;}
+ renderPane(p,r.data,elid,map[p][2]);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function card(k,v){return `<div class="card"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`;}
+function renderPane(p,d,elid){const el=document.getElementById(elid);
+ if(p==='agents'){document.getElementById('h-agents').textContent=d.total||0;el.innerHTML=(d.agents||[]).map(a=>card(a.label||a.type||a.id||'agent',a.type||'')).join('')||'<span class="dim">no agents</span>';}
+ else if(p==='colonies'){document.getElementById('h-col').textContent=d.total||0;el.innerHTML=(d.colonies||[]).map(c=>card(c.label||c.id,'colony')).join('')||'<span class="dim">no colonies</span>';}
+ else if(p==='tasks'){el.innerHTML=(d.tasks||[]).map(t=>card(t.label||t.id,t.type||'task')).join('')||'<span class="dim">no tasks</span>';}
+ else if(p==='tools'){document.getElementById('h-tools').textContent=d.total||0;el.innerHTML=(d.tools||[]).map(t=>card(t.name,t.tags?t.tags.join(', '):(t.description||''))).join('')||'<span class="dim">no tools</span>';}
+ else if(p==='quant'){const t=d.trading||'unknown';el.innerHTML=card('Trading',t)+(d.status?Object.entries(d.status).slice(0,8).map(([k,v])=>card(k,JSON.stringify(v).slice(0,60))).join(''):'<span class="dim">no live data — quant not wired</span>');}
+ else if(p==='memory'){el.innerHTML='<span class="dim">search above to query memory</span>';}
+ else if(p==='events'){el.innerHTML=(d.events||[]).map(e=>card(e.type,e.source+' · '+(e.timestamp?new Date(e.timestamp*1000).toLocaleTimeString():''))).join('')||'<span class="dim">no events</span>';}
+ else if(p==='status'){const s=d.services||{};el.innerHTML=Object.entries(s).map(([k,v])=>{const ok=v.status==='ok';return `<div class="card"><div class="k">${esc(k)}</div><div class="v ${ok?'ok':'bad'}">${esc(v.status)}${v.stats?' · '+JSON.stringify(v.stats).slice(0,40):''}</div></div>`;}).join('');}
+}
+document.getElementById('msearch').oninput=async e=>{const q=e.target.value.trim();if(q.length<2)return;const r=await get('memory/'+encodeURIComponent(q));document.getElementById('memory-list').innerHTML=r.success?card(q,JSON.stringify(r.data).slice(0,120)):'<span class="bad">not found</span>';};
+// ── Boot ──
+let t0=Date.now();
+async function boot(){await loadGraph();const st=await get('status');if(st.success){const s=st.data.services||{};document.getElementById('f-port').textContent='UI :8080 · '+Object.keys(s).length+' services';}
+ loadPane('status');log('BLACKHORNET UI ready');}
+setInterval(()=>{document.getElementById('h-clock').textContent=new Date().toLocaleTimeString();document.getElementById('f-uptime').textContent='uptime '+Math.floor((Date.now()-t0)/1000)+'s';},1000);
+setInterval(async()=>{if(document.getElementById('pane-graph').classList.contains('active'))await loadGraph();const cur=document.querySelector('.nav-btn.active');if(cur)loadPane(cur.dataset.pane);},15000);
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "id": "msg-1781978581660-autonomy-daemon",
+  "from": "autonomy",
+  "to": "daemon",
+  "subject": "Health Report",
+  "body": "System Health Report:\n  Uptime: 18:03:01 up 2 days,  6:35,  0 users,  load average: 34.82, 33.03, 34.09\n  Memory: 79.9% used (766MB avail)\n  CPUs: 8\n  Processes: 7\n  Disk: 79.4% used\n  Log files: 3",
+  "timestamp": "2026-06-20T18:03:01.660553",
+  "read": true
+}

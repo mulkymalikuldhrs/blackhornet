@@ -1,0 +1,1 @@
+"""Harness module — legacy agent harness for AI-MultiColony."""

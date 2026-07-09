@@ -1,0 +1,108 @@
+name: BlackHornet Hive — CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours — auto health check
+
+jobs:
+  # ── Lint & Syntax ──────────────────────────────────────────
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install ruff
+      - run: ruff check src/ --select E,F,W --ignore E501
+
+  # ── Trading Tools Test ──────────────────────────────────────
+  test-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install -e .
+      - name: Import all 22 tools
+        run: |
+          cd src && python3 -c "
+          import sys; sys.path.insert(0, '.')
+          tools = ['shared_state','market_data_tool','technical_analysis_tool',
+                   'risk_officer_tool','execution_tool','kill_switch_tool',
+                   'journal_tool','strategy_tool','macro_sentiment_tool',
+                   'portfolio_tool','auditor_research_tool','chart_vision_tool',
+                   'pressure_engine','decision_engine','market_state_engine',
+                   'news_sentinel','strategy_lifecycle','math_engine',
+                   'backtest_engine','autoswitch_engine','smc_agent_enhanced','audit_logger']
+          for t in tools:
+              exec(f'from tools.{t} import *')
+              print(f'  ✅ {t}')
+          print('All 22 tools OK')
+          "
+
+  # ── Swarm Intelligence Test ─────────────────────────────────
+  test-swarm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install -e .
+      - name: Test swarm algorithms
+        run: |
+          python3 -c "
+          from src.swarm.pso_swarm import PSOOptimizer
+          from src.swarm.abc_swarm import ABCOptimizer
+          from src.swarm.stigmergy import StigmergyLayer
+          from src.swarm.swarm_orchestrator import SwarmOrchestrator
+          print('✅ PSO, ABC, Stigmergy, SwarmOrchestrator import OK')
+          "
+
+  # ── Core Module Test ────────────────────────────────────────
+  test-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install -e .
+      - name: Test core modules
+        run: |
+          python3 -c "
+          from src.core.self_healing import PhiAccrualFailureDetector
+          from src.core.tool_registry import ToolRegistry
+          from src.memory.system import MemorySystem
+          print('✅ self_healing, tool_registry, memory import OK')
+          "
+
+  # ── Security Scan ───────────────────────────────────────────
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for secrets
+        run: |
+          if grep -r "nvapi-\|ghp_\|sk-" config/ src/ 2>/dev/null; then
+            echo "⚠️ WARNING: Potential secrets found in code!"
+          else
+            echo "✅ No secrets detected"
+          fi
+      - name: Check .env in gitignore
+        run: grep -q "config/.env" .gitignore && echo "✅ .env gitignored" || echo "⚠️ .env NOT in .gitignore"
+
+  # ── Health Ping ─────────────────────────────────────────────
+  health-check:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Swarm health report
+        run: |
+          echo "BlackHornet Hive — Scheduled Health Check"
+          echo "Timestamp: $(date -u)"
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"

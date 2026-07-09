@@ -1,0 +1,9 @@
+{
+  "id": "msg-1781928540999-autonomy-daemon",
+  "from": "autonomy",
+  "to": "daemon",
+  "subject": "New Goal: Review and prune stale data",
+  "body": "Autonomy generated goal goal-1781928539: Review and prune stale data",
+  "timestamp": "2026-06-20T04:09:01.000062",
+  "read": true
+}

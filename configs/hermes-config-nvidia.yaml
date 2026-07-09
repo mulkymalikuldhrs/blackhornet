@@ -1,0 +1,74 @@
+model:
+  default: meta/llama-3.1-405b-instruct
+  provider: nvidia
+providers:
+  nvidia:
+    base_url: https://integrate.api.nvidia.com/v1
+    api_key_env: NVIDIA_API_KEY
+    models:
+      - meta/llama-3.1-405b-instruct
+      - meta/llama-3.1-70b-instruct
+      - google/gemma-2b
+      - mistralai/mistral-large
+    primary: true
+    weight: 1.0
+  nexusrouter:
+    base_url: https://nexusrouter.dev/v1
+    api_key_env: NEXUS_ROUTER_API_KEY
+    models:
+      - nexus-fast
+      - nexus-smart
+      - nexus-creative
+    primary: false
+    weight: 0.9
+  opencode-zen:
+    base_url: https://opencode.ai/zen/v1
+    api_key_env: OPENCODE_API_KEY
+    models:
+      - deepseek-v4-flash-free
+      - nemotron-3-ultra-free
+      - kimi-k2.6
+    primary: false
+    weight: 0.8
+  groq:
+    base_url: https://api.groq.com/openai/v1
+    api_key_env: GROQ_API_KEY
+    models:
+      - llama-3.3-70b-versatile
+      - llama-3.1-8b-instant
+      - mixtral-8x7b-32768
+    primary: false
+    weight: 0.85
+  together:
+    base_url: https://api.together.xyz/v1
+    api_key_env: TOGETHER_API_KEY
+    models:
+      - meta-llama/Llama-3.3-70B-Instruct-Turbo
+      - mistralai/Mixtral-8x7B-Instruct-v0.1
+    primary: false
+    weight: 0.7
+fallback_providers: []
+credential_pool_strategies: {}
+toolsets:
+- hermes-cli
+- opencode
+max_concurrent_sessions: null
+agent:
+  max_turns: 150
+  gateway_timeout: 1800
+  restart_drain_timeout: 180
+  api_max_retries: 3
+  service_tier: 'auto'
+  tool_use_enforcement: auto
+  task_completion_guidance: true
+  environment_probe: true
+  coding_context: auto
+terminal:
+  backend: local
+  modal_mode: auto
+  cwd: /sdcard/dhaherlabs
+  timeout: 180
+  env_passthrough: []
+  home_mode: auto
+  shell_init_files: []
+  auto_source_bashrc: true

@@ -1,0 +1,9 @@
+{
+  "id": "msg-1781931913349-autonomy-executor",
+  "from": "autonomy",
+  "to": "executor",
+  "subject": "New Goal: Document architecture decisions",
+  "body": "Autonomy generated goal goal-1781931908: Document architecture decisions",
+  "timestamp": "2026-06-20T05:05:13.349158",
+  "read": false
+}

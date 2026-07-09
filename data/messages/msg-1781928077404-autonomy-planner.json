@@ -1,0 +1,9 @@
+{
+  "id": "msg-1781928077404-autonomy-planner",
+  "from": "autonomy",
+  "to": "planner",
+  "subject": "New Goal: Test and validate agent behaviors",
+  "body": "Autonomy generated goal goal-1781928077: Test and validate agent behaviors",
+  "timestamp": "2026-06-20T04:01:17.404884",
+  "read": false
+}

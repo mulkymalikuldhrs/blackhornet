@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""
+BLACKHORNET - Keeper Daemon
+================================
+Cron-friendly health check + auto-restart.
+Runs every minute via cron or Termux:Boot.
+Lighter than watchdog - no persistent process needed.
+"""
+
+import os
+import sys
+import json
+import subprocess
+from datetime import datetime
+from pathlib import Path
+
+BASE_DIR = Path(__file__).parent.parent.resolve()
+BH_SCRIPT = BASE_DIR / "src" / "bh_quant.py"
+WATCHDOG_SCRIPT = BASE_DIR / "src" / "watchdog.py"
+PID_FILE = BASE_DIR / "blackhornet.pid"
+WATCHDOG_PID_FILE = BASE_DIR / "watchdog.pid"
+LOG_DIR = BASE_DIR / "logs"
+CONFIG_ENV = BASE_DIR / "config" / ".env"
+
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+log_file = LOG_DIR / f"keeper_{datetime.now().strftime('%Y%m%d')}.log"
+
+
+def log(msg, level="INFO"):
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    line = f"[{timestamp}] [{level}] {msg}"
+    print(line, flush=True)
+    with open(log_file, 'a') as f:
+        f.write(line + '\n')
+
+
+def is_process_running(pid_file, process_pattern):
+    """Check if a process is running"""
+    # Check PID file
+    if pid_file.exists():
+        try:
+            pid = int(pid_file.read_text().strip())
+            os.kill(pid, 0)
+            return True
+        except (ProcessLookupError, OSError, ValueError):
+            pid_file.unlink(missing_ok=True)
+
+    # Fallback: check by process name
+    result = subprocess.run(['pgrep', '-f', process_pattern],
+                           capture_output=True, text=True)
+    return result.returncode == 0
+
+
+def start_watchdog():
+    """Start the watchdog daemon"""
+    log("Starting watchdog daemon...")
+    subprocess.Popen(
+        [sys.executable, str(WATCHDOG_SCRIPT)],
+        stdout=open(LOG_DIR / "watchdog_stdout.log", 'a'),
+        stderr=subprocess.STDOUT,
+        cwd=str(BASE_DIR / "src"),
+        start_new_session=True
+    )
+    log("Watchdog daemon started")
+
+
+def start_bh_direct():
+    """Start BH directly (fallback if no watchdog)"""
+    log("Starting BLACKHORNET directly...")
+    subprocess.Popen(
+        [sys.executable, str(BH_SCRIPT)],
+        stdout=open(LOG_DIR / "stdout.log", 'a'),
+        stderr=subprocess.STDOUT,
+        cwd=str(BASE_DIR / "src"),
+        start_new_session=True
+    )
+    log("BH started")
+
+
+def main():
+    log("=" * 40)
+    log("BH KEEPER CHECK")
+    log("=" * 40)
+
+    # Check if watchdog is running
+    watchdog_running = is_process_running(WATCHDOG_PID_FILE, "watchdog.py")
+    bh_running = is_process_running(PID_FILE, "bh_quant.py")
+
+    log(f"Watchdog: {'RUNNING' if watchdog_running else 'NOT RUNNING'}")
+    log(f"BH: {'RUNNING' if bh_running else 'NOT RUNNING'}")
+
+    if not watchdog_running:
+        log("Watchdog not running! Starting watchdog...")
+        start_watchdog()
+        time.sleep(3)
+
+        # Verify watchdog started
+        if is_process_running(WATCHDOG_PID_FILE, "watchdog.py"):
+            log("Watchdog started successfully!")
+        else:
+            log("Watchdog failed to start! Starting BH directly...", "WARN")
+            if not bh_running:
+                start_bh_direct()
+
+    elif not bh_running:
+        log("Watchdog running but BH not detected. Watchdog should auto-restart.")
+        # Don't double-start - let watchdog handle it
+
+    else:
+        log("All systems operational. BLACKHORNET is eternal.")
+
+    log("Keeper check complete.")
+
+
+import time
+
+if __name__ == "__main__":
+    main()

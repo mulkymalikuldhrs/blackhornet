@@ -1,0 +1,53 @@
+# BLACKHORNET — E2B Sandbox Configuration
+# Sovereign Autonomous Ecosystem
+
+[build]
+# Use Python 3.11 base
+base_image = "python:3.11-slim"
+
+[build.env]
+# Environment variables for the sandbox
+BLACKHORNET_MODE = "e2b"
+PROXYGATE_PORT = "3333"
+LOG_LEVEL = "INFO"
+
+[build.commands]
+# Install system dependencies
+apt-get update && apt-get install -y --no-install-recommends curl git nodejs npm && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export PATH="/root/.local/bin:$PATH"
+
+# Clone and setup BlackHornet
+git clone https://codeberg.org/Dhaher-Labs/blackhornet.git /app || git clone https://gitlab.com/mulkymalikuldhr/blackhornet.git /app
+cd /app
+pip install -r requirements.txt openai
+
+# Clone and setup ProxyGateLLM
+git clone https://codeberg.org/Dhaher-Labs/ProxyGateLLM.git /proxygate || git clone https://gitlab.com/mulkymalikuldhr/ProxyGateLLM.git /proxygate
+cd /proxygate && npm install --omit=dev
+
+[run]
+# Startup command
+command = ["/app/deploy/entrypoint.sh"]
+
+[run.env]
+# Runtime environment variables
+PORT = "3333"
+PYTHONUNBUFFERED = "1"
+
+[run.workdir]
+# Working directory
+path = "/app"
+
+[run.ports]
+# Exposed ports
+3333 = "ProxyGateLLM LLM Gateway"
+3001 = "Mnemosyne Memory (optional)"
+
+[run.permissions]
+# Sandbox permissions
+network = true
+filesystem = true
+process = true

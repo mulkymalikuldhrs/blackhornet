@@ -1,0 +1,9 @@
+{
+  "id": "msg-1781927678110-planner-executor",
+  "from": "planner",
+  "to": "executor",
+  "subject": "Task Assignment",
+  "body": "Please execute research task",
+  "timestamp": "2026-06-20T03:54:38.111041",
+  "read": true
+}

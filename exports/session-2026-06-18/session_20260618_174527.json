@@ -1,0 +1,10 @@
+[
+  {
+    "type": "decision",
+    "agent_id": "queen",
+    "decision": "Session complete: Phase 14 + 100 agents + graphified",
+    "context": "All work saved, committed, and recorded in knowledge graph. 13 nodes, 12 edges.",
+    "confidence": 1.0,
+    "timestamp": 1781804727.4457052
+  }
+]

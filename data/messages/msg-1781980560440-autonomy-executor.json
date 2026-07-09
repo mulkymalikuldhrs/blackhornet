@@ -1,0 +1,9 @@
+{
+  "id": "msg-1781980560440-autonomy-executor",
+  "from": "autonomy",
+  "to": "executor",
+  "subject": "New Goal: Review and prune stale data",
+  "body": "Autonomy generated goal goal-1781980549: Review and prune stale data",
+  "timestamp": "2026-06-20T18:36:00.441013",
+  "read": false
+}

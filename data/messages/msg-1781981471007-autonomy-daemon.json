@@ -1,0 +1,9 @@
+{
+  "id": "msg-1781981471007-autonomy-daemon",
+  "from": "autonomy",
+  "to": "daemon",
+  "subject": "New Goal: Document architecture decisions",
+  "body": "Autonomy generated goal goal-1781981458: Document architecture decisions",
+  "timestamp": "2026-06-20T18:51:11.007304",
+  "read": true
+}

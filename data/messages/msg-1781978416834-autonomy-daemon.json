@@ -1,0 +1,9 @@
+{
+  "id": "msg-1781978416834-autonomy-daemon",
+  "from": "autonomy",
+  "to": "daemon",
+  "subject": "Coordination Report",
+  "body": "Coordination Analysis:\n  Active agents: 12\n  Unread messages: 1810\n  Total message files: 1972\n  Agents: __pycache__, audit, browser, coder, colony, executor, manus, planner, researcher, security, specialists, voice\n",
+  "timestamp": "2026-06-20T18:00:16.834426",
+  "read": true
+}

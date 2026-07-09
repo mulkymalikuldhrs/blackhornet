@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  omega:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: blackhornet/omega:5.0.0
+    container_name: bh-omega
+    command: ["bh-omega", "start", "--loop", "0"]
+    environment:
+      - DHAHERLABS=/bh/data
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - bh_data:/bh/data
+      - bh_logs:/bh/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "bh-omega", "status"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  omega-loop:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: blackhornet/omega:5.0.0
+    container_name: bh-omega-loop
+    command: ["bh-omega", "loop"]
+    environment:
+      - DHAHERLABS=/bh/data
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - bh_data:/bh/data
+      - bh_logs:/bh/logs
+    profiles:
+      - manual
+      - oneshot
+
+volumes:
+  bh_data:
+  bh_logs:

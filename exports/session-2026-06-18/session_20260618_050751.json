@@ -1,0 +1,26 @@
+[
+  {
+    "type": "decision",
+    "agent_id": "queen",
+    "decision": "Phase 14 complete: Mesh Healing + MCP Deepening + UI/TUI Hardening + Trading Intelligence",
+    "context": "Implemented ColonyHealthMonitor, MCP initialize handshake, 6 colony tools, SSE Transport, WebSocketHandler, TUI auto-refresh, TradingAnalyst, 50 audit agents, 50 specialist agents",
+    "confidence": 1.0,
+    "timestamp": 1781759271.748317
+  },
+  {
+    "type": "decision",
+    "agent_id": "queen",
+    "decision": "Created 100 new agents (50 audit + 50 specialist)",
+    "context": "Expanded agent roster from 10 to 110. Audit agents cover security, code quality, infrastructure, compliance, operational, business, data, system. Specialist agents cover backend, frontend, DevOps, security, data, communications, architecture, operations, governance.",
+    "confidence": 1.0,
+    "timestamp": 1781759271.7483425
+  },
+  {
+    "type": "decision",
+    "agent_id": "queen",
+    "decision": "Full documentation for all agents and phases",
+    "context": "Created AGENT_ROSTER.md, updated AGENTS.md, CHANGELOG.md, SOUL.md with complete agent roster and Phase 14 status",
+    "confidence": 1.0,
+    "timestamp": 1781759271.7483537
+  }
+]
