@@ -99,6 +99,12 @@ class TestSelfUpgrade(TestCase):
         daemon_file = ROOT / "immortal_daemon.py"
         marker = "\n# tdd self-upgrade live-check\n"
         try:
+            # Sync with remote first (daemon always rebases before publishing)
+            pull_url = f"https://x-access-token:{GITHUB_TOKEN}@github.com/mulkymalikuldhaher/BlackHornet.git"
+            subprocess.run(
+                ["git", "-C", str(ROOT.parent), "pull", "--rebase", pull_url, "main"],
+                capture_output=True, timeout=30,
+            )
             with open(daemon_file, "a") as f:
                 f.write(marker)
             os.environ["GITHUB_TOKEN"] = GITHUB_TOKEN
