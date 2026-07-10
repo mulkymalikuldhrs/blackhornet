@@ -102,7 +102,7 @@ class TestSelfUpgrade(TestCase):
             # Sync with remote first (daemon always rebases before publishing)
             pull_url = f"https://x-access-token:{GITHUB_TOKEN}@github.com/mulkymalikuldhaher/BlackHornet.git"
             subprocess.run(
-                ["git", "-C", str(ROOT.parent), "pull", "--rebase", pull_url, "main"],
+                ["git", "-C", str(ROOT.parent), "pull", "--rebase", "--autostash", pull_url, "main"],
                 capture_output=True, timeout=30,
             )
             with open(daemon_file, "a") as f:
