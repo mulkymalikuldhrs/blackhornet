@@ -6,9 +6,9 @@ A self-improving, immortal, autonomous AGI colony system implementing PSO ring t
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:D9A441,100:00D1C7&height=180&section=header&text=BlackHornet&fontSize=35&fontColor=ffffff&animation=fadeIn" width="100%" />
 
-[![Codeberg](https://img.shields.io/badge/Codeberg-Dhaher--Labs%2FBlackHornet-2185D0?logo=codeberg)](https://codeberg.org/Dhaher-Labs/BlackHornet)
+[![GitHub](https://img.shields.io/badge/GitHub-mulkymalikuldhaher%2FBlackHornet-181717?logo=github)](https://github.com/mulkymalikuldhaher/BlackHornet)
+[![Codeberg](https://img.shields.io/badge/Codeberg-Mirror-2185D0?logo=codeberg)](https://codeberg.org/Dhaher-Labs/BlackHornet)
 [![GitLab](https://img.shields.io/badge/Gitlab-Mirror-FC6D26?logo=gitlab)](https://gitlab.com/mulkymalikuldhr/BlackHornet)
-[![GitHub](https://img.shields.io/badge/GitHub-Archive-181717?logo=github)](https://github.com/dhaher-labs/BlackHornet)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 <p align="center">
@@ -49,7 +49,7 @@ src/
 ## ⚡ Quick Start
 
 ```bash
-git clone https://codeberg.org/Dhaher-Labs/BlackHornet.git
+git clone https://github.com/mulkymalikuldhaher/BlackHornet.git
 cd BlackHornet
 pip install -e .
 # Single launcher + single UI (control center on :8080)
