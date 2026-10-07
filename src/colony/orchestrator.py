@@ -313,6 +313,23 @@ class EcosystemOrchestrator:
 
         return status
 
+    def _feed_ecosystem_snapshot(self) -> None:
+        """Persist current EcosystemState into the memory federation.
+
+        Called from _sync_loop each cycle. Defensive: missing
+        methods or serialization errors are logged, never raised.
+        """
+        if not self._memory_system or not self._ecosystem_state:
+            return
+        snapshot_ecosystem = getattr(
+            self._memory_system, "snapshot_ecosystem", None)
+        if not callable(snapshot_ecosystem):
+            return
+        try:
+            snapshot_ecosystem(self._ecosystem_state)
+        except Exception as exc:
+            logger.debug("ecosystem_snapshot_feed_error err=%s", exc)
+
     async def _sync_loop(self) -> None:
         while self._running:
             try:
@@ -326,6 +343,8 @@ class EcosystemOrchestrator:
                         peers=status.get("radar", {}).get("peer_count", 0),
                         agents=status.get("agents", {}).get("total", 0),
                     )
+
+                    self._feed_ecosystem_snapshot()
 
                 if self._mesh_bus and self._radar:
                     self._mesh_bus.update_peers(self._radar.get_peers())

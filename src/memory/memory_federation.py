@@ -308,4 +308,74 @@ class MemoryFederation:
                 sum(m.confidence for m in self._memories.values()) / max(len(self._memories), 1)
             ),
             "total_conflicts": sum(m.conflict_count for m in self._memories.values()),
+            "ecosystem_snapshots": sum(
+                1 for m in self._memories.values()
+                if m.memory_type == "ecosystem_snapshot"
+            ),
         }
+
+    # ── Ecosystem Snapshots ─────────────────────────────────
+
+    def snapshot_ecosystem(
+        self,
+        ecosystem_state: Any,
+        source_agent: str = "orchestrator",
+        max_snapshots: int = 20,
+    ) -> dict[str, Any]:
+        """Persist an EcosystemState snapshot as a federated memory.
+
+        Snapshots travel through sync_from() like any other shared
+        memory and are pruned oldest-first beyond max_snapshots.
+        """
+        try:
+            data = (
+                ecosystem_state.to_dict()
+                if hasattr(ecosystem_state, "to_dict")
+                else dict(ecosystem_state)
+            )
+        except Exception as exc:
+            logger.warning(
+                "snapshot_ecosystem_serialize_error type=%s err=%s",
+                type(ecosystem_state).__name__, exc,
+            )
+            data = {"error": str(exc)}
+
+        entry = self.share_memory(
+            content=json.dumps(data, default=str),
+            source_agent=source_agent,
+            memory_type="ecosystem_snapshot",
+            importance=0.9,
+            confidence=1.0,
+            tags=["ecosystem", "snapshot"],
+        )
+
+        if max_snapshots > 0:
+            snapshots = sorted(
+                self.get_memories_by_type("ecosystem_snapshot"),
+                key=lambda m: m.created_at,
+            )
+            for stale in snapshots[: len(snapshots) - max_snapshots]:
+                self._memories.pop(stale.memory_id, None)
+
+        return {"snapshot_id": entry.memory_id,
+                "entry_count": len(self._memories)}
+
+    def get_ecosystem_snapshots(self, limit: int = 10) -> list[dict[str, Any]]:
+        """Return recent ecosystem snapshots, newest first."""
+        snapshots = sorted(
+            self.get_memories_by_type("ecosystem_snapshot"),
+            key=lambda m: m.created_at,
+            reverse=True,
+        )[:limit]
+        results: list[dict[str, Any]] = []
+        for mem in snapshots:
+            try:
+                parsed = json.loads(mem.content)
+            except (json.JSONDecodeError, TypeError):
+                parsed = {"raw": mem.content}
+            results.append({
+                "memory_id": mem.memory_id,
+                "data": parsed,
+                "created_at": mem.created_at,
+            })
+        return results
