@@ -22,7 +22,7 @@ from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
-DHAHER = Path(os.environ.get("DHAHERLABS", "/sdcard/dhaherlabs"))
+DHAHER = Path(os.environ.get("DHAHERLABS") or os.path.join(os.path.expanduser("~"), "dhaherlabs"))
 HUB_SCRIPT = DHAHER / "data" / "ecosystem-memory" / "unified-memory-hub.py"
 
 

@@ -54,7 +54,7 @@ class ProjectScorer:
             }, f, indent=2)
 
     def _resolve_path(self) -> str:
-        base = os.environ.get("DHAHERLABS", "/sdcard/dhaherlabs")
+        base = os.environ.get("DHAHERLABS") or os.path.join(os.path.expanduser("~"), "dhaherlabs")
         return os.path.join(base, self.SCORE_PATH)
 
     def score(self, name: str, constitution: int, quality: int, operations: int) -> ProjectScore:

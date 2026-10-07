@@ -8,10 +8,8 @@ synchronization and statistics.
 from __future__ import annotations
 
 import logging
-import os
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -34,7 +32,6 @@ class MemoryTier:
     T3_TEMPORAL = "t3_temporal"     # Temporal knowledge graph
     T4_TREE = "t4_tree"             # Hierarchical tree store
     T5_SMALLVILLE = "t5_smallville" # Smallville 3-factor memory stream
-    T6_NEURAL = "t6_neural"         # Neural-memory graph brain (spreading activation)
 
 
 # ── Pydantic models ──────────────────────────────────────────────
@@ -133,9 +130,6 @@ class MemoryManager:
         # T5 – Smallville memory stream (3-factor retrieval)
         self._smallville = SmallvilleStream(memory_limit=500)
 
-        # T6 – Neural-memory graph brain (spreading activation)
-        self._neural = None
-
         # Sessions
         self._sessions: Dict[str, Dict[str, Any]] = {}
 
@@ -230,15 +224,6 @@ class MemoryManager:
             )
             store_id = memory.id
 
-        elif tier == MemoryTier.T6_NEURAL:
-            nn_id = await self._ensure_neural().remember(
-                content=str(value),
-                tags=set(metadata.get("tags", [])) if metadata else set(),
-                source=agent_id or None,
-                importance=importance or 0.5,
-            )
-            store_id = nn_id
-
         return store_id
 
     # ── Retrieve ─────────────────────────────────────────────────
@@ -293,29 +278,7 @@ class MemoryManager:
                     "type": results[0].memory.memory_type,
                 }
 
-        # T6 – Neural (spreading activation)
-        if tier in (None, MemoryTier.T6_NEURAL):
-            try:
-                nn_results = await self._ensure_neural().recall(
-                    query=key, limit=1, min_score=0.3
-                )
-                if nn_results:
-                    return nn_results[0]
-            except Exception as e:
-                logger.debug("neural_retrieve_error err=%s", e)
-
         return None
-
-
-    async def _ensure_neural(self):
-        """Lazy-init T6 neural bridge."""
-        if self._neural is None:
-            from src.memory.neural_bridge import NeuralMemoryBridge
-            self._neural = NeuralMemoryBridge(
-                brain_name="blackhornet-manager",
-                data_dir=Path(os.environ.get("BH_DATA_DIR", "data")) / "neural",
-            )
-        return self._neural
 
     # ── Search ───────────────────────────────────────────────────
 
@@ -395,24 +358,6 @@ class MemoryManager:
                     })
             except Exception as e:
                 logger.debug("smallville_search_error err=%s", e)
-
-        # T6 – Neural (spreading activation search)
-        if tier in (None, MemoryTier.T6_NEURAL):
-            try:
-                nn_results = await self._ensure_neural().recall(
-                    query=query, limit=limit, min_score=0.2
-                )
-                for r in nn_results:
-                    results.append({
-                        "tier": "neural",
-                        "id": r["id"],
-                        "content": r["content"],
-                        "neuron_type": r["neuron_type"],
-                        "tags": r["tags"],
-                        "relevance": r["score"],
-                    })
-            except Exception as e:
-                logger.debug("neural_search_error err=%s", e)
 
         # Sort by relevance
         results.sort(key=lambda r: r.get("relevance", 0), reverse=True)

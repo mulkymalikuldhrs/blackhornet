@@ -141,8 +141,8 @@ class PressureNormalizationEngine:
         Auto-normalize pressure for a symbol by fetching technical data.
         """
         try:
-            from tools.technical_analysis_tool import TechnicalAnalysisTool
-            from tools.news_sentinel import NewsSentinelTool
+            from src.tools.technical_analysis_tool import TechnicalAnalysisTool
+            from src.tools.news_sentinel import NewsSentinelTool
 
             tat = TechnicalAnalysisTool()
             analysis = json.loads(tat.analyze(symbol, "1h"))

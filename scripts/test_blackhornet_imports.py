@@ -47,7 +47,7 @@ if __name__ == "__main__":
         ("src.colony_bridge", "COLONY_CAPABILITIES"),
 
         # Original files (should still import)
-        ("src.hermes_quant", "blackhornet"),
+        ("src.bh_quant", "blackhornet"),
     ]
 
     results = []

@@ -194,7 +194,7 @@ class BacktestEngine:
         signal_func(candle, indicators) -> dict with:
           direction, entry, stop_loss, take_profit, lot_size
         """
-        from tools.math_engine import MathEngine
+        from src.tools.math_engine import MathEngine
 
         closes = [d["close"] for d in data]
         highs = [d["high"] for d in data]
@@ -328,7 +328,7 @@ class BacktestEngine:
     def run(self, symbol: str = "XAUUSD") -> str:
         """Run a simple backtest on the given symbol"""
         try:
-            from tools.market_data_tool import MarketDataTool
+            from src.tools.market_data_tool import MarketDataTool
             mdt = MarketDataTool()
             raw = json.loads(mdt.get_ohlcv(symbol, "1d", 200))
 

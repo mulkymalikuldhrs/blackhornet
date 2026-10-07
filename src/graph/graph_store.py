@@ -78,10 +78,8 @@ class GraphStore:
         conn.commit()
 
     def _get_conn(self) -> sqlite3.Connection:
-        # ponytail: per-thread connection + check_same_thread=False so the
-        # graph store is safe when queried from the WebServer thread.
         if self._conn is None:
-            self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
+            self._conn = sqlite3.connect(self.db_path)
             self._conn.row_factory = sqlite3.Row
         return self._conn
 

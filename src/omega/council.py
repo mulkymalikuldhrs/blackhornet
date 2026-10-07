@@ -118,3 +118,41 @@ class Council:
 
     def history(self, limit: int = 10) -> list[CouncilResult]:
         return self._history[-limit:]
+
+    def deliberate(self, context: str, **kwargs) -> CouncilResult:
+        """Alias for convene() — debate entry point used by BlackHornet orchestration."""
+        return self.convene(context, **kwargs)
+
+    async def run_consensus_debate(self, context: str, proposal: str) -> CouncilResult:
+        """Full consensus debate: Proposer -> Challenger -> Judge via ConsensusEngine."""
+        from src.core.consensus_engine import ConsensusEngine, ProposalStatus
+        engine = ConsensusEngine()
+
+        async def challenger_fn(p, rounds):
+            if rounds:
+                last = rounds[-1]
+                return f"Challenge to proposal: {last.reasoning}"
+            return f"Challenge to '{p[:80]}': Needs more evidence."
+
+        async def proposer_fn(c, p, rounds):
+            return f"Counter to challenge: addressing '{c[:80]}' with supporting data."
+
+        result = await engine.run_consensus(proposal, challenger_fn, proposer_fn)
+        vote_synthesis = self._synthesize([])
+        return CouncilResult(
+            context=context,
+            votes=[],
+            synthesis=f"{vote_synthesis} | Consensus engine: {result.summary}",
+            consensus=(result.final_decision.value == "approved"),
+            minority_report="",
+            recommended_action=f"Engine verdict: {result.final_decision.value} (confidence {result.confidence:.0%})",
+            timestamp=time.time(),
+        )
+
+
+__all__ = [
+    "Persona",
+    "CouncilVote",
+    "CouncilResult",
+    "Council",
+]

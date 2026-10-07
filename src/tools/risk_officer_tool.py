@@ -52,7 +52,7 @@ class RiskOfficerTool:
 
     def check_trade(self, symbol: str, direction: str, lot_size: float,
                     entry: float, stop_loss: float, account_balance: float = 10000.0,
-                    take_profit: float = None) -> str:
+                    take_profit: Optional[float] = None) -> str:
         """
         9-checkpoint risk validation. Returns APPROVED or VETOED.
         """

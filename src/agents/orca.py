@@ -50,7 +50,7 @@ class OrcaOrchestrator:
         self._base_dir = self._detect_base()
 
     def _detect_base(self) -> str:
-        base = os.environ.get("DHAHERLABS", "/sdcard/dhaherlabs")
+        base = os.environ.get("DHAHERLABS") or os.path.join(os.path.expanduser("~"), "dhaherlabs")
         worktrees = os.path.join(base, "worktrees")
         os.makedirs(worktrees, exist_ok=True)
         return worktrees

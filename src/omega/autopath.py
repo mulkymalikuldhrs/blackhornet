@@ -6,6 +6,7 @@ Never hardcode. Always detect via env, git, cwd, or convention.
 from __future__ import annotations
 
 import os
+import platform
 import subprocess
 from typing import Optional
 
@@ -15,7 +16,7 @@ class AutoPath:
 
     @staticmethod
     def dhaherlabs() -> str:
-        return os.environ.get("DHAHERLABS") or os.environ.get("DHAHER") or "/sdcard/dhaherlabs"
+        return os.environ.get("DHAHERLABS") or os.environ.get("DHAHER") or os.path.join(os.path.expanduser("~"), "dhaherlabs")
 
     @staticmethod
     def blackhornet() -> str:
@@ -32,6 +33,8 @@ class AutoPath:
 
     @staticmethod
     def omega() -> str:
+        if platform.system() == "Windows":
+            return os.path.join(os.path.expanduser("~"), ".config", "opencode", "skills", "godmode", "auto")
         return "/root/.config/opencode/skills/godmode/auto"
 
     @staticmethod
@@ -48,13 +51,12 @@ class AutoPath:
 
     @staticmethod
     def detect_os() -> str:
-        try:
-            return subprocess.run(["uname", "-o"], capture_output=True, text=True, timeout=5).stdout.strip()
-        except Exception:
-            return "linux"
+        return platform.system().lower()
 
     @staticmethod
     def detect_shell() -> str:
+        if platform.system() == "Windows":
+            return os.environ.get("COMSPEC", "cmd.exe").split("\\")[-1]
         return os.environ.get("SHELL", "bash").split("/")[-1]
 
     @staticmethod

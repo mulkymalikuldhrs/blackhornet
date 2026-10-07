@@ -68,7 +68,7 @@ class KillSwitchTool:
 
     def check_auto_trigger(self, daily_pnl_pct: float, weekly_pnl_pct: float) -> str:
         """Auto-check if kill switch should trigger based on risk limits"""
-        from tools.risk_officer_tool import MAX_DAILY_LOSS, MAX_WEEKLY_LOSS
+        from src.tools.risk_officer_tool import MAX_DAILY_LOSS, MAX_WEEKLY_LOSS
 
         if abs(min(0, daily_pnl_pct)) >= MAX_DAILY_LOSS:
             return self.activate("AUTO_DAILY_LIMIT")

@@ -59,7 +59,7 @@ class SecondBrain:
             json.dump({"version": 2, "entries": [asdict(e) for e in self._entries[-500:]]}, f, indent=2)
 
     def _resolve_path(self, rel: str) -> str:
-        base = os.environ.get("DHAHERLABS", "/sdcard/dhaherlabs")
+        base = os.environ.get("DHAHERLABS") or os.path.join(os.path.expanduser("~"), "dhaherlabs")
         return os.path.join(base, rel)
 
     def _new_id(self) -> str:

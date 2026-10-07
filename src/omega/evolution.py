@@ -53,7 +53,7 @@ class EvolutionEngine:
             json.dump({"history": [asdict(e) for e in self._history[-200:]]}, f, indent=2)
 
     def _resolve_path(self) -> str:
-        base = os.environ.get("DHAHERLABS", "/sdcard/dhaherlabs")
+        base = os.environ.get("DHAHERLABS") or os.path.join(os.path.expanduser("~"), "dhaherlabs")
         return os.path.join(base, self.EVOLUTION_PATH)
 
     def record(self, event_type: str, dimension: str, description: str, fitness_before: float, fitness_after: float, success: bool = True) -> EvolutionEvent:

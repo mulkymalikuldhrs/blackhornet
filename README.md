@@ -6,87 +6,101 @@ A self-improving, immortal, autonomous AGI colony system implementing PSO ring t
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:D9A441,100:00D1C7&height=180&section=header&text=BlackHornet&fontSize=35&fontColor=ffffff&animation=fadeIn" width="100%" />
 
-[![GitHub](https://img.shields.io/badge/GitHub-mulkymalikuldhaher%2FBlackHornet-181717?logo=github)](https://github.com/mulkymalikuldhaher/BlackHornet)
-[![Codeberg](https://img.shields.io/badge/Codeberg-Mirror-2185D0?logo=codeberg)](https://codeberg.org/Dhaher-Labs/BlackHornet)
+[![Codeberg](https://img.shields.io/badge/Codeberg-Dhaher--Labs%2FBlackHornet-2185D0?logo=codeberg)](https://codeberg.org/Dhaher-Labs/BlackHornet)
 [![GitLab](https://img.shields.io/badge/Gitlab-Mirror-FC6D26?logo=gitlab)](https://gitlab.com/mulkymalikuldhr/BlackHornet)
+[![GitHub](https://img.shields.io/badge/GitHub-Archive-181717?logo=github)](https://github.com/dhaher-labs/BlackHornet)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 <p align="center">
   <em>Part of <a href="https://dhaher-labs.codeberg.page">Dhaher Labs</a> &mdash; Autonomous Multi-Agent Swarm Framework</em>
 </p>
 
-## 📋 Overview
+## Overview
 
 A self-improving, immortal, autonomous AGI colony system implementing PSO ring topology, ABC role-switching, and stigmergic communication for distributed autonomous agents.
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 src/
-├── __init__.py           # Top-level package exports
+├── __init__.py           # Top-level package
 ├── colony_types/         # Pydantic v2 type system
-├── bh_types/              # Unified type system (Pydantic v2) [renamed from types/]
-├── core/                 # Core framework (agents, LLM, event bus, tools)
-├── agents/               # Agent implementations (manus, coder, researcher)
+├── bh_types/             # Unified type system (Pydantic v2)
+├── core/                 # Core framework + SamanAI integration
+│   ├── ast_sanitizer.py  # AST security gate (SamanAI §3.1)
+│   ├── consensus_engine.py # Consensus + scoring (SamanAI §3.2)
+│   ├── debate_arena.py   # Proposer/Challenger/Judge debate (SamanAI §3.2)
+│   ├── workforce/        # OWL Agent Factory layer (SamanAI §3.3)
+│   │   ├── agent_factory.py
+│   │   ├── prompter.py
+│   │   └── task_planner.py
+├── agents/               # Agent implementations (9 core + 38 audit + 42 specialist)
 ├── agent_tools/          # MCP-based tool implementations
-├── config/               # Pydantic settings
-├── swarm/                # PSO, ABC, stigmergy orchestration
-├── memory/               # Memory system (semantic, vector, episodic)
-├── colony/               # Colony evolution, self-modify, skill learner
-├── api/                  # Starlette API server
-├── harness/              # LangGraph harness (legacy)
-└── integration/          # External integrations
+├── config/               # Pydantic settings + logging
+├── swarm/                # PSO, ABC, stigmergy, swarm orchestrator
+├── memory/               # Memory system (semantic, vector, episodic, 22 modules)
+├── colony/               # Colony evolution, orchestrator, queen, nest
+├── api/                  # Starlette REST API server
+├── omega/                # Omega Engine (autonomous loop, SCS, council, brain, genome)
+├── tools/                # 21 trading tools (L1-L5 layers)
+├── mcp/                  # MCP protocol implementation + server
+├── graph/                # Knowledge graph (10 modules)
+├── thinking/             # Cognition modules (intention, goal, curiosity, priority)
+├── sandbox/              # Code executor, Docker, WASM sandbox
+├── security/             # Permissions, audit, analyzer
+├── ui/                   # Dashboard, WebSocket, TUI, Cytoscape
+├── browser/              # Browser automation
+├── channels/             # Discord, Slack, Telegram, WhatsApp
+├── integration/          # External integrations
+├── integrations/         # Framework adapters
+├── auto_discovery/       # LLM/model auto-discovery
+├── delta/                # Delta engine (JS)
+├── llm_router/           # LLM router (JS)
+├── hermes_nous/          # Consciousness layers
+├── bridge/               # QNA bridge + BH core bridge
+└── harness/              # LangGraph-compatible harness (~100 files)
 ```
 
-## ✨ Key Features
+## Key Features
 
 - **Swarm Intelligence**: PSO with 4 topologies, ABC role-switching, stigmergic coordination
+- **Omega Engine**: Autonomous self-improvement loop with SCS, Council, Predictor, Brain
+- **21 Trading Tools**: Full L1-L5 trading agent stack (market data → execution → journal)
 - **Self-Healing**: Phi-accrual failure detector with automatic recovery
 - **Self-Modification**: Propose-approve-apply pipeline with safety gating
+- **104 Agents**: 9 core + 38 audit + 42 specialist agents
 - **Multi-LLM**: 15+ providers via JeumpaLLM, Hermes, or direct API
 - **Immortal Daemon**: Auto-upgrade, cross-repo sync, crash recovery
+- **MCP Protocol**: Full Model Context Protocol implementation
 
-## ⚡ Quick Start
+## Quick Start
 
 ```bash
-git clone https://github.com/mulkymalikuldhaher/BlackHornet.git
+git clone https://codeberg.org/Dhaher-Labs/BlackHornet.git
 cd BlackHornet
 pip install -e .
-# Single launcher + single UI (control center on :8080)
-python blackhornet.py --start
-# or directly:
-python -m src.integration.unified_launcher --port 8080
+
+# Entry points
+bh-omega          # Omega Engine CLI
+bh-colony         # Unified launcher
+python -m src.hermes_quant   # Trading system
 ```
 
-Open `http://localhost:8080` — the unified control center (10 panels: graph, agents,
-colonies, tasks, tools, ecosystem, trading, memory, events, status).
-
-## 🖤 Unified Launcher & Control Center (v6.2.0)
-
-**One launcher, one UI.** `blackhornet.py --start` delegates to `unified_launcher`,
-which boots **17 components** (event bus, graph store, memory, web server, dashboard,
-provider hub, AMC bridge, BHQuant trading, colony health/radar/mesh, ecosystem orchestrator, …)
-and serves the single UI.
-
-- **Daemon**: `python blackhornet.py --deploy` (provisions the nest) · `--immortal` (self-healing loop)
-- **UI API**: `src/ui/api_bridge.py` — 10 live REST endpoints (`/api/v1/*`)
-- **Audit**: `AUDIT_IMPLEMENTATION_2026-07-10.md` — full gap report, verified live
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Category | Technology |
 |----------|-----------|
 | Language | Python 3.11+ |
-| Framework | Pydantic v2, asyncio |
+| Framework | Pydantic v2, asyncio, Starlette |
 | Storage | SQLite (FTS5), ChromaDB, Qdrant |
-| LLM | JeumpaLLM, OpenAI, Anthropic |
-| UI | stdlib `http.server` (no JS framework) |
+| LLM | JeumpaLLM, OpenAI, Anthropic, 15+ providers |
+| Trading | yfinance, MT5, OANDA, Binance |
 
-## 🤝 Contributing
+## Contributing
 
 Part of [Dhaher Labs](https://dhaher-labs.codeberg.page) ecosystem.
 
-## 📄 License
+## License
 
 MIT License
 
@@ -94,7 +108,7 @@ MIT License
 
 ## Audit Report
 
-**Score: 62/100** | Last audit: 2026-06-27
+**Score: 62/100** | Last audit: 2026-07-25
 
 | Category | Score |
 |----------|-------|
@@ -105,12 +119,19 @@ MIT License
 | Production Readiness | 40 |
 | **Overall** | **62/100** |
 
-### Known Gaps
-1. ~~Circular import (`src/types` shadowing stdlib)~~ ✅ Fixed
-2. **Bare repo behind** — worktree 29 commits ahead of bare; needs `git push bare main`
-3. **Tests not runnable** — individual modules work but full suite blocked
-4. **Credential exposure risk** — `.env` files in worktree (gitignored but present)
-5. **Philosophical doc bloat** — 30+ doc files, some AI-hallucinated; needs pruning
+### Fixed (2026-07-25)
+- 39 broken import paths (`from tools.xxx` → `from src.tools.xxx`)
+- Windows compatibility (hardcoded Linux paths removed)
+- Type safety (`float = None` → `Optional[float]`)
+- Orphan cleanup (dead modules deleted)
+- Phantom docs removed (16 files)
+- CI/CD pipeline added (GitHub Actions)
+
+### Known Remaining Gaps
+1. **Version crisis** — pyproject.toml=5.0.0, CHANGELOG=1.0.0, SOUL.md=5.0.0 (needs alignment)
+2. **Test coverage** — 348 passing but low coverage for ~400 source files
+3. **~150 modules undocumented** — only 11 classes have API docs
+4. **8 numbered doc slots missing** — docs/04-08, 15-21
 
 ---
 

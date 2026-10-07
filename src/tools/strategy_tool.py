@@ -24,7 +24,7 @@ class StrategyTool:
         Generate 3 scenarios (Bullish/Bearish/Neutral) with confluence scoring.
         """
         # Get technical analysis
-        from tools.technical_analysis_tool import TechnicalAnalysisTool
+        from src.tools.technical_analysis_tool import TechnicalAnalysisTool
         ta = TechnicalAnalysisTool()
         analysis = json.loads(ta.analyze(symbol, interval))
 

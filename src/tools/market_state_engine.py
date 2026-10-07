@@ -123,8 +123,8 @@ class MarketStateEngine:
         Auto-detect regime using market data.
         """
         try:
-            from tools.market_data_tool import MarketDataTool
-            from tools.technical_analysis_tool import TechnicalAnalysisTool
+            from src.tools.market_data_tool import MarketDataTool
+            from src.tools.technical_analysis_tool import TechnicalAnalysisTool
 
             mdt = MarketDataTool()
             tat = TechnicalAnalysisTool()

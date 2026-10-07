@@ -45,30 +45,30 @@ except ImportError:
                         os.environ.setdefault(k.strip(), v.strip())
 
 # Import Trading Tools
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 try:
-    from tools.shared_state import get_shared_state
-    from tools.market_data_tool import MarketDataTool
-    from tools.technical_analysis_tool import TechnicalAnalysisTool
-    from tools.risk_officer_tool import RiskOfficerTool
-    from tools.execution_tool import ExecutionTool
-    from tools.kill_switch_tool import KillSwitchTool
-    from tools.journal_tool import JournalTool
-    from tools.strategy_tool import StrategyTool
-    from tools.macro_sentiment_tool import MacroSentimentTool
-    from tools.portfolio_tool import PortfolioTool
-    from tools.auditor_research_tool import AuditorResearchTool
-    from tools.chart_vision_tool import ChartVisionTool
-    from tools.pressure_engine import PressureNormalizationEngine
-    from tools.decision_engine import DecisionSynthesisEngine
-    from tools.market_state_engine import MarketStateEngine
-    from tools.news_sentinel import NewsSentinelTool
-    from tools.strategy_lifecycle import StrategyLifecycleManager
-    from tools.math_engine import MathEngine
-    from tools.backtest_engine import BacktestEngine
-    from tools.autoswitch_engine import AutoSwitchEngine
-    from tools.smc_agent_enhanced import SMCAgentEnhanced
-    from tools.audit_logger import AuditLogger
+    from src.tools.shared_state import get_shared_state
+    from src.tools.market_data_tool import MarketDataTool
+    from src.tools.technical_analysis_tool import TechnicalAnalysisTool
+    from src.tools.risk_officer_tool import RiskOfficerTool
+    from src.tools.execution_tool import ExecutionTool
+    from src.tools.kill_switch_tool import KillSwitchTool
+    from src.tools.journal_tool import JournalTool
+    from src.tools.strategy_tool import StrategyTool
+    from src.tools.macro_sentiment_tool import MacroSentimentTool
+    from src.tools.portfolio_tool import PortfolioTool
+    from src.tools.auditor_research_tool import AuditorResearchTool
+    from src.tools.chart_vision_tool import ChartVisionTool
+    from src.tools.pressure_engine import PressureNormalizationEngine
+    from src.tools.decision_engine import DecisionSynthesisEngine
+    from src.tools.market_state_engine import MarketStateEngine
+    from src.tools.news_sentinel import NewsSentinelTool
+    from src.tools.strategy_lifecycle import StrategyLifecycleManager
+    from src.tools.math_engine import MathEngine
+    from src.tools.backtest_engine import BacktestEngine
+    from src.tools.autoswitch_engine import AutoSwitchEngine
+    from src.tools.smc_agent_enhanced import SMCAgentEnhanced
+    from src.tools.audit_logger import AuditLogger
     TOOLS_AVAILABLE = True
 except ImportError as e:
     TOOLS_AVAILABLE = False

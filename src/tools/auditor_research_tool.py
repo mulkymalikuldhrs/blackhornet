@@ -20,7 +20,7 @@ class AuditorResearchTool:
 
     def audit_recent(self) -> str:
         """Audit recent trades for plan vs execution alignment"""
-        from tools.journal_tool import JournalTool
+        from src.tools.journal_tool import JournalTool
         journal = JournalTool()
 
         stats = json.loads(journal.get_stats())

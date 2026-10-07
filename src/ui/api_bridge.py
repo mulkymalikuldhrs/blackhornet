@@ -32,23 +32,15 @@ class APIResponse:
 
 class APIBridge:
     def __init__(self, graph_store=None, memory_system=None,
-                 event_bus=None, thinking=None, orchestrator=None,
-                 tool_registry=None, agent_registry=None, hermes_quant=None,
-                 ecosystem_orchestrator=None):
+                 event_bus=None, thinking=None, orchestrator=None):
         self._graph = graph_store
         self._memory = memory_system
         self._event_bus = event_bus
         self._thinking = thinking
         self._orchestrator = orchestrator
-        self._tool_registry = tool_registry
-        self._agent_registry = agent_registry
-        self._hermes_quant = hermes_quant
-        self._ecosystem_orchestrator = ecosystem_orchestrator
 
     def set_services(self, graph_store=None, memory_system=None,
-                     event_bus=None, thinking=None, orchestrator=None,
-                     tool_registry=None, agent_registry=None, hermes_quant=None,
-                     ecosystem_orchestrator=None):
+                     event_bus=None, thinking=None, orchestrator=None):
         if graph_store:
             self._graph = graph_store
         if memory_system:
@@ -59,14 +51,6 @@ class APIBridge:
             self._thinking = thinking
         if orchestrator:
             self._orchestrator = orchestrator
-        if tool_registry:
-            self._tool_registry = tool_registry
-        if agent_registry:
-            self._agent_registry = agent_registry
-        if hermes_quant:
-            self._hermes_quant = hermes_quant
-        if ecosystem_orchestrator:
-            self._ecosystem_orchestrator = ecosystem_orchestrator
 
     def get_graph(self, center: str = "", max_depth: int = 1) -> APIResponse:
         try:
@@ -185,72 +169,17 @@ class APIBridge:
     def get_ecosystem_status(self) -> APIResponse:
         """Return orchestrator ecosystem status (synchronous snapshot)."""
         try:
-            data: Dict[str, Any] = {"stats": {}, "cache": {}, "agents": 0, "colonies": 0, "colony": {}}
-            if self._orchestrator:
-                data["stats"] = self._orchestrator.get_stats() if hasattr(self._orchestrator, "get_stats") else {}
-                data["cache"] = self._orchestrator.get_status_cache() if hasattr(self._orchestrator, "get_status_cache") else {}
-            if self._agent_registry and hasattr(self._agent_registry, "_agents"):
-                data["agents"] = len(self._agent_registry._agents)
-            if self._graph:
-                nodes = self._graph.export_json().get("nodes", [])
-                data["colonies"] = len([n for n in nodes if n.get("type") == "colony"])
-            # ponytail: real colony subsystem snapshot (radar/mesh/health)
-            eco = self._ecosystem_orchestrator
-            if eco:
-                data["colony"] = {
-                    "radar_peers": len(getattr(eco._radar, "_peers", {}) or {}),
-                    "mesh_peers": len(getattr(eco._mesh_bus, "_peers", {}) or {}),
-                    "identity": str(getattr(eco._config, "colony_id", "")),
-                    "running": getattr(eco, "_running", False),
-                }
-            return APIResponse(data=data)
-        except Exception as exc:
-            return APIResponse(success=False, error=str(exc), status_code=500)
-
-    # ponytail: tasks/colonies/tools were orphaned in src/api/routes — collapsed here
-    def get_tasks(self, limit: int = 50) -> APIResponse:
-        try:
-            tasks: List[Dict[str, Any]] = []
-            if self._graph:
-                nodes = self._graph.export_json().get("nodes", [])
-                tasks = [n for n in nodes if n.get("type") in ("task", "goal", "episode")][:limit]
-            return APIResponse(data={"tasks": tasks, "total": len(tasks)})
-        except Exception as exc:
-            return APIResponse(success=False, error=str(exc), status_code=500)
-
-    def get_tools(self, limit: int = 200) -> APIResponse:
-        try:
-            if not self._tool_registry or not hasattr(self._tool_registry, "list_all"):
-                return APIResponse(data={"tools": [], "total": 0})
-            all_tools = self._tool_registry.list_all()
-            flat = [{"name": k, **v} for k, v in all_tools.items()][:limit]
-            return APIResponse(data={"tools": flat, "total": len(flat)})
-        except Exception as exc:
-            return APIResponse(success=False, error=str(exc), status_code=500)
-
-    def get_colonies(self, limit: int = 50) -> APIResponse:
-        try:
-            colonies: List[Dict[str, Any]] = []
-            if self._graph:
-                nodes = self._graph.export_json().get("nodes", [])
-                colonies = [n for n in nodes if n.get("type") == "colony"][:limit]
-            return APIResponse(data={"colonies": colonies, "total": len(colonies)})
-        except Exception as exc:
-            return APIResponse(success=False, error=str(exc), status_code=500)
-
-    def get_quant(self) -> APIResponse:
-        """Return BHQuant trading status (if wired)."""
-        try:
-            if not self._hermes_quant:
-                return APIResponse(data={"trading": "unavailable", "reason": "quant not wired"})
-            status = self._hermes_quant.status() if hasattr(self._hermes_quant, "status") else {}
-            return APIResponse(data={"trading": "active", "status": status})
+            if not self._orchestrator:
+                return APIResponse(success=False, error="Orchestrator not available",
+                                   status_code=503)
+            stats = self._orchestrator.get_stats() if hasattr(self._orchestrator, "get_stats") else {}
+            cache = self._orchestrator.get_status_cache() if hasattr(self._orchestrator, "get_status_cache") else {}
+            return APIResponse(data={"stats": stats, "cache": cache})
         except Exception as exc:
             return APIResponse(success=False, error=str(exc), status_code=500)
 
     def handle_request(self, method: str, path: str,
                        body: Optional[Dict[str, Any]] = None) -> APIResponse:
-        # ponytail: every real subsystem now routed — no orphaned endpoints
         if path == "/api/v1/graph" and method == "GET":
             return self.get_graph()
         elif path.startswith("/api/v1/graph/search") and method == "GET":
@@ -271,18 +200,6 @@ class APIBridge:
             return self.get_status()
         elif path == "/api/v1/events" and method == "GET":
             return self.get_events()
-        elif path == "/api/v1/agents" and method == "GET":
-            return self.get_agents()
-        elif path == "/api/v1/ecosystem" and method == "GET":
-            return self.get_ecosystem_status()
-        elif path == "/api/v1/tasks" and method == "GET":
-            return self.get_tasks()
-        elif path == "/api/v1/tools" and method == "GET":
-            return self.get_tools()
-        elif path == "/api/v1/colonies" and method == "GET":
-            return self.get_colonies()
-        elif path == "/api/v1/quant" and method == "GET":
-            return self.get_quant()
         else:
             return APIResponse(success=False, error="Not found",
                                status_code=404)

@@ -30,10 +30,6 @@ from src.colony.graph_sync import GraphifySyncBridge
 from src.colony.session_export import SessionExporter
 from src.core.evolution_bridge import EvolutionBridge
 from src.swarm.swarm_skills import SwarmSkillsManager
-# ponytail: wire() reconstructs these with the health monitor — must be imported at module scope
-from src.colony.radar import ColonyRadar, RadarConfig
-from src.colony.mesh_bus import MeshBus
-from src.colony.nest import SelfNest
 
 logger = get_logger(__name__)
 
@@ -144,6 +140,7 @@ class EcosystemOrchestrator:
                 self._radar = ColonyRadar(radar_config, self._health_monitor)
             if self._mesh_bus:
                 # Create a new MeshBus with health monitor
+                mesh_config = self._mesh_bus._config
                 self._mesh_bus = MeshBus(self._mesh_bus._local_bus, self._mesh_bus._identity, self._mesh_bus._http_port, self._health_monitor)
             if self._nest:
                 # Create a new SelfNest with health monitor
@@ -161,7 +158,6 @@ class EcosystemOrchestrator:
             session_recorder is not None,
             memory_system is not None,
             lifecycle_recorder is not None,
-            self._mcp_server is not None,
         )
 
     async def start(self) -> None:

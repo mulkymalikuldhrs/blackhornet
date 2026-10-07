@@ -7,7 +7,7 @@ Trade logging, PnL calculation, performance stats
 import json
 import logging
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 logger = logging.getLogger("blackhornet.Journal")
 
@@ -20,7 +20,7 @@ class JournalTool:
         self.daily_summaries = {}
 
     def log_trade(self, symbol: str, direction: str, entry: float,
-                  exit_price: float, stop_loss: float, take_profit: float = None,
+                  exit_price: float, stop_loss: float, take_profit: Optional[float] = None,
                   lot_size: float = 0.01, reason: str = "",
                   result: str = "") -> str:
         """Log a completed trade with full details"""

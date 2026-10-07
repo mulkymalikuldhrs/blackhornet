@@ -187,7 +187,7 @@ class SharedState:
                 "SELECT name, state, trades_count, wins, losses, total_pnl, expectancy, max_drawdown FROM strategy_lifecycle"
             ).fetchall()
             if rows:
-                from tools.strategy_lifecycle import StrategyLifecycleManager
+                from src.tools.strategy_lifecycle import StrategyLifecycleManager
                 slm = self._get_or_create("strategy_lifecycle", StrategyLifecycleManager)
                 for row in rows:
                     name, state, tc, wins, losses, pnl, exp, dd = row
@@ -340,7 +340,7 @@ class SharedState:
     def risk_officer(self):
         """Get the SHARED RiskOfficerTool instance"""
         if self._risk_officer is None:
-            from tools.risk_officer_tool import RiskOfficerTool
+            from src.tools.risk_officer_tool import RiskOfficerTool
             self._risk_officer = RiskOfficerTool()
         return self._risk_officer
 
@@ -348,7 +348,7 @@ class SharedState:
     def kill_switch(self):
         """Get the SHARED KillSwitchTool instance"""
         if self._kill_switch is None:
-            from tools.kill_switch_tool import KillSwitchTool
+            from src.tools.kill_switch_tool import KillSwitchTool
             self._kill_switch = KillSwitchTool()
         return self._kill_switch
 
@@ -356,7 +356,7 @@ class SharedState:
     def journal(self):
         """Get the SHARED JournalTool instance"""
         if self._journal is None:
-            from tools.journal_tool import JournalTool
+            from src.tools.journal_tool import JournalTool
             self._journal = JournalTool()
         return self._journal
 

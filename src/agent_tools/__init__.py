@@ -7,7 +7,7 @@ permission-aware dispatch.
 
 from src.agent_tools.base import MCPTool, RateLimitConfig, ToolHealth
 from .shell import ShellTool
-from .file import FileTool
+from .file_tool import FileTool
 from .browser import BrowserTool
 from .search import SearchTool
 from .code import CodeTool

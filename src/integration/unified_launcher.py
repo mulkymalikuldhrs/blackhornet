@@ -83,26 +83,10 @@ class UnifiedLauncher:
         # 6. API bridge
         try:
             from src.ui.api_bridge import APIBridge
-            # ponytail: feed real registries so API exposes live data, not empty
-            try:
-                from src.agents.registry import AgentRegistry
-                from src.ui.event_bus import EventBus
-                agent_registry = AgentRegistry(EventBus())
-            except Exception:
-                agent_registry = None
-            try:
-                from src.core.tool_registry import ToolRegistry
-                tool_registry = ToolRegistry()
-            except Exception:
-                tool_registry = None
             ab = APIBridge(
                 graph_store=self._components.get("graph_store"),
                 memory_system=self._components.get("memory_system"),
                 event_bus=self._components.get("event_bus"),
-                orchestrator=self._components.get("amc_bridge"),
-                agent_registry=agent_registry,
-                tool_registry=tool_registry,
-                hermes_quant=self._components.get("hermes_quant"),
             )
             self._components["api_bridge"] = ab
             started.append("api_bridge")
@@ -187,61 +171,6 @@ class UnifiedLauncher:
             results["amc_tools"] = f"ok ({registered} tools)"
         except Exception as exc:
             results["amc_tools"] = str(exc)
-
-        # 13. BHQuant trading subsystem (best-effort: optional deps)
-        try:
-            from src.hermes_quant import blackhornet as HermesQuantEngine
-            from src.integrations.blackhornet_quant_bridge import BlackHornetQuantBridge
-            quant = HermesQuantEngine()
-            bridge = BlackHornetQuantBridge()
-            self._components["hermes_quant"] = quant
-            self._components["quant_bridge"] = bridge
-            started.append("hermes_quant")
-            results["hermes_quant"] = "ok"
-            # ponytail: APIBridge was built in step 6 — backfill quant ref
-            if "api_bridge" in self._components:
-                self._components["api_bridge"].set_services(hermes_quant=quant)
-        except Exception as exc:
-            results["hermes_quant"] = str(exc)
-
-        # 14–17. Autonomous colony subsystem (best-effort: optional networking)
-        try:
-            from src.core.event_bus import EventBus as CoreEventBus
-            from src.colony.health_monitor.health_monitor import ColonyHealthMonitor
-            from src.colony.radar import ColonyRadar, RadarConfig, ColonyIdentity
-            from src.colony.mesh_bus import MeshBus
-            from src.colony.orchestrator import EcosystemOrchestrator, OrchestratorConfig
-
-            identity = ColonyIdentity(name="blackhornet-primary")
-            core_bus = CoreEventBus()
-            health = ColonyHealthMonitor()
-            # ponytail: radar/mesh wired to health monitor post-construction
-            radar = ColonyRadar(RadarConfig(identity=identity, static_peers=[]), health)
-            mesh = MeshBus(core_bus, identity, http_port=0, health_monitor=health)
-            health.wire_radar(radar)
-            health.wire_mesh(mesh)
-
-            orch_cfg = OrchestratorConfig(colony_id=str(identity.colony_id), colony_name="blackhornet")
-            orch = EcosystemOrchestrator(orch_cfg, health_monitor=health)
-            orch.wire(radar=radar, mesh=mesh, graph_store=self._components.get("graph_store"),
-                      memory_system=self._components.get("memory_system"),
-                      agent_registry=self._components.get("agent_registry"))
-
-            self._components.update({
-                "colony_health": health, "colony_radar": radar,
-                "colony_mesh": mesh, "ecosystem_orchestrator": orch,
-            })
-            started.extend(["colony_health", "colony_radar", "colony_mesh", "ecosystem_orchestrator"])
-            results["ecosystem_orchestrator"] = "ok"
-        except Exception as exc:
-            results["ecosystem_orchestrator"] = str(exc)
-
-        # ponytail: APIBridge (step 6) — backfill colony + quant refs
-        if "api_bridge" in self._components:
-            self._components["api_bridge"].set_services(
-                hermes_quant=self._components.get("hermes_quant"),
-                ecosystem_orchestrator=self._components.get("ecosystem_orchestrator"),
-            )
 
         self._running = True
         results["_started"] = started

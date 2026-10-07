@@ -36,7 +36,7 @@ class Constitution:
         self.checks: list[ConstitutionCheck] = []
 
     def _detect_root(self) -> str:
-        for p in [os.environ.get("DHAHERLABS", "/sdcard/dhaherlabs"), os.getcwd()]:
+        for p in [os.environ.get("DHAHERLABS") or os.path.join(os.path.expanduser("~"), "dhaherlabs"), os.getcwd()]:
             bh = os.path.join(p, "blackhornet-worktree")
             if os.path.isdir(bh):
                 return bh

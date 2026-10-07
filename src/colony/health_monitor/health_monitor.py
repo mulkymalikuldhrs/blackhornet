@@ -45,8 +45,8 @@ class ColonyHealthMonitor:
         """Wire Radar to health monitor."""
         self._radar = radar
         # Register all peer IDs for monitoring
-        if radar._peers:
-            for peer_id in radar._peers.keys():
+        if radar.peers:
+            for peer_id in radar.peers.keys():
                 self._detector.reset(peer_id)
 
     def wire_mesh(self, mesh_bus: MeshBus) -> None:

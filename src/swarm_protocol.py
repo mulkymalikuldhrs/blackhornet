@@ -21,6 +21,7 @@ Architecture:
 """
 
 import os
+import platform
 import sys
 import json
 import time
@@ -109,7 +110,7 @@ class SwarmProtocol:
             repo=repo,
             repo_url=repo_url,
             version=version,
-            hostname=os.uname().nodename,
+            hostname=platform.node(),
             pid=os.getpid(),
             started_at=datetime.now(timezone.utc).isoformat(),
             capabilities=self._detect_capabilities()
@@ -125,7 +126,7 @@ class SwarmProtocol:
 
     def _generate_id(self) -> str:
         """Generate unique agent ID based on host + repo + hash."""
-        seed = f"{os.uname().nodename}-{os.getpid()}-{time.time()}"
+        seed = f"{platform.node()}-{os.getpid()}-{time.time()}"
         return hashlib.md5(seed.encode()).hexdigest()[:12]
 
     def _detect_capabilities(self) -> List[str]:
@@ -133,7 +134,7 @@ class SwarmProtocol:
         caps = ["swarm_protocol", "self_upgrade", "memory_sync"]
         # Detect based on available tools
         try:
-            from tools.shared_state import get_shared_state
+            from src.tools.shared_state import get_shared_state
             caps.append("trading")
             caps.append("risk_management")
         except ImportError:
@@ -419,7 +420,7 @@ class SwarmProtocol:
             repo=target_repo,
             repo_url=repo_url,
             version="0.1.0",
-            hostname=os.uname().nodename,
+            hostname=platform.node(),
             pid=0,
             started_at=datetime.now(timezone.utc).isoformat(),
         )

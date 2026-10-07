@@ -151,7 +151,7 @@ class DecisionSynthesisEngine:
             action = best_rule["action"]
 
             # Additional risk clearance check
-            from tools.risk_officer_tool import MAX_DAILY_LOSS
+            from src.tools.risk_officer_tool import MAX_DAILY_LOSS
             if abs(min(0, daily_pnl_pct)) >= MAX_DAILY_LOSS:
                 risk_clearance = "BLOCKED"
                 reason = f"Daily loss limit reached: {daily_pnl_pct:.2%}"
@@ -190,9 +190,9 @@ class DecisionSynthesisEngine:
         and calculating pressure from technical analysis.
         """
         try:
-            from tools.market_state_engine import MarketStateEngine
-            from tools.pressure_engine import PressureNormalizationEngine
-            from tools.technical_analysis_tool import TechnicalAnalysisTool
+            from src.tools.market_state_engine import MarketStateEngine
+            from src.tools.pressure_engine import PressureNormalizationEngine
+            from src.tools.technical_analysis_tool import TechnicalAnalysisTool
 
             mse = MarketStateEngine()
             regime_result = mse.auto_detect(symbol)

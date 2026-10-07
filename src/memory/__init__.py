@@ -38,8 +38,6 @@ from .condensers import (
 )
 from .knowledge import KnowledgeBase, Fact, Document, Chunk
 from .knowledge_graph import TemporalKnowledgeGraph, Triple, Entity, EvolutionEntry
-from .neural_bridge import NeuralMemoryBridge
-from .neural_graph import NeuralGraphMemory, NeuronData, SynapseData
 from .session import SessionMemory, Session, Message, CompactionResult
 
 # Self-consolidation (arXiv:2602.01966)
@@ -116,9 +114,4 @@ __all__ = [
     "ConsolidatedMemory",
     "ReflectedInsight",
     "Experience",
-    # Neural Bridge
-    "NeuralMemoryBridge",
-    "NeuralGraphMemory",
-    "NeuronData",
-    "SynapseData",
 ]

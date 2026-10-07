@@ -47,3 +47,13 @@ __all__ = [
     "AgentContractManager", "AgentContract", "SuccessCriteria", "ContractStatus", "ContractViolation",
     "EvolutionBridge",
 ]
+from src.core.ast_sanitizer import SecurityViolationException, SanitizeResult, sanitize, is_allowed
+
+from src.core.consensus_engine import ConsensusEngine, ConsensusResult, JudgeRound, ProposalStatus
+
+from src.core.debate_arena import DebateArena
+
+from src.core.workforce.agent_factory import AgentFactory, AgentSpec, CreatedAgent
+from src.core.workforce.prompter import DynamicPrompter
+
+from src.core.workforce.task_planner import TaskPlanner, Plan, SubTask

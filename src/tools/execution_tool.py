@@ -37,12 +37,12 @@ class ExecutionTool:
     def shared_state(self):
         """Lazy-load shared state to avoid circular imports"""
         if self._shared_state is None:
-            from tools.shared_state import get_shared_state
+            from src.tools.shared_state import get_shared_state
             self._shared_state = get_shared_state()
         return self._shared_state
 
     def paper_trade(self, symbol: str, direction: str, lot_size: float,
-                    entry: float, stop_loss: float, take_profit: float = None,
+                    entry: float, stop_loss: float, take_profit: Optional[float] = None,
                     reason: str = "") -> str:
         """
         Execute a paper trade. ALWAYS checks Risk Officer first.

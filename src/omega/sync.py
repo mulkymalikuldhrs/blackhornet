@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import platform
 import subprocess
 import time
 from typing import Optional
@@ -11,6 +12,13 @@ from typing import Optional
 from src.config.logging_config import get_logger
 
 logger = get_logger("omega.sync")
+
+
+def _get_python_cmd() -> str:
+    """Return the correct python command for the current OS."""
+    if platform.system() == "Windows":
+        return "python"
+    return "python3"
 
 
 class EcosystemSync:
@@ -21,7 +29,7 @@ class EcosystemSync:
     ECOSYSTEM_MEMORY = "data/ecosystem-memory"
 
     def __init__(self) -> None:
-        self._base = os.environ.get("DHAHERLABS", "/sdcard/dhaherlabs")
+        self._base = os.environ.get("DHAHERLABS") or os.path.join(os.path.expanduser("~"), "dhaherlabs")
         self._last_sync: Optional[float] = None
 
     def run(self) -> dict:
@@ -47,7 +55,7 @@ class EcosystemSync:
     def _sync_pages(self) -> dict:
         script = os.path.join(self._base, "data", "ecosystem-memory", "ecosystem-sync-pages.py")
         if os.path.isfile(script):
-            result = subprocess.run(["python3", script], capture_output=True, text=True, timeout=60)
+            result = subprocess.run([_get_python_cmd(), script], capture_output=True, text=True, timeout=60)
             return {"stdout": result.stdout[-200:], "stderr": result.stderr[-200:], "returncode": result.returncode}
         return {"info": "ecosystem-sync-pages.py not found", "script_path": script}
 

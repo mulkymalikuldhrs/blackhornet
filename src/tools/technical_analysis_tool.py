@@ -25,7 +25,7 @@ class TechnicalAnalysisTool:
         """
         try:
             # Get OHLCV data first
-            from tools.market_data_tool import MarketDataTool
+            from src.tools.market_data_tool import MarketDataTool
             mdt = MarketDataTool()
             raw_data = json.loads(mdt.get_ohlcv(symbol, interval, 100))
 

@@ -59,7 +59,7 @@ class SelfConfidenceSystem:
             }, f, indent=2)
 
     def _resolve_path(self) -> str:
-        base = os.environ.get("DHAHERLABS", "/sdcard/dhaherlabs")
+        base = os.environ.get("DHAHERLABS") or os.path.join(os.path.expanduser("~"), "dhaherlabs")
         return os.path.join(base, self.CONFIDENCE_PATH)
 
     def record_action(self, action: str, confidence: float, evidence_sources: int) -> ConfidenceEntry:

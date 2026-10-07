@@ -6,6 +6,8 @@ autonomous agent operating system.
 
 from __future__ import annotations
 
+from .ecosystem import ConsensusStatus, EcosystemState
+
 from .models import (
     # Enums
     AgentType,
