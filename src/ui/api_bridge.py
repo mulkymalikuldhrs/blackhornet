@@ -172,10 +172,15 @@ class APIBridge:
             if not self._orchestrator:
                 return APIResponse(success=False, error="Orchestrator not available",
                                    status_code=503)
-            stats = self._orchestrator.get_stats() if hasattr(self._orchestrator, "get_stats") else {}
-            cache = self._orchestrator.get_status_cache() if hasattr(self._orchestrator, "get_status_cache") else {}
-            return APIResponse(data={"stats": stats, "cache": cache})
+            if hasattr(self._orchestrator, "get_status_snapshot"):
+                snapshot = self._orchestrator.get_status_snapshot()
+            else:
+                cache = (self._orchestrator._status_cache
+                         if hasattr(self._orchestrator, "_status_cache") else {})
+                snapshot = dict(cache)
+            return APIResponse(data=snapshot)
         except Exception as exc:
+            logger.exception("APIBridge.get_ecosystem_status error")
             return APIResponse(success=False, error=str(exc), status_code=500)
 
     def handle_request(self, method: str, path: str,
@@ -198,6 +203,8 @@ class APIBridge:
             return self.get_memory(key)
         elif path == "/api/v1/status" and method == "GET":
             return self.get_status()
+        elif path == "/api/v1/ecosystem" and method == "GET":
+            return self.get_ecosystem_status()
         elif path == "/api/v1/events" and method == "GET":
             return self.get_events()
         else:

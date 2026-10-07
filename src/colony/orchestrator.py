@@ -197,6 +197,18 @@ class EcosystemOrchestrator:
 
         logger.info("orchestrator_stopped colony=%s", self._config.colony_name)
 
+    def get_status_snapshot(self) -> dict[str, Any]:
+        """Synchronous status snapshot for synchronous API consumers.
+
+        Returns the last cached full_status() output plus the live
+        EcosystemState dict. Safe to call from sync contexts (HTTP
+        handlers) that cannot await full_status().
+        """
+        snapshot: dict[str, Any] = dict(self._status_cache)
+        if self._ecosystem_state:
+            snapshot["ecosystem"] = self._ecosystem_state.to_dict()
+        return snapshot
+
     async def full_status(self) -> dict[str, Any]:
         """Return a comprehensive status of the entire ecosystem.
 
