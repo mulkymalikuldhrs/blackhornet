@@ -28,6 +28,7 @@ from src.config.logging_config import get_logger
 from src.colony_types._pydantic_compat import model_dump
 from src.colony.graph_sync import GraphifySyncBridge
 from src.colony.session_export import SessionExporter
+from src.bh_types.ecosystem import EcosystemState
 from src.core.evolution_bridge import EvolutionBridge
 from src.swarm.swarm_skills import SwarmSkillsManager
 
@@ -81,6 +82,7 @@ class EcosystemOrchestrator:
         self._session_exporter: Optional[SessionExporter] = None
         self._mcp_server: Any = None
         self._evolution_bridge: Optional[EvolutionBridge] = None
+        self._ecosystem_state: EcosystemState = EcosystemState()
         self._swarm_skills: Optional[SwarmSkillsManager] = None
 
         self._graph_sync: Optional[GraphifySyncBridge] = None
@@ -220,6 +222,7 @@ class EcosystemOrchestrator:
             "memory": {},
             "lifecycle": {},
             "evolution": {},
+            "ecosystem": {},
         }
 
         if self._radar:
@@ -290,6 +293,9 @@ class EcosystemOrchestrator:
             except Exception as e:
                 status["evolution"] = {"error": str(e)}
 
+        if self._ecosystem_state:
+            status["ecosystem"] = self._ecosystem_state.to_dict()
+
         async with self._lock:
             self._status_cache = status
 
@@ -300,6 +306,14 @@ class EcosystemOrchestrator:
             try:
                 status = await self.full_status()
                 self._sync_count += 1
+
+                if self._ecosystem_state:
+                    self._ecosystem_state.append_audit(
+                        "orchestrator.sync",
+                        sync_count=self._sync_count,
+                        peers=status.get("radar", {}).get("peer_count", 0),
+                        agents=status.get("agents", {}).get("total", 0),
+                    )
 
                 if self._mesh_bus and self._radar:
                     self._mesh_bus.update_peers(self._radar.get_peers())
