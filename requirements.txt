@@ -2,5 +2,5 @@ aiohttp>=3.9.0
 python-dotenv>=1.2.2
 yfinance>=0.2.30
 requests>=2.34.2
-pandas>=2.0.0
+pandas>=3.0.6
 pyyaml>=6.0.3
